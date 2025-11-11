@@ -5,7 +5,8 @@ import pandas as pd
 from openai import OpenAI
 import json
 
-
+# create two columns 
+col1, col2 = st.columns([1.2, 1])
 st.set_page_config(layout="wide")
 @st.cache_resource
 def get_mongo_client():
@@ -111,40 +112,69 @@ def run_chatbot(prolific_id: str):
     """,
     )
     
-  # --- Two-column layout ---
-    col1, col2 = st.columns([1.3, 1])  # wider left column
+    col1, col2 = st.columns([1.3, 1], gap="large")  
 
-    # LEFT COLUMN → Abstract & Summary
     with col1:
         st.markdown(f"### {abstract['abstract_title']}")
         st.write(abstract["abstract"])
 
-        # If summary already generated, display it below
         if st.session_state.show_summary:
             st.divider()
             st.markdown("### 🧾 Summary of Scientific Abstract")
-            st.write(st.session_state.generated_summary)
+            st.markdown(
+                f"<div style='background-color:#f5f7fa;padding:1rem;border-radius:0.5rem;'>"
+                f"{st.session_state.generated_summary}</div>",
+                unsafe_allow_html=True
+            )
 
-    # RIGHT COLUMN → Chat / Q&A
+    st.markdown(
+        """
+        <style>
+            /* Divider between left and right columns */
+            section[data-testid="stHorizontalBlock"] > div:first-child {
+                border-right: 2px solid #e0e0e0;
+                padding-right: 2rem;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
     with col2:
-        st.markdown("### 💬 Ask Questions About This Abstract")
+        st.markdown("### 💬 Chat with the Chatbot")
+        chat_container = st.container()
+        with chat_container:
+            st.markdown(
+                """
+                <style>
+                    /* Make chat area scrollable and fix height */
+                    div[data-testid="stVerticalBlock"] > div:nth-child(2) {
+                        max-height: 500px;
+                        overflow-y: auto;
+                        padding-right: 10px;
+                    }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
 
-        # Show chat history
-        for msg in st.session_state.messages:
-            with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
+            for msg in st.session_state.messages:
+                role_label = "🧑‍💬 You" if msg["role"] == "user" else "🤖 Assistant"
+                with st.chat_message(msg["role"]):
+                    st.markdown(f"**{role_label}:** {msg['content']}")
 
-        # Chat input field
+        # Chat input stays at the bottom
         if not st.session_state.show_summary:
-            if prompt := st.chat_input("Type your question here..."):
-                # Save question to session + DB
+            prompt = st.chat_input("Type your question here...")
+            if prompt:
+                # Save user question
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 st.session_state.question_count += 1
 
                 with st.chat_message("user"):
                     st.markdown(prompt)
 
-                # Generate AI answer
+                # Generate AI response
                 with st.chat_message("assistant"):
                     placeholder = st.empty()
                     with st.spinner("🤔 Thinking..."):
@@ -158,7 +188,7 @@ def run_chatbot(prolific_id: str):
                     answer = response.choices[0].message.content
                     placeholder.markdown(answer)
 
-                # Store assistant response
+                # Save assistant reply
                 st.session_state.messages.append({"role": "assistant", "content": answer})
                 users_collection.update_one(
                     {"prolific_id": prolific_id},
@@ -171,14 +201,13 @@ def run_chatbot(prolific_id: str):
                     }}
                 )
 
-        # "I'm done asking questions" button after 3 questions
+        # "I'm done asking questions" button
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
+            st.divider()
             if st.button("I'm done asking questions"):
-                # build conversation text
                 conversation_text = "\n".join(
                     [f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.messages]
                 )
-
                 system_prompt = (
                     "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
                     f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
@@ -198,8 +227,6 @@ def run_chatbot(prolific_id: str):
                     )
 
                 summary = response.choices[0].message.content
-
-                # Save to DB and update session
                 users_collection.update_one(
                     {"prolific_id": prolific_id},
                     {"$set": {
@@ -212,6 +239,7 @@ def run_chatbot(prolific_id: str):
                 st.session_state.show_summary = True
 
         if st.session_state.show_summary:
+            st.divider()
             if st.button("Next"):
                 st.session_state.show_summary = False
                 st.session_state.generated_summary = ""
