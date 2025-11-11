@@ -5,6 +5,7 @@ import pandas as pd
 from openai import OpenAI
 import json
 
+
 st.set_page_config(layout="wide")
 @st.cache_resource
 def get_mongo_client():
@@ -110,111 +111,111 @@ def run_chatbot(prolific_id: str):
     """,
     )
     
-    st.markdown(f"### {abstract['abstract_title']}")
-    st.write(abstract["abstract"])
-    st.markdown("### 💬 Ask Questions About This Abstract")
+  # --- Two-column layout ---
+    col1, col2 = st.columns([1.3, 1])  # wider left column
 
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+    # LEFT COLUMN → Abstract & Summary
+    with col1:
+        st.markdown(f"### {abstract['abstract_title']}")
+        st.write(abstract["abstract"])
 
-    if not st.session_state.show_summary:
-        if prompt := st.chat_input("Type your question here..."):
-            # save to session + DB
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            st.session_state.question_count += 1
+        # If summary already generated, display it below
+        if st.session_state.show_summary:
+            st.divider()
+            st.markdown("### 🧾 Summary of Scientific Abstract")
+            st.write(st.session_state.generated_summary)
 
-            with st.chat_message("user"):
-                st.markdown(prompt)
+    # RIGHT COLUMN → Chat / Q&A
+    with col2:
+        st.markdown("### 💬 Ask Questions About This Abstract")
 
-            # generate AI answer
-            with st.chat_message("assistant"):
-                placeholder = st.empty()
-                with st.spinner("🤔 Thinking..."):
+        # Show chat history
+        for msg in st.session_state.messages:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
+
+        # Chat input field
+        if not st.session_state.show_summary:
+            if prompt := st.chat_input("Type your question here..."):
+                # Save question to session + DB
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                st.session_state.question_count += 1
+
+                with st.chat_message("user"):
+                    st.markdown(prompt)
+
+                # Generate AI answer
+                with st.chat_message("assistant"):
+                    placeholder = st.empty()
+                    with st.spinner("🤔 Thinking..."):
+                        response = client_openai.chat.completions.create(
+                            model="gpt-4o",
+                            messages=[
+                                {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts."},
+                                *st.session_state.messages,
+                            ],
+                        )
+                    answer = response.choices[0].message.content
+                    placeholder.markdown(answer)
+
+                # Store assistant response
+                st.session_state.messages.append({"role": "assistant", "content": answer})
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$push": {
+                        f"phases.interactive.abstracts.{abstract_id}.conversation_log": {
+                            "user": prompt,
+                            "assistant": answer,
+                            "timestamp": datetime.utcnow()
+                        }
+                    }}
+                )
+
+        # "I'm done asking questions" button after 3 questions
+        if st.session_state.question_count >= 3 and not st.session_state.show_summary:
+            if st.button("I'm done asking questions"):
+                # build conversation text
+                conversation_text = "\n".join(
+                    [f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.messages]
+                )
+
+                system_prompt = (
+                    "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
+                    f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
+                    "Use this conversation to identify what concepts, terms, or results the reader found confusing, interesting, or important. "
+                    "Then rewrite the original abstract into a clear, accurate, plain-language summary that preserves all key scientific details "
+                    "but provides additional explanation and context for the specific parts the reader asked about or struggled to understand. "
+                    "The goal is to make the abstract easier to understand while staying true to the science."
+                )
+
+                with st.spinner("✨ Generating the summary of the scientific abstract..."):
                     response = client_openai.chat.completions.create(
                         model="gpt-4o",
                         messages=[
-                            {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts."},
-                            *st.session_state.messages,
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": f"Rewrite this abstract:\n\n{abstract['abstract']}"}
                         ],
                     )
-                answer = response.choices[0].message.content
-                placeholder.markdown(answer)
 
-            # store assistant response
-            st.session_state.messages.append({"role": "assistant", "content": answer})
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$push": {
-                    f"phases.interactive.abstracts.{abstract_id}.conversation_log": {
-                        "user": prompt,
-                        "assistant": answer,
-                        "timestamp": datetime.utcnow()
-                    }
-                }}
-            )
+                summary = response.choices[0].message.content
 
-    if st.session_state.question_count >= 3 and not st.session_state.show_summary:
-        if st.button("I'm done asking questions"):
-            conversation = []
-            for msg in st.session_state.messages:
-                if "role" in msg and "content" in msg:
-                    conversation.append(msg)
-                elif "user" in msg and "assistant" in msg:
-                    conversation.append({"role": "user", "content": msg["user"]})
-                    conversation.append({"role": "assistant", "content": msg["assistant"]})
-
-            conversation_text = "\n".join(
-                [f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.messages]
-            )
-
-            system_prompt = (
-                "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
-                f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
-                "Use this conversation to identify what concepts, terms, or results the reader found confusing, interesting, or important. "
-                "Then rewrite the original abstract into a clear, accurate, plain-language summary that preserves all key scientific details "
-                "but provides additional explanation and context for the specific parts the reader asked about or struggled to understand. "
-                "The goal is to make the abstract easier to understand while staying true to the science."
-            )
-            print(conversation_text)
-
-            with st.spinner("✨ Generating the summary of the scientific abstract..."):
-                response = client_openai.chat.completions.create(
-                    model="gpt-4o",
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": f"Rewrite this abstract:\n\n{abstract['abstract']}"}
-                    ],
+                # Save to DB and update session
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {
+                        f"phases.interactive.abstracts.{abstract_id}.pls": summary,
+                        f"phases.interactive.abstracts.{abstract_id}.completed": True
+                    }}
                 )
-            summary = response.choices[0].message.content
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$set": {
-                    f"phases.interactive.abstracts.{abstract_id}.pls": summary,
-                    f"phases.interactive.abstracts.{abstract_id}.completed": True
-                }}
-            )
 
-            st.session_state.last_completed_abstract = {
-                "abstract_id": abstract_id,
-                "title": abstract["abstract_title"],
-                "abstract": abstract["abstract"],
-                "pls": summary, 
-                "prolific_id": prolific_id
-            }
+                st.session_state.generated_summary = summary
+                st.session_state.show_summary = True
 
-            st.session_state.generated_summary = summary
-            st.session_state.show_summary = True
-
-    if st.session_state.show_summary:
-        st.divider()
-        st.markdown("### 🧾 Summary of Scientific Abstract")
-        st.write(st.session_state.generated_summary)
-
-        if st.button("Next"):
-            st.session_state.show_summary = False
-            st.session_state.generated_summary = ""
-            st.session_state.messages = []
-            st.session_state.question_count = 0
-            st.session_state.abstract_index += 1
-            st.switch_page("pages/short_answers.py")
+        if st.session_state.show_summary:
+            if st.button("Next"):
+                st.session_state.show_summary = False
+                st.session_state.generated_summary = ""
+                st.session_state.messages = []
+                st.session_state.question_count = 0
+                st.session_state.abstract_index += 1
+                st.switch_page("pages/short_answers.py")
