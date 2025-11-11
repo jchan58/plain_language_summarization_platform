@@ -3,7 +3,6 @@ from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from openai import OpenAI
-import json
 
 st.set_page_config(layout="wide")
 
@@ -34,9 +33,7 @@ def get_user_interactive_abstracts(prolific_id: str):
     )
     if not user:
         return []
-    abstracts_dict = (
-        user.get("phases", {}).get("interactive", {}).get("abstracts", {})
-    )
+    abstracts_dict = user.get("phases", {}).get("interactive", {}).get("abstracts", {})
     abstracts = []
     for abstract_id, data in abstracts_dict.items():
         abstracts.append({
@@ -61,19 +58,9 @@ def run_chatbot(prolific_id: str):
         st.error("No interactive abstracts found for this user.")
         return
 
-    if "abstract_index" not in st.session_state:
-        user = users_collection.find_one({"prolific_id": prolific_id})
-        abstracts_dict = user.get("phases", {}).get("interactive", {}).get("abstracts", {})
-        uncompleted_ids = [aid for aid, data in abstracts_dict.items() if not data.get("completed", False)]
-        if uncompleted_ids:
-            for i, abs_data in enumerate(abstracts):
-                if abs_data["abstract_id"] in uncompleted_ids:
-                    st.session_state.abstract_index = i
-                    break
-        else:
-            st.session_state.abstract_index = len(abstracts)
-
+    # Initialize state
     for key, default in {
+        "abstract_index": 0,
         "messages": [],
         "question_count": 0,
         "show_summary": False,
@@ -84,7 +71,6 @@ def run_chatbot(prolific_id: str):
 
     total = len(abstracts)
     idx = st.session_state.abstract_index
-
     if idx >= total:
         st.success("🎉 You've completed all interactive abstracts!")
         return
@@ -94,6 +80,7 @@ def run_chatbot(prolific_id: str):
 
     st.progress((idx + 1) / total)
     st.caption(f"Progress: {idx + 1} of {total} abstracts completed")
+
     st.markdown(
         """
         ### 📝 Instructions
@@ -103,83 +90,52 @@ def run_chatbot(prolific_id: str):
         4. When finished, click **“I'm done asking questions.”**  
         5. A plain-language summary will appear on the left.  
         6. Click **Next** to move to the next page after reviewing.  
-        """,
+        """
     )
 
     col1, col2 = st.columns([1.3, 1], gap="large")
+
+    # LEFT COLUMN
     with col1:
         st.markdown(f"### {abstract['abstract_title']}")
         st.write(abstract["abstract"])
-
         if st.session_state.show_summary:
             st.divider()
             st.markdown("### 🧾 Summary of Scientific Abstract")
             st.markdown(
                 f"<div style='background-color:#f5f7fa;padding:1rem;border-radius:0.5rem;'>"
                 f"{st.session_state.generated_summary}</div>",
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
+    # RIGHT COLUMN (Chat)
     with col2:
         st.markdown("### 💬 Chat with the Chatbot")
 
-        # Display chat history
-        chat_container = st.container()
-        with chat_container:
-            for msg in st.session_state.messages:
-                with st.chat_message(msg["role"]):
-                    st.markdown(msg["content"])
+        # Scrollable chat area
+        st.markdown(
+            """
+            <style>
+            .chat-box {
+                max-height: 500px;
+                overflow-y: auto;
+                padding: 10px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                background-color: #fafafa;
+                margin-bottom: 10px;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        st.divider()
-        st.markdown("**Ask your question:**")
-        with st.form("chat_input_form", clear_on_submit=True):
-            cols = st.columns([4, 1])
-            with cols[0]:
-                user_input = st.text_input(" ", placeholder="Type your question here...", label_visibility="collapsed")
-            with cols[1]:
-                send = st.form_submit_button("Send")
+        st.markdown('<div class="chat-box">', unsafe_allow_html=True)
+        for msg in st.session_state.messages:
+            role = "You" if msg["role"] == "user" else "Assistant"
+            st.markdown(f"**{role}:** {msg['content']}")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        # Handle question submission
-        if send and user_input.strip():
-            # Store user message
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            st.session_state.question_count += 1
-
-            # Display user question immediately
-            with chat_container:
-                with st.chat_message("user"):
-                    st.markdown(user_input)
-
-            # Generate AI response
-            with chat_container:
-                with st.chat_message("assistant"):
-                    with st.spinner("🤔 Thinking..."):
-                        response = client_openai.chat.completions.create(
-                            model="gpt-4o",
-                            messages=[
-                                {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts."},
-                                *st.session_state.messages,
-                            ],
-                        )
-                    answer = response.choices[0].message.content
-                    st.markdown(answer)
-
-            # Store assistant response
-            st.session_state.messages.append({"role": "assistant", "content": answer})
-
-            # Save to MongoDB
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$push": {
-                    f"phases.interactive.abstracts.{abstract_id}.conversation_log": {
-                        "user": user_input,
-                        "assistant": answer,
-                        "timestamp": datetime.utcnow()
-                    }
-                }}
-            )
-
-        # -------------------- DONE ASKING BUTTON --------------------
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
             st.divider()
             if st.button("I'm done asking questions"):
@@ -192,30 +148,71 @@ def run_chatbot(prolific_id: str):
                     "but provides additional explanation and context for the specific parts the reader asked about or struggled to understand. "
                     "The goal is to make the abstract easier to understand while staying true to the science."
                 )
-
                 with st.spinner("✨ Generating the summary of the scientific abstract..."):
                     response = client_openai.chat.completions.create(
                         model="gpt-4o",
                         messages=[
                             {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": f"Rewrite this abstract:\n\n{abstract['abstract']}"}
+                            {"role": "user", "content": f"Rewrite this abstract:\n\n{abstract['abstract']}"},
                         ],
                     )
                 summary = response.choices[0].message.content
-
-                # Save summary to DB
                 users_collection.update_one(
                     {"prolific_id": prolific_id},
                     {"$set": {
                         f"phases.interactive.abstracts.{abstract_id}.pls": summary,
-                        f"phases.interactive.abstracts.{abstract_id}.completed": True
-                    }}
+                        f"phases.interactive.abstracts.{abstract_id}.completed": True,
+                    }},
                 )
-
                 st.session_state.generated_summary = summary
                 st.session_state.show_summary = True
 
-        # -------------------- NEXT BUTTON --------------------
+        # Input box
+        st.divider()
+        st.markdown("**Ask your question:**")
+        with st.form("chat_input_form", clear_on_submit=True):
+            cols = st.columns([4, 1])
+            with cols[0]:
+                user_input = st.text_input(
+                    " ", placeholder="Type your question here...", label_visibility="collapsed"
+                )
+            with cols[1]:
+                send = st.form_submit_button("Send")
+
+        # Handle send
+        if send and user_input.strip():
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            st.session_state.question_count += 1
+
+            with st.spinner("🤔 Thinking..."):
+                response = client_openai.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts."},
+                        *st.session_state.messages,
+                    ],
+                )
+            answer = response.choices[0].message.content
+            st.session_state.messages.append({"role": "assistant", "content": answer})
+
+            # Save conversation to MongoDB
+            users_collection.update_one(
+                {"prolific_id": prolific_id},
+                {"$push": {
+                    f"phases.interactive.abstracts.{abstract_id}.conversation_log": {
+                        "user": user_input,
+                        "assistant": answer,
+                        "timestamp": datetime.utcnow(),
+                    }
+                }},
+            )
+            st.markdown(
+                "<script>var chatBox = window.parent.document.querySelector('.chat-box');"
+                "if(chatBox){chatBox.scrollTop = chatBox.scrollHeight;}</script>",
+                unsafe_allow_html=True,
+            )
+
+        # NEXT BUTTON
         if st.session_state.show_summary:
             st.divider()
             if st.button("Next"):
@@ -226,7 +223,6 @@ def run_chatbot(prolific_id: str):
                 st.session_state.abstract_index += 1
                 st.switch_page("pages/short_answers.py")
 
-    # -------------------- STYLE: DIVIDER BETWEEN COLUMNS --------------------
     st.markdown(
         """
         <style>
