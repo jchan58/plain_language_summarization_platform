@@ -2,6 +2,7 @@ import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
 
+st.set_page_config(layout="wide")
 def show_progress():
     if "progress_info" in st.session_state:
         progress = st.session_state.progress_info

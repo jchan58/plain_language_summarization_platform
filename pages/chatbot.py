@@ -5,6 +5,7 @@ import pandas as pd
 from openai import OpenAI
 import json
 
+st.set_page_config(layout="wide")
 @st.cache_resource
 def get_mongo_client():
     return MongoClient(st.secrets["MONGO_URI"])

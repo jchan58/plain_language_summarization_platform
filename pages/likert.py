@@ -2,6 +2,7 @@ import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
 
+st.set_page_config(layout="wide")
 def run_likert():
     st.markdown(
     """
@@ -11,7 +12,7 @@ def run_likert():
     3. When you have finished answering all questions, click the **Next** button to continue.  
     """
     )
-    st.title("📝 Scientific Abstract")
+    st.markdown("📝 Scientific Abstract")
 
     if "survey_context" not in st.session_state:
         st.warning("Please complete the interactive session first.")
