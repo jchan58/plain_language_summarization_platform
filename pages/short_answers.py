@@ -12,6 +12,16 @@ def show_progress():
 
 def run_feedback():
     show_progress()
+    st.markdown(
+    """
+    ### 📝 Instructions
+    1. Read the summary shown below. The summary is another version of the abstract.  
+    2. Answer the short answer questions to check your understanding.  
+    3. **DO NOT copy** from the summary, say “I don’t know,” or provide unrelated answers.  
+       Please respond to the questions to the best of your ability — doing otherwise may risk not being compensated for the task.  
+    4. When you have finished answering all questions, click the **Next** button to continue.  
+    """
+    )
     st.title("📝 Summary of Scientific Abstract")
 
     if "last_completed_abstract" not in st.session_state:

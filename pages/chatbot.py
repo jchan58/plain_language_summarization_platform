@@ -95,8 +95,20 @@ def run_chatbot(prolific_id: str):
 
     st.progress((idx + 1) / total)
     st.caption(f"Progress: {idx + 1} of {total} abstracts completed")
-    
 
+    # add in instructions at the top 
+    st.markdown(
+    """
+    ### 📝 Instructions
+    1. Read the scientific abstract shown on the **left side of the screen**.  
+    2. Use the **question box** to ask any questions you have about the abstract.
+    3. You will have to ask at least 3 questions about the abstract. 
+    4. When you are finished asking all your questions, click the **“I'm done asking questions”** button.  
+    5. The system will then provide a **summary** — a short, easier-to-understand version of the abstract.  
+    6. Review this summary to make sure it is clear to you before clicking the **Next** button.  
+    """,
+    )
+    
     st.markdown(f"### {abstract['abstract_title']}")
     st.write(abstract["abstract"])
     st.markdown("### 💬 Ask Questions About This Abstract")

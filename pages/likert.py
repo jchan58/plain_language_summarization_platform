@@ -3,6 +3,14 @@ from pymongo import MongoClient
 from datetime import datetime
 
 def run_likert():
+    st.markdown(
+    """
+    ### 📝 Instructions
+    1. Read the scientific abstract and the **summary** shown below.  
+    2. Fill out the survey questions about the **summary**.  
+    3. When you have finished answering all questions, click the **Next** button to continue.  
+    """
+    )
     st.title("📝 Scientific Abstract")
 
     if "survey_context" not in st.session_state:
