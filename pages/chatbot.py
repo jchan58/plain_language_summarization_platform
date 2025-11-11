@@ -5,8 +5,7 @@ import pandas as pd
 from openai import OpenAI
 import json
 
-# create two columns 
-col1, col2 = st.columns([1.2, 1])
+
 st.set_page_config(layout="wide")
 @st.cache_resource
 def get_mongo_client():
@@ -146,37 +145,39 @@ def run_chatbot(prolific_id: str):
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
 
-        if not st.session_state.show_summary:
-            if prompt := st.chat_input("Type your question here..."):
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                st.session_state.question_count += 1
-                with st.chat_message("user"):
-                    st.markdown(prompt)
+    # ✅ move chat input OUTSIDE the column
+    if not st.session_state.show_summary:
+        if prompt := st.chat_input("Type your question here..."):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            st.session_state.question_count += 1
 
-                with st.chat_message("assistant"):
-                    placeholder = st.empty()
-                    with st.spinner("🤔 Thinking..."):
-                        response = client_openai.chat.completions.create(
-                            model="gpt-4o",
-                            messages=[
-                                {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts."},
-                                *st.session_state.messages,
-                            ],
-                        )
-                    answer = response.choices[0].message.content
-                    placeholder.markdown(answer)
+            with st.chat_message("user"):
+                st.markdown(prompt)
 
-                st.session_state.messages.append({"role": "assistant", "content": answer})
-                users_collection.update_one(
-                    {"prolific_id": prolific_id},
-                    {"$push": {
-                        f"phases.interactive.abstracts.{abstract_id}.conversation_log": {
-                            "user": prompt,
-                            "assistant": answer,
-                            "timestamp": datetime.utcnow()
-                        }
-                    }}
-                )
+            with st.chat_message("assistant"):
+                placeholder = st.empty()
+                with st.spinner("🤔 Thinking..."):
+                    response = client_openai.chat.completions.create(
+                        model="gpt-4o",
+                        messages=[
+                            {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts."},
+                            *st.session_state.messages,
+                        ],
+                    )
+                answer = response.choices[0].message.content
+                placeholder.markdown(answer)
+
+            st.session_state.messages.append({"role": "assistant", "content": answer})
+            users_collection.update_one(
+                {"prolific_id": prolific_id},
+                {"$push": {
+                    f"phases.interactive.abstracts.{abstract_id}.conversation_log": {
+                        "user": prompt,
+                        "assistant": answer,
+                        "timestamp": datetime.utcnow()
+                    }
+                }}
+            )
 
         # "I'm done asking questions" button
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
