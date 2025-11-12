@@ -189,6 +189,22 @@ def run_chatbot(prolific_id: str):
                 chat_html += f'<div class="bubble-wrapper"><div class="assistant-bubble">{msg["content"]}</div></div>'
         chat_html += "</div>"
         st.markdown(chat_html, unsafe_allow_html=True)
+        # allow for auto scrolling
+        st.markdown("""
+            <script>
+            const observer = new MutationObserver(() => {
+                const chatDiv = window.parent.document.querySelector('.chat-container');
+                if (chatDiv) {
+                    chatDiv.scrollTop = chatDiv.scrollHeight;
+                }
+            });
+            const chatDiv = window.parent.document.querySelector('.chat-container');
+            if (chatDiv) {
+                observer.observe(chatDiv, { childList: true, subtree: true });
+                chatDiv.scrollTop = chatDiv.scrollHeight;
+            }
+            </script>
+            """, unsafe_allow_html=True)
 
         # --- Auto-scroll ---
         st.markdown("""
