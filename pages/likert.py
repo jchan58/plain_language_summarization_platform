@@ -5,7 +5,20 @@ from datetime import datetime
 st.set_page_config(layout="wide")
 
 def run_likert():
-    # --- Instructions ---
+    with st.sidebar:
+        if "last_completed_abstract" in st.session_state:
+            user_info = st.session_state.last_completed_abstract
+            st.markdown(f"**MTurk ID:** `{user_info['prolific_id']}`")
+
+        if st.button("Logout"):
+            for key in [
+                "last_completed_abstract", "feedback", "survey_context",
+                "progress_info", "messages", "show_summary",
+                "generated_summary", "question_count"
+            ]:
+                st.session_state.pop(key, None)
+            st.switch_page("app.py")
+
     st.markdown(
         """
         ### 📝 Instructions
@@ -26,7 +39,6 @@ def run_likert():
     pls = data["pls"]
     abstract_title = data["abstract_title"]
 
-    # --- Style ---
     st.markdown("""
     <style>
     div[data-testid="stHorizontalBlock"] {
