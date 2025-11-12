@@ -212,13 +212,10 @@ def run_chatbot(prolific_id: str):
             st.markdown(
             """
             <style>
-            .next-btn-container {
+            .fixed-next-btn {
                 position: fixed;
                 bottom: 40px;
                 right: 60px;
-                z-index: 999;
-            }
-            .next-btn {
                 background-color: #0066cc;
                 color: white;
                 border: none;
@@ -227,26 +224,35 @@ def run_chatbot(prolific_id: str):
                 font-size: 16px;
                 cursor: pointer;
                 box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+                z-index: 999;
             }
-            .next-btn:hover {
+            .fixed-next-btn:hover {
                 background-color: #0052a3;
             }
             </style>
-
-            <div class="next-btn-container">
-                <form action="#" method="post">
-                    <button class="next-btn" name="next" type="submit">Next</button>
-                </form>
-            </div>
             """,
-            unsafe_allow_html=True,
+            unsafe_allow_html=True
         )
 
-        next_clicked = st.session_state.get("next_clicked", False)
-        if st.session_state.get("next_triggered", False) or next_clicked:
+        # This button is rendered invisibly in layout but visible via custom CSS
+        next_clicked = st.button("Next ➡️", key="next_button", help="Go to the next page")
+
+        if next_clicked:
             st.session_state.show_summary = False
             st.session_state.generated_summary = ""
             st.session_state.messages = []
             st.session_state.question_count = 0
             st.session_state.abstract_index += 1
             st.switch_page("pages/short_answers.py")
+
+        st.markdown(
+            """
+            <script>
+            const nextBtn = window.parent.document.querySelector('button[data-testid="stButton"][aria-label="Next ➡️"]');
+            if (nextBtn) {
+                nextBtn.classList.add('fixed-next-btn');
+            }
+            </script>
+            """,
+            unsafe_allow_html=True,
+        )
