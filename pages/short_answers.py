@@ -48,6 +48,17 @@ def run_feedback():
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
 
+    st.markdown(
+    """
+    <style>
+    /* Align columns at the top */
+    div[data-testid="stHorizontalBlock"] {
+        align-items: flex-start !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+    )
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.title("Summary of Scientific Abstract")
@@ -68,7 +79,7 @@ def run_feedback():
         )
 
     with col2:
-        st.title("Summary of Scientific Abstract")
+        st.title("Short Answer Questions")
         if "feedback" not in st.session_state:
             st.session_state.feedback = {"main_idea": "", "method": "", "result": ""}
 
