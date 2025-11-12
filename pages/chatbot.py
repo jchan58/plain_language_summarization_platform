@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from openai import OpenAI
+import dummy
 
 st.set_page_config(layout="wide")
 
@@ -55,7 +56,6 @@ def run_chatbot(prolific_id: str):
         st.error("No interactive abstracts found for this user.")
         return
 
-    # Initialize session state
     for key, default in {
         "abstract_index": 0,
         "messages": [],
@@ -77,8 +77,6 @@ def run_chatbot(prolific_id: str):
 
     st.progress((idx + 1) / total)
     st.caption(f"Progress: {idx + 1} of {total} abstracts completed")
-
-    # Instructions
     st.markdown(
         """
         ### 📝 Instructions
@@ -86,14 +84,12 @@ def run_chatbot(prolific_id: str):
         2. Use the **question box** on the right to ask questions.  
         3. You must ask at least 3 questions.  
         4. When finished, click **“I'm done asking questions.”**  
-        5. A plain-language summary will appear on the left.  
-        6. Click **Next** to move to the next page after reviewing.  
+        5. A plain-language summary will appear on the left. Please read this summary carefully. You’ll answer questions about it on the next page.
+        6. Click **Next** to move to the next page after you feel that you are ready.  
         """
     )
 
     col1, col2 = st.columns([1.3, 1], gap="large")
-
-    # ---------------- LEFT COLUMN ----------------
     with col1:
         st.markdown(f"### {abstract['abstract_title']}")
         st.write(abstract["abstract"])
@@ -106,71 +102,65 @@ def run_chatbot(prolific_id: str):
                 unsafe_allow_html=True,
             )
 
-    # ---------------- RIGHT COLUMN (Chatbot) ----------------
     with col2:
         st.markdown("### 💬 Chat with the Chatbot")
+        st.markdown("""
+        <style>
+        .chat-container {
+            height: 600px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+            display: flex;
+            flex-direction: column;
+        }
+        .bubble-wrapper {
+            display: flex;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+        .user-bubble {
+            background-color: #DCF8C6;
+            color: black;
+            padding: 10px 14px;
+            border-radius: 16px;
+            max-width: 75%;
+            align-self: flex-start;
+            margin-right: auto;   /* move to left */
+        }
+        .assistant-bubble {
+            background-color: #E8E8E8;
+            color: black;
+            padding: 10px 14px;
+            border-radius: 16px;
+            max-width: 75%;
+            align-self: flex-end;
+            margin-left: auto;    /* move to right */
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
-        # CSS for scrollable chat area
-        st.markdown(
-            """
-            <style>
-            .chat-box {
-                max-height: 500px;
-                overflow-y: auto;
-                padding: 10px;
-                border: 1px solid #e0e0e0;
-                border-radius: 8px;
-                background-color: #fafafa;
-                margin-bottom: 10px;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
+        # --- Render chat messages as bubbles ---
+        chat_html = '<div class="chat-container">'
+        for msg in st.session_state.messages:
+            if msg["role"] == "user":
+                chat_html += f'<div class="bubble-wrapper"><div class="user-bubble">{msg["content"]}</div></div>'
+            else:
+                chat_html += f'<div class="bubble-wrapper"><div class="assistant-bubble">{msg["content"]}</div></div>'
+        chat_html += "</div>"
+        st.markdown(chat_html, unsafe_allow_html=True)
 
-        # Scrollable container for chat
-        chat_container = st.container()
-        with chat_container:
-            st.markdown('<div class="chat-box">', unsafe_allow_html=True)
-            for msg in st.session_state.messages:
-                role = "🧑You" if msg["role"] == "user" else "🤖 Assistant"
-                st.markdown(f"**{role}:** {msg['content']}")
-            st.markdown("</div>", unsafe_allow_html=True)
+        # --- Auto-scroll to bottom ---
+        st.markdown("""
+        <script>
+        const chatDiv = window.parent.document.querySelector('.chat-container');
+        if (chatDiv) { chatDiv.scrollTop = chatDiv.scrollHeight; }
+        </script>
+        """, unsafe_allow_html=True)
 
-        # "I'm done" button ABOVE the input box
-        if st.session_state.question_count >= 3 and not st.session_state.show_summary:
-            st.divider()
-            if st.button("✅ I'm done asking questions"):
-                conversation_text = get_conversation()
-                system_prompt = (
-                    "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
-                    f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
-                    "Use this conversation to identify what concepts, terms, or results the reader found confusing, interesting, or important. "
-                    "Then rewrite the original abstract into a clear, accurate, plain-language summary that preserves all key scientific details "
-                    "but provides additional explanation and context for the specific parts the reader asked about or struggled to understand. "
-                    "The goal is to make the abstract easier to understand while staying true to the science."
-                )
-                with st.spinner("✨ Generating the summary of the scientific abstract..."):
-                    response = client_openai.chat.completions.create(
-                        model="gpt-4o",
-                        messages=[
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": f"Rewrite this abstract:\n\n{abstract['abstract']}"},
-                        ],
-                    )
-                summary = response.choices[0].message.content
-                users_collection.update_one(
-                    {"prolific_id": prolific_id},
-                    {"$set": {
-                        f"phases.interactive.abstracts.{abstract_id}.pls": summary,
-                        f"phases.interactive.abstracts.{abstract_id}.completed": True,
-                    }},
-                )
-                st.session_state.generated_summary = summary
-                st.session_state.show_summary = True
-
-        # Chat input form
-        st.divider()
+        # --- Input box below ---
         st.markdown("**Ask your question:**")
         with st.form("chat_input_form", clear_on_submit=True):
             cols = st.columns([4, 1])
@@ -179,23 +169,27 @@ def run_chatbot(prolific_id: str):
             with cols[1]:
                 send = st.form_submit_button("Send")
 
-        # Handle send
+        # --- Handle sending message ---
         if send and user_input.strip():
             st.session_state.messages.append({"role": "user", "content": user_input})
             st.session_state.question_count += 1
 
-            with st.spinner("🤔 Thinking..."):
-                response = client_openai.chat.completions.create(
-                    model="gpt-4o",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts."},
-                        *st.session_state.messages,
-                    ],
-                )
-            answer = response.choices[0].message.content
+            # Build chat context and call OpenAI
+            conversation_context = [
+                {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts. "
+                                            "Use the abstract below to answer clearly and accurately."},
+                {"role": "system", "content": f"Abstract:\n{abstract['abstract']}"}
+            ] + st.session_state.messages
+
+            response = client_openai.chat.completions.create(
+                model="gpt-4o",
+                messages=conversation_context,
+            )
+
+            answer = response.choices[0].message.content.strip()
             st.session_state.messages.append({"role": "assistant", "content": answer})
 
-            # Save conversation
+            # Write to DB
             users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {"$push": {
@@ -207,20 +201,42 @@ def run_chatbot(prolific_id: str):
                 }},
             )
 
-            # Auto-scroll to bottom
-            st.markdown(
-                "<script>var chatBox = window.parent.document.querySelector('.chat-box');"
-                "if(chatBox){chatBox.scrollTop = chatBox.scrollHeight;}</script>",
-                unsafe_allow_html=True,
+        # if the number of questions is greater than 3 then we are good to move on
+        if st.session_state.question_count >= 3 and not st.session_state.show_summary:
+            if st.button("✅ I'm done asking questions", key="done_button"):
+                st.session_state.generate_summary = True
+
+        # --- Generate summary after rerun ---
+        if st.session_state.get("generate_summary", False):
+            st.session_state.generate_summary = False
+            conversation_text = get_conversation()
+            system_prompt = (
+                "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
+                f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
+                "Use this conversation to identify what concepts, terms, or results the reader found confusing, interesting, or important. "
+                "Then rewrite the original abstract into a clear, accurate, plain-language summary."
             )
 
-            # Re-render the full message list inside the chat container
-            with chat_container:
-                st.markdown('<div class="chat-box">', unsafe_allow_html=True)
-                for msg in st.session_state.messages:
-                    role = "🧑You" if msg["role"] == "user" else "🤖 Assistant"
-                    st.markdown(f"**{role}:** {msg['content']}")
-                st.markdown("</div>", unsafe_allow_html=True)
+            with st.spinner("✨ Generating the summary..."):
+                response = client_openai.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": f"Rewrite this abstract:\n\n{abstract['abstract']}"},
+                    ],
+                )
+            summary = response.choices[0].message.content
+
+            users_collection.update_one(
+                {"prolific_id": prolific_id},
+                {"$set": {
+                    f"phases.interactive.abstracts.{abstract_id}.pls": summary,
+                    f"phases.interactive.abstracts.{abstract_id}.completed": True,
+                }},
+            )
+
+            st.session_state.generated_summary = summary
+            st.session_state.show_summary = True
 
         # Next button
         if st.session_state.show_summary:
@@ -233,7 +249,6 @@ def run_chatbot(prolific_id: str):
                 st.session_state.abstract_index += 1
                 st.switch_page("pages/short_answers.py")
 
-    # Divider between left and right columns
     st.markdown(
         """
         <style>
