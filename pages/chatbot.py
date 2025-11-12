@@ -101,39 +101,27 @@ def run_chatbot(prolific_id: str):
 
     col1, col2 = st.columns([1.3, 1], gap="large")
     with col1:
-        expanded_state = not st.session_state.show_summary
-        with st.expander(f"📘 {abstract['abstract_title']}", expanded=expanded_state):
-            st.markdown("**Abstract:**")
-            st.write(abstract["abstract"])
-
-        if st.session_state.show_summary:
-            st.divider()
-            st.markdown("### 🧾 Summary of Scientific Abstract")
-            st.markdown(
-                f"<div style='background-color:#f5f7fa;padding:1rem;border-radius:0.5rem;'>"
-                f"{st.session_state.generated_summary}</div>",
-                unsafe_allow_html=True,
-            )
+        st.markdown(f"### 📘 {abstract['abstract_title']}")
+        st.markdown("**Abstract:**")
+        st.write(abstract["abstract"])
 
     with col2:
-        st.markdown("### 💬 Chat with the Chatbot")
-
-        # --- Native scrollable message container ---
-        messages = st.container(height=600, border=True)
-
-        # Display chat messages (inside a fixed-height container)
-        for msg in st.session_state.messages:
-            messages.chat_message(msg["role"]).write(msg["content"])
-
-        # --- Chat input stays fixed below automatically ---
         if not st.session_state.show_summary:
-            if prompt := st.chat_input("Type your question here..."):
+            st.markdown("### 💬 Chat with the Chatbot")
+
+            # --- Native scrollable message container ---
+            messages = st.container(height=650, border=True)
+            for msg in st.session_state.messages:
+                messages.chat_message(msg["role"]).write(msg["content"])
+
+            # --- Chat input (pinned below automatically) ---
+            if prompt := (st.chat_input("Type your question here...") if not st.session_state.show_summary else None):
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 st.session_state.question_count += 1
                 messages.chat_message("user").write(prompt)
 
                 with messages.chat_message("assistant"):
-                    with st.spinner("🤔 Thinking..."):
+                    with st.spinner("Thinking..."):
                         conversation_context = [
                             {"role": "system", "content": (
                                 "You are a helpful assistant explaining scientific abstracts clearly and accurately. "
@@ -151,24 +139,30 @@ def run_chatbot(prolific_id: str):
                         st.session_state.messages.append({"role": "assistant", "content": full_response})
                         st.markdown(full_response)
 
-            # --- “I'm done asking questions” button ---
-        if st.session_state.question_count >= 3 and not st.session_state.show_summary:
-            st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("✅ I'm done asking questions"):
-                conversation_log = [
-                    {"role": msg["role"], "content": msg["content"], "timestamp": datetime.utcnow()}
-                    for msg in st.session_state.messages
-                ]
-                users_collection.update_one(
-                    {"prolific_id": prolific_id},
-                    {"$set": {
-                        f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
-                    }},
-                )
-                st.session_state.generate_summary = True
-                st.rerun()
-                
-
+            # “I'm done asking” button (only in chat mode)
+            if st.session_state.question_count >= 3 and not st.session_state.show_summary:
+                st.markdown("<br>", unsafe_allow_html=True)
+                if st.button("✅ I'm done asking questions"):
+                    conversation_log = [
+                        {"role": m["role"], "content": m["content"], "timestamp": datetime.utcnow()}
+                        for m in st.session_state.messages
+                    ]
+                    users_collection.update_one(
+                        {"prolific_id": prolific_id},
+                        {"$set": {
+                            f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
+                        }},
+                    )
+                    st.session_state.generate_summary = True
+                    st.rerun()
+        else:
+            # 📄 Summary replaces the chat panel
+            st.markdown("### Summary of Scientific Abstract")
+            st.markdown(
+                f"<div style='background-color:#f5f7fa;padding:1rem;border-radius:0.5rem;'>"
+                f"{st.session_state.generated_summary}</div>",
+                unsafe_allow_html=True,
+            )
         # --- Generate summary after rerun ---
         if st.session_state.get("generate_summary", False):
             st.session_state.generate_summary = False
