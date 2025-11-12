@@ -201,58 +201,53 @@ def run_chatbot(prolific_id: str):
                 st.session_state.generating_summary = False
                 st.rerun()
 
-        # show summary
-        else:
+        if st.session_state.show_summary and not st.session_state.get("generating_summary", False):
             st.markdown("### 🧾 Summary of Scientific Abstract")
             st.markdown(
                 f"<div style='background-color:#f5f7fa;padding:1rem;border-radius:0.5rem;'>"
                 f"{st.session_state.generated_summary}</div>",
                 unsafe_allow_html=True,
             )
+
+            # CSS for true bottom-right fixed button across full width layout
             st.markdown(
-            """
-            <style>
-            .fixed-next-btn {
-                position: fixed;
-                bottom: 40px;
-                right: 60px;
-                background-color: #0066cc;
-                color: white;
-                border: none;
-                padding: 0.7rem 1.4rem;
-                border-radius: 6px;
-                font-size: 16px;
-                cursor: pointer;
-                box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-                z-index: 999;
-            }
-            .fixed-next-btn:hover {
-                background-color: #0052a3;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
+                """
+                <style>
+                .next-btn-container {
+                    position: fixed;
+                    bottom: 40px;
+                    right: 60px;
+                    z-index: 9999;
+                    pointer-events: none;  /* prevents layout issues */
+                }
+                .next-btn-container button {
+                    pointer-events: auto;  /* re-enable interaction for the button itself */
+                    background-color: #0066cc;
+                    color: white;
+                    border: none;
+                    padding: 0.7rem 1.4rem;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+                }
+                .next-btn-container button:hover {
+                    background-color: #0052a3;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
 
-        # This button is rendered invisibly in layout but visible via custom CSS
-        next_clicked = st.button("Next ➡️", key="next_button", help="Go to the next page")
+            # HTML wrapper for fixed positioning
+            st.markdown('<div class="next-btn-container">', unsafe_allow_html=True)
+            next_clicked = st.button("Next ➡️", key="next_button", help="Go to the next page")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        if next_clicked:
-            st.session_state.show_summary = False
-            st.session_state.generated_summary = ""
-            st.session_state.messages = []
-            st.session_state.question_count = 0
-            st.session_state.abstract_index += 1
-            st.switch_page("pages/short_answers.py")
-
-        st.markdown(
-            """
-            <script>
-            const nextBtn = window.parent.document.querySelector('button[data-testid="stButton"][aria-label="Next ➡️"]');
-            if (nextBtn) {
-                nextBtn.classList.add('fixed-next-btn');
-            }
-            </script>
-            """,
-            unsafe_allow_html=True,
-        )
+            if next_clicked:
+                st.session_state.show_summary = False
+                st.session_state.generated_summary = ""
+                st.session_state.messages = []
+                st.session_state.question_count = 0
+                st.session_state.abstract_index += 1
+                st.switch_page("pages/short_answers.py")
