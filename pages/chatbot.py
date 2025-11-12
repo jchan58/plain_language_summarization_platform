@@ -30,11 +30,8 @@ def load_example_users():
 
 example_user_df = load_example_users()
 
-
-def render_message(content, role):
-    formatted = markdown.markdown(content, extensions=["fenced_code", "tables"])
-    safe_html = html.escape(formatted)
-    return safe_html
+def render_message(content):
+    return markdown.markdown(content, extensions=["fenced_code", "tables", "nl2br"])
 
 def get_user_interactive_abstracts(prolific_id: str):
     user = users_collection.find_one(
@@ -155,14 +152,11 @@ def run_chatbot(prolific_id: str):
         send = False
         user_input = st.session_state.get("pending_input", "")
         if "trigger_send" in st.session_state and st.session_state.trigger_send:
-            # Handle sending message
             st.session_state.messages.append({"role": "user", "content": user_input})
             st.session_state.question_count += 1
 
-            # Call OpenAI API
             conversation_context = [
-                {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts. "
-                                            "Use the abstract below to answer clearly and accurately."},
+                {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts."},
                 {"role": "system", "content": f"Abstract:\n{abstract['abstract']}"}
             ] + st.session_state.messages
 
@@ -177,56 +171,32 @@ def run_chatbot(prolific_id: str):
             st.session_state.pending_input = ""
             st.rerun()
 
-        # --- Render chat messages ---
+        # 2️⃣ Always render chat (even if nothing was just sent)
         chat_html = """
-        <div id="chat" style="
-            height: 600px;
-            overflow-y: auto;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background-color: #fafafa;
-            padding: 10px;">
+        <div id="chat" style="height:600px;overflow-y:auto;
+            border:1px solid #e0e0e0;border-radius:8px;background-color:#fafafa;padding:10px;">
         """
 
         for msg in st.session_state.messages:
-            msg_html = markdown.markdown(msg["content"], extensions=["fenced_code", "tables"])
-
-            if msg["role"] == "user":
-                chat_html += f"""
-                <div style="background-color:#DCF8C6;
-                            color:black;
-                            padding:10px 14px;
-                            border-radius:16px;
-                            margin:8px 0;
-                            max-width:75%;
-                            align-self:flex-start;
-                            white-space:pre-wrap;">
-                    {msg_html}
-                </div>
-                """
-            else:
-                chat_html += f"""
-                <div style="background-color:#E8E8E8;
-                            color:black;
-                            padding:10px 14px;
-                            border-radius:16px;
-                            margin:8px 0;
-                            max-width:75%;
-                            align-self:flex-end;
-                            margin-left:auto;
-                            white-space:pre-wrap;">
-                    {msg_html}
-                </div>
-                """
+            msg_html = render_message(msg["content"])
+            color = "#DCF8C6" if msg["role"] == "user" else "#E8E8E8"
+            chat_html += f"""
+            <div style="background-color:{color};
+                        padding:10px 14px;border-radius:16px;margin:8px 0;
+                        max-width:75%;white-space:normal;word-wrap:break-word;">
+                {msg_html}
+            </div>
+            """
 
         chat_html += """
         <script>
-            const chatDiv = document.getElementById("chat");
-            chatDiv.scrollTop = chatDiv.scrollHeight;
+        const chatDiv = document.getElementById("chat");
+        if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
         </script>
         </div>
         """
         components.html(chat_html, height=650, scrolling=False)
+
 
         # --- Ask your question below ---
         st.markdown("**Ask your question:**")
