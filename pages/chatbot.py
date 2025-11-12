@@ -240,7 +240,6 @@ def run_chatbot(prolific_id: str):
             )
 
             done_clicked = st.button("✅ I'm done asking questions", key="done_button")
-
             if done_clicked:
                 conversation_log = [
                     {"role": msg["role"], "content": msg["content"], "timestamp": datetime.utcnow()}
@@ -281,6 +280,7 @@ def run_chatbot(prolific_id: str):
             summary = response.choices[0].message.content
             st.session_state.generated_summary = summary
             st.session_state.show_summary = True
+            st.rerun() 
 
         # Next button
         if st.session_state.show_summary:
