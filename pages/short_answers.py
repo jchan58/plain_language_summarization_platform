@@ -14,7 +14,6 @@ def show_progress():
 
 def run_feedback():
     with st.sidebar:
-        st.title("Session Controls")
         if "last_completed_abstract" in st.session_state:
             user_info = st.session_state.last_completed_abstract
             st.markdown(f"**MTurk ID:** `{user_info['prolific_id']}`")
