@@ -117,7 +117,7 @@ def run_chatbot(prolific_id: str):
         st.markdown("""
         <style>
         .chat-container {
-            height: 500px;
+            height: 600px;
             overflow-y: auto;
             padding: 10px;
             border: 1px solid #e0e0e0;
@@ -221,7 +221,7 @@ def run_chatbot(prolific_id: str):
         </script>
         </div>
         """
-        components.html(chat_html, height=500, scrolling=False)
+        components.html(chat_html, height=650, scrolling=False)
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
             st.markdown(
                 """
