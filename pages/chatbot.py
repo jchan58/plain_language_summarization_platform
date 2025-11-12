@@ -117,6 +117,7 @@ def run_chatbot(prolific_id: str):
 
     with col2:
         st.markdown("### 💬 Chat with the Chatbot")
+
         # --- Display previous messages ---
         for msg in st.session_state.messages:
             with st.chat_message(msg["role"]):
@@ -127,18 +128,20 @@ def run_chatbot(prolific_id: str):
             prompt = st.chat_input("Type your question here...")
 
             if prompt:
-                # Append and display user message
+                # 1️⃣ Show user message immediately
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 st.session_state.question_count += 1
                 with st.chat_message("user"):
                     st.markdown(prompt)
 
-                # Assistant reply (streamed)
+                # 2️⃣ Generate assistant reply right away (no rerun)
                 with st.chat_message("assistant"):
-                    with st.spinner("Thinking..."):
+                    with st.spinner("🤔 Thinking..."):
                         conversation_context = [
-                            {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts. "
-                                                        "Use the abstract below to answer clearly and accurately."},
+                            {"role": "system", "content": (
+                                "You are a helpful assistant explaining scientific abstracts clearly and accurately. "
+                                "Use the abstract below to provide detailed but easy-to-understand answers."
+                            )},
                             {"role": "system", "content": f"Abstract:\n{abstract['abstract']}"},
                         ] + st.session_state.messages
 
@@ -146,10 +149,12 @@ def run_chatbot(prolific_id: str):
                             model="gpt-4o",
                             messages=conversation_context,
                         )
-                        full_response = response.choices[0].message.content.strip()
-                        st.session_state.messages.append({"role": "assistant", "content": full_response})
-                        st.rerun()
 
+                        full_response = response.choices[0].message.content.strip()
+                        st.markdown(full_response) 
+
+                # 3️⃣ Save assistant message to session
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
         # --- “I'm done asking questions” button ---
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
             st.markdown("<br>", unsafe_allow_html=True)
