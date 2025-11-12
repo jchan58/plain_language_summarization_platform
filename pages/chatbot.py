@@ -221,7 +221,7 @@ def run_chatbot(prolific_id: str):
         </script>
         </div>
         """
-        components.html(chat_html, height=650, scrolling=False)
+        components.html(chat_html, height=500, scrolling=False)
 
         # --- Ask your question below ---
         st.markdown("**Ask your question:**")
@@ -233,20 +233,11 @@ def run_chatbot(prolific_id: str):
                 )
             with cols[1]:
                 send = st.form_submit_button("Send")
-
-        if send and st.session_state.pending_input.strip():
-            st.session_state.trigger_send = True
-            st.rerun()
-
-        # if the number of questions is greater than 3 then we are good to move on
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
+            st.markdown("<div style='text-align:center; margin-top:10px;'>", unsafe_allow_html=True)
             if st.button("✅ I'm done asking questions", key="done_button"):
                 conversation_log = [
-                    {
-                        "role": msg["role"],
-                        "content": msg["content"],
-                        "timestamp": datetime.utcnow()
-                    }
+                    {"role": msg["role"], "content": msg["content"], "timestamp": datetime.utcnow()}
                     for msg in st.session_state.messages
                 ]
                 users_collection.update_one(
@@ -256,6 +247,11 @@ def run_chatbot(prolific_id: str):
                     }},
                 )
                 st.session_state.generate_summary = True
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        if send and st.session_state.pending_input.strip():
+            st.session_state.trigger_send = True
+            st.rerun()
 
         # --- Generate summary after rerun ---
         if st.session_state.get("generate_summary", False):
