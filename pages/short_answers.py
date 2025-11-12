@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from datetime import datetime
 
 st.set_page_config(layout="wide")
+
 def show_progress():
     if "progress_info" in st.session_state:
         progress = st.session_state.progress_info
@@ -12,98 +13,95 @@ def show_progress():
         st.caption(f"Progress: {current} of {total} abstracts completed")
 
 def run_feedback():
+    with st.sidebar:
+        st.title("Session Controls")
+        if "last_completed_abstract" in st.session_state:
+            user_info = st.session_state.last_completed_abstract
+            st.markdown(f"**MTurk ID:** `{user_info['prolific_id']}`")
+
+        if st.button("Logout"):
+            for key in [
+                "last_completed_abstract", "feedback", "survey_context",
+                "progress_info", "messages", "show_summary",
+                "generated_summary", "question_count"
+            ]:
+                st.session_state.pop(key, None)
+            st.switch_page("app.py")
     show_progress()
     st.markdown(
-    """
-    ### 📝 Instructions
-    1. Read the summary shown below. The summary is another version of the abstract.  
-    2. Answer the short answer questions to check your understanding.  
-    3. **DO NOT copy** from the summary, say “I don’t know,” or provide unrelated answers.  
-       Please respond to the questions to the best of your ability — doing otherwise may risk not being compensated for the task.  
-    4. When you have finished answering all questions, click the **Next** button to continue.  
-    """
+        """
+        ### 📝 Instructions
+        1. Read the summary shown below. The summary is another version of the abstract.  
+        2. Answer the short answer questions to check your understanding.  
+        3. **DO NOT copy** from the summary, say “I don’t know,” or provide unrelated answers.  
+           Please respond to the questions to the best of your ability — doing otherwise may risk not being compensated for the task.  
+        4. When you have finished answering all questions, click the **Next** button to continue.  
+        """
     )
-    st.title("📝 Summary of Scientific Abstract")
 
+    # Check that interactive portion is completed
     if "last_completed_abstract" not in st.session_state:
         st.warning("Please complete the interactive session first.")
         st.stop()
 
-    # get info passed in
     data = st.session_state.last_completed_abstract
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
 
-    # css style for adjustment
-    st.markdown(
-        """
-        <style>
-        .no-select {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        h3 {
-            font-size: 1.3rem !important;
-            font-weight: 700 !important;
-            color: #2c3e50 !important;
-            margin-bottom: 0.4rem !important;  /* reduce gap below question */
-            margin-top: 1.0rem !important;     /* smaller gap above */
-        }
-        textarea {
-            font-size: 1.05rem !important;
-            line-height: 1.4 !important;       /* restore normal text spacing */
-            margin-top: -0.5rem !important;    /* tighten gap above text box */
-        }
-        div[data-testid="stMarkdownContainer"] p {
-            margin-bottom: 0rem !important;    /* eliminate bottom margin from markdown blocks */
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    col1, col2 = st.columns([1, 1], gap="large")
+    with col1:
+        st.title("Summary of Scientific Abstract")
 
-    # display the title and the pls
-    st.markdown(f"### {data['title']}")
-    st.markdown(f'<div class="no-select">{data["pls"]}</div>', unsafe_allow_html=True)
+        # Gray box for summary
+        st.markdown(f"### {data['title']}")
+        st.markdown(
+            f"""
+            <div class="no-select" style="
+                background-color:#f2f3f5;
+                padding:1rem;
+                border-radius:0.5rem;
+                line-height:1.6;
+                border:1px solid #dcdcdc;
+                margin-bottom:1rem;">
+                {data["pls"]}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    if "feedback" not in st.session_state:
-        st.session_state.feedback = {
-            "main_idea": "",
-            "method": "",
-            "result": ""
-        }
+    with col2:
+        # Initialize feedback state if not already present
+        if "feedback" not in st.session_state:
+            st.session_state.feedback = {"main_idea": "", "method": "", "result": ""}
 
-    # make sure results persist 
-    def update_main_idea():
-        st.session_state.feedback["main_idea"] = st.session_state.main_idea_box
+        # Update functions
+        def update_main_idea():
+            st.session_state.feedback["main_idea"] = st.session_state.main_idea_box
 
-    def update_method():
-        st.session_state.feedback["method"] = st.session_state.method_box
+        def update_method():
+            st.session_state.feedback["method"] = st.session_state.method_box
 
-    def update_result():
-        st.session_state.feedback["result"] = st.session_state.result_box
-    
-    # headers for the questions
-    st.markdown("### 🧠 What did the researchers in this study want to find out?")
-    st.text_area("", key="main_idea_box", value=st.session_state.feedback["main_idea"], on_change=update_main_idea)
+        def update_result():
+            st.session_state.feedback["result"] = st.session_state.result_box
 
-    st.markdown("### 🧪 What was the method used in study?")
-    st.text_area("", key="method_box", value=st.session_state.feedback["method"], on_change=update_method)
+        # Questions
+        st.markdown("### 🧠 What did the researchers in this study want to find out?")
+        st.text_area("", key="main_idea_box", value=st.session_state.feedback["main_idea"], on_change=update_main_idea)
 
-    st.markdown("### 📊 What was the result of this study?")
-    st.text_area("", key="result_box", value=st.session_state.feedback["result"], on_change=update_result)
+        st.markdown("### 🧪 What was the method used in the study?")
+        st.text_area("", key="method_box", value=st.session_state.feedback["method"], on_change=update_method)
 
-    all_filled = all([
-        st.session_state.feedback["main_idea"].strip(),
-        st.session_state.feedback["method"].strip(),
-        st.session_state.feedback["result"].strip()
-    ])
+        st.markdown("### 📊 What was the result of this study?")
+        st.text_area("", key="result_box", value=st.session_state.feedback["result"], on_change=update_result)
 
-    # next button only ready when all fields filled
-    if st.button("Next", disabled=not all_filled):
-        with st.spinner("Submitting your feedback... please wait."):
+        # Enable Next only when all fields filled
+        all_filled = all([
+            st.session_state.feedback["main_idea"].strip(),
+            st.session_state.feedback["method"].strip(),
+            st.session_state.feedback["result"].strip()
+        ])
+
+        if st.button("Next", disabled=not all_filled):
             feedback_data = {
                 "main_idea": st.session_state.feedback["main_idea"].strip(),
                 "methods": st.session_state.feedback["method"].strip(),
@@ -130,6 +128,7 @@ def run_feedback():
                 "prolific_id": prolific_id,
                 "abstract_id": abstract_id
             }
+
             st.switch_page("pages/likert.py")
 
 run_feedback()
