@@ -147,8 +147,8 @@ def run_chatbot(prolific_id: str):
                             messages=conversation_context,
                         )
                         full_response = response.choices[0].message.content.strip()
-
                         st.session_state.messages.append({"role": "assistant", "content": full_response})
+                        st.rerun()
 
         # --- “I'm done asking questions” button ---
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
