@@ -12,9 +12,14 @@ def run_likert():
 
         if st.button("Logout"):
             for key in [
-                "last_completed_abstract", "feedback", "survey_context",
-                "progress_info", "messages", "show_summary",
-                "generated_summary", "question_count"
+            "last_completed_abstract",
+            "survey_context",
+            "feedback",
+            "progress_info",
+            "messages",
+            "show_summary",
+            "generated_summary",
+            "question_count"
             ]:
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
