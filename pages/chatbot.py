@@ -222,6 +222,17 @@ def run_chatbot(prolific_id: str):
         </div>
         """
         components.html(chat_html, height=650, scrolling=False)
+        st.markdown("**Ask your question:**")
+        with st.form("chat_input_form", clear_on_submit=True):
+            cols = st.columns([4, 1])
+            with cols[0]:
+                st.session_state.pending_input = st.text_input(
+                    " ", placeholder="Type your question here...", label_visibility="collapsed"
+                )
+            with cols[1]:
+                send = st.form_submit_button("Send")
+
+        # --- “I'm done asking questions” button ---
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
             st.markdown(
                 """
@@ -253,6 +264,7 @@ def run_chatbot(prolific_id: str):
                 )
                 st.session_state.generate_summary = True
             st.markdown("</div>", unsafe_allow_html=True)
+                
 
         if send and st.session_state.pending_input.strip():
             st.session_state.trigger_send = True
