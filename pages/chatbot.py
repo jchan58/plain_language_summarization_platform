@@ -109,7 +109,6 @@ def run_chatbot(prolific_id: str):
                         border-radius:0.5rem;
                         line-height:1.6;
                         border:1px solid #dcdcdc;'>
-                <strong>Abstract:</strong><br>
                 {abstract['abstract']}
             </div>
             """,
@@ -127,29 +126,30 @@ def run_chatbot(prolific_id: str):
                 messages.chat_message(msg["role"]).write(msg["content"])
 
             # Chat input (always pinned below)
-            if prompt := st.chat_input("Type your question here..."):
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                st.session_state.question_count += 1
-                messages.chat_message("user").write(prompt)
+            if not st.session_state.get("generating_summary", False):
+                if prompt := st.chat_input("Type your question here..."):
+                    st.session_state.messages.append({"role": "user", "content": prompt})
+                    st.session_state.question_count += 1
+                    messages.chat_message("user").write(prompt)
 
-                with messages.chat_message("assistant"):
-                    with st.spinner("🤔 Thinking..."):
-                        conversation_context = [
-                            {"role": "system", "content": (
-                                "You are a helpful assistant explaining scientific abstracts clearly and accurately. "
-                                "Use the abstract below to provide detailed but easy-to-understand answers."
-                            )},
-                            {"role": "system", "content": f"Abstract:\n{abstract['abstract']}"},
-                        ] + st.session_state.messages
+                    with messages.chat_message("assistant"):
+                        with st.spinner("🤔 Thinking..."):
+                            conversation_context = [
+                                {"role": "system", "content": (
+                                    "You are a helpful assistant explaining scientific abstracts clearly and accurately. "
+                                    "Use the abstract below to provide detailed but easy-to-understand answers."
+                                )},
+                                {"role": "system", "content": f"Abstract:\n{abstract['abstract']}"},
+                            ] + st.session_state.messages
 
-                        response = client_openai.chat.completions.create(
-                            model="gpt-4o",
-                            messages=conversation_context,
-                        )
-                        full_response = response.choices[0].message.content.strip()
+                            response = client_openai.chat.completions.create(
+                                model="gpt-4o",
+                                messages=conversation_context,
+                            )
+                            full_response = response.choices[0].message.content.strip()
 
-                        st.session_state.messages.append({"role": "assistant", "content": full_response})
-                        st.markdown(full_response)
+                            st.session_state.messages.append({"role": "assistant", "content": full_response})
+                            st.markdown(full_response)
 
             # "I'm done asking" button
             if st.session_state.question_count >= 3:
@@ -168,10 +168,9 @@ def run_chatbot(prolific_id: str):
                     st.session_state.generating_summary = True  # NEW: triggers spinner state
                     st.rerun()
 
-        # --- While generating summary (spinner only) ---
         elif st.session_state.get("generating_summary", False):
             st.markdown("### 🧾 Generating Summary...")
-            with st.spinner("✨ Generating the plain-language summary, please wait..."):
+            with st.spinner("✨ Generating the summary, please wait..."):
                 conversation_text = get_conversation()
                 system_prompt = (
                     "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
