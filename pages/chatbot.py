@@ -118,51 +118,21 @@ def run_chatbot(prolific_id: str):
     with col2:
         st.markdown("### 💬 Chat with the Chatbot")
 
-        # --- Chat box style ---
-        st.markdown("""
-        <style>
-        .chat-container {
-            max-height: 600px;      /* fixed height */
-            overflow-y: auto;       /* scroll inside */
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background-color: #fafafa;
-            margin-bottom: 1rem;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        # --- Native scrollable message container ---
+        messages = st.container(height=600, border=True)
 
-        # --- Render chat messages inside scrollable div ---
-        chat_container = st.container()
-        with chat_container:
-            st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-            for msg in st.session_state.messages:
-                with st.chat_message(msg["role"]):
-                    st.markdown(msg["content"])
-            st.markdown("</div>", unsafe_allow_html=True)
+        # Display chat messages (inside a fixed-height container)
+        for msg in st.session_state.messages:
+            messages.chat_message(msg["role"]).write(msg["content"])
 
-        # --- Auto-scroll to bottom (safer selector) ---
-        st.markdown("""
-        <script>
-        const chatDiv = window.document.querySelector('.chat-container');
-        if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
-        </script>
-        """, unsafe_allow_html=True)
-
-        # --- Chat input ---
+        # --- Chat input stays fixed below automatically ---
         if not st.session_state.show_summary:
-            prompt = st.chat_input("Type your question here...")
-
-            if prompt:
-                # Show user message immediately
+            if prompt := st.chat_input("Type your question here..."):
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 st.session_state.question_count += 1
-                with st.chat_message("user"):
-                    st.markdown(prompt)
+                messages.chat_message("user").write(prompt)
 
-                # Generate assistant response
-                with st.chat_message("assistant"):
+                with messages.chat_message("assistant"):
                     with st.spinner("🤔 Thinking..."):
                         conversation_context = [
                             {"role": "system", "content": (
@@ -177,9 +147,9 @@ def run_chatbot(prolific_id: str):
                             messages=conversation_context,
                         )
                         full_response = response.choices[0].message.content.strip()
-                        st.markdown(full_response)
 
-                st.session_state.messages.append({"role": "assistant", "content": full_response})
+                        st.session_state.messages.append({"role": "assistant", "content": full_response})
+                        st.markdown(full_response)
 
             # --- “I'm done asking questions” button ---
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
