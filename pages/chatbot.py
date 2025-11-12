@@ -141,38 +141,31 @@ def run_chatbot(prolific_id: str):
         </style>
         """, unsafe_allow_html=True)
 
-        # --- Ask your question ---
-        st.markdown("**Ask your question:**")
-        with st.form("chat_input_form", clear_on_submit=True):
-            cols = st.columns([4, 1])
-            with cols[0]:
-                user_input = st.text_input(
-                    " ", placeholder="Type your question here...", label_visibility="collapsed"
-                )
-            with cols[1]:
-                send = st.form_submit_button("Send")
+        # --- Input logic first (invisible, runs before UI) ---
+        send = False
+        user_input = st.session_state.get("pending_input", "")
 
-        # --- Handle new question immediately ---
-        if send and user_input.strip():
-            user_input = user_input.strip()
+        if "trigger_send" in st.session_state and st.session_state.trigger_send:
+            # Handle sending message
             st.session_state.messages.append({"role": "user", "content": user_input})
             st.session_state.question_count += 1
 
+            # Call OpenAI API
             conversation_context = [
                 {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts. "
-                                              "Use the abstract below to answer clearly and accurately."},
+                                            "Use the abstract below to answer clearly and accurately."},
                 {"role": "system", "content": f"Abstract:\n{abstract['abstract']}"}
             ] + st.session_state.messages
 
-            with st.spinner("💭 Thinking..."):
-                response = client_openai.chat.completions.create(
-                    model="gpt-4o",
-                    messages=conversation_context,
-                )
+            response = client_openai.chat.completions.create(
+                model="gpt-4o",
+                messages=conversation_context,
+            )
 
             answer = response.choices[0].message.content.strip()
             st.session_state.messages.append({"role": "assistant", "content": answer})
 
+            # Save to Mongo
             users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {"$push": {
@@ -184,7 +177,10 @@ def run_chatbot(prolific_id: str):
                 }},
             )
 
-            st.experimental_rerun()  # only one clean rerun
+            # Reset state to prevent loop
+            st.session_state.trigger_send = False
+            st.session_state.pending_input = ""
+            st.rerun()
 
         # --- Render chat messages ---
         chat_html = '<div class="chat-container">'
@@ -196,22 +192,38 @@ def run_chatbot(prolific_id: str):
         chat_html += "</div>"
         st.markdown(chat_html, unsafe_allow_html=True)
 
-        # --- Smooth auto-scroll after rerun ---
+        # --- Auto-scroll ---
         st.markdown("""
         <script>
-        setTimeout(() => {
-          const chatDiv = window.parent.document.querySelector('.chat-container');
-          if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
-        }, 300);
+        const chatDiv = window.parent.document.querySelector('.chat-container');
+        if (chatDiv) { chatDiv.scrollTop = chatDiv.scrollHeight; }
         </script>
         """, unsafe_allow_html=True)
 
-        # --- Done button ---
+        # --- Ask your question below ---
+        st.markdown("**Ask your question:**")
+        with st.form("chat_input_form", clear_on_submit=True):
+            cols = st.columns([4, 1])
+            with cols[0]:
+                st.session_state.pending_input = st.text_input(
+                    " ", placeholder="Type your question here...", label_visibility="collapsed"
+                )
+            with cols[1]:
+                send = st.form_submit_button("Send")
+
+        if send and st.session_state.pending_input.strip():
+            st.session_state.trigger_send = True
+            st.rerun()
+
+
+        # --- Input box below ---
+
+        # if the number of questions is greater than 3 then we are good to move on
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
             if st.button("✅ I'm done asking questions", key="done_button"):
                 st.session_state.generate_summary = True
 
-        # --- Generate summary ---
+        # --- Generate summary after rerun ---
         if st.session_state.get("generate_summary", False):
             st.session_state.generate_summary = False
             conversation_text = get_conversation()
@@ -243,7 +255,7 @@ def run_chatbot(prolific_id: str):
             st.session_state.generated_summary = summary
             st.session_state.show_summary = True
 
-        # --- Next button ---
+        # Next button
         if st.session_state.show_summary:
             st.divider()
             if st.button("Next ➡️"):
@@ -253,3 +265,15 @@ def run_chatbot(prolific_id: str):
                 st.session_state.question_count = 0
                 st.session_state.abstract_index += 1
                 st.switch_page("pages/short_answers.py")
+
+    st.markdown(
+        """
+        <style>
+        section[data-testid="stHorizontalBlock"] > div:first-child {
+            border-right: 2px solid #e0e0e0;
+            padding-right: 2rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
