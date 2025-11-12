@@ -30,7 +30,7 @@ def run_feedback():
     st.markdown(
         """
         ### 📝 Instructions
-        1. Read the summary shown below. The summary is another version of the abstract.  
+        1. Please read the summary shown below, which was generated from the previous page.
         2. Answer the short answer questions to check your understanding.  
         3. **DO NOT copy** from the summary, say “I don’t know,” or provide unrelated answers.  
            Please respond to the questions to the best of your ability — doing otherwise may risk not being compensated for the task.  
@@ -38,7 +38,6 @@ def run_feedback():
         """
     )
 
-    # Check that interactive portion is completed
     if "last_completed_abstract" not in st.session_state:
         st.warning("Please complete the interactive session first.")
         st.stop()
@@ -46,45 +45,6 @@ def run_feedback():
     data = st.session_state.last_completed_abstract
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
-
-    st.markdown("""
-    <style>
-    /* Align columns at the top */
-    div[data-testid="stHorizontalBlock"] {
-        align-items: flex-start !important;
-    }
-
-    /* Reduce default Streamlit markdown spacing */
-    div[data-testid="stMarkdownContainer"] h1,
-    div[data-testid="stMarkdownContainer"] h2,
-    div[data-testid="stMarkdownContainer"] h3,
-    div[data-testid="stMarkdownContainer"] h4 {
-        margin-top: 0.2rem !important;
-        margin-bottom: 0.4rem !important;
-    }
-
-    /* Reduce spacing under regular paragraphs */
-    div[data-testid="stMarkdownContainer"] p {
-        margin-bottom: 0.2rem !important;
-    }
-
-    /* Tighten spacing before text areas */
-    textarea {
-        margin-top: -0.3rem !important;
-    }
-
-    /* Summary box style */
-    .summary-box {
-        background-color: #f7f8fa;
-        padding: 1.1rem 1.3rem;
-        border-radius: 10px;
-        border: 1px solid #e0e0e0;
-        line-height: 1.55;
-        font-size: 1.05rem;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.title("Summary of Scientific Abstract")
