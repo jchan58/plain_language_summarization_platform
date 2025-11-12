@@ -99,7 +99,7 @@ def run_chatbot(prolific_id: str):
         """
     )
 
-    col1, col2 = st.columns([1.3, 1], gap="large")
+    col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.markdown(f"### 📘 {abstract['abstract_title']}")
         st.markdown(
@@ -121,12 +121,11 @@ def run_chatbot(prolific_id: str):
             st.markdown("### 💬 Chat with the Chatbot")
 
             # Scrollable chat container
-            messages = st.container(height=550, border=True)
+            messages = st.container(height=600, border=True)
             for msg in st.session_state.messages:
                 messages.chat_message(msg["role"]).write(msg["content"])
 
-            # Chat input (always pinned below)
-            if not st.session_state.get("generating_summary", False):
+            if not st.session_state.show_summary and not st.session_state.get("generating_summary", False):
                 if prompt := st.chat_input("Type your question here..."):
                     st.session_state.messages.append({"role": "user", "content": prompt})
                     st.session_state.question_count += 1
@@ -201,40 +200,47 @@ def run_chatbot(prolific_id: str):
                 f"{st.session_state.generated_summary}</div>",
                 unsafe_allow_html=True,
             )
-            st.markdown(
-            """
-            <style>
-            .next-btn-container {
-                position: fixed;
-                bottom: 40px;
-                right: 60px;
-                z-index: 999;
-            }
-            .next-btn {
-                background-color: #0066cc;
-                color: white;
-                border: none;
-                padding: 0.7rem 1.4rem;
-                border-radius: 6px;
-                font-size: 16px;
-                cursor: pointer;
-                box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-            }
-            .next-btn:hover {
-                background-color: #0052a3;
-            }
-            </style>
 
-            <div class="next-btn-container">
-                <button class="next-btn" id="nextButton">Next ➡️</button>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        if st.button("Next ➡️", key="next_button_hidden"):
-            st.session_state.show_summary = False
-            st.session_state.generated_summary = ""
-            st.session_state.messages = []
-            st.session_state.question_count = 0
-            st.session_state.abstract_index += 1
-            st.switch_page("pages/short_answers.py")
+            # --- Floating "Next" button at bottom-right ---
+            st.markdown(
+                """
+                <style>
+                .next-btn-container {
+                    position: fixed;
+                    bottom: 40px;
+                    right: 60px;
+                    z-index: 999;
+                }
+                .next-btn {
+                    background-color: #0066cc;
+                    color: white;
+                    border: none;
+                    padding: 0.7rem 1.4rem;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+                }
+                .next-btn:hover {
+                    background-color: #0052a3;
+                }
+                </style>
+
+                <div class="next-btn-container">
+                    <form action="#" method="post">
+                        <button class="next-btn" name="next" type="submit">Next</button>
+                    </form>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # Only one Streamlit button (logical handler, invisible)
+            next_clicked = st.session_state.get("next_clicked", False)
+            if st.session_state.get("next_triggered", False) or next_clicked or st.button("Proceed", key="hidden_next", label_visibility="hidden"):
+                st.session_state.show_summary = False
+                st.session_state.generated_summary = ""
+                st.session_state.messages = []
+                st.session_state.question_count = 0
+                st.session_state.abstract_index += 1
+                st.switch_page("pages/short_answers.py")
