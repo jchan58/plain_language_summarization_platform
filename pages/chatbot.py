@@ -74,37 +74,32 @@ def run_chatbot(prolific_id: str):
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
-    user_data = users_collection.find_one(
-    {"prolific_id": prolific_id},
-    {"_id": 0, "phases.interactive.abstracts": 1}
-    )
-    abstracts_dict = user_data.get("phases", {}).get("interactive", {}).get("abstracts", {})
-    sorted_abstracts = sorted(abstracts_dict.items(), key=lambda x: int(x[0]))
+    abstracts = get_user_interactive_abstracts(prolific_id)
+    if not abstracts:
+        st.error("No interactive abstracts found for this user.")
+        return
 
-    # --- Find the next one without Likert submitted ---
-    next_abstract_id, next_data = None, None
-    for abstract_id, data in sorted_abstracts:
-        if not data.get("likert_submitted", False):
-            next_abstract_id, next_data = abstract_id, data
-            break
+    for key, default in {
+        "abstract_index": 0,
+        "messages": [],
+        "question_count": 0,
+        "show_summary": False,
+        "generated_summary": "",
+    }.items():
+        if key not in st.session_state:
+            st.session_state[key] = default
 
-    # --- If all abstracts completed ---
-    if not next_abstract_id:
-        st.success("🎉 You've completed all interactive abstracts! Thank you for participating.")
-        st.stop()
+    total = len(abstracts)
+    idx = st.session_state.abstract_index
+    if idx >= total:
+        st.success("🎉 You've completed all interactive abstracts!")
+        return
 
-    # --- Assign for current round ---
-    abstract_id = next_abstract_id
-    abstract = next_data
-    total = len(sorted_abstracts)
-    completed = sum(1 for _, d in sorted_abstracts if d.get("likert_submitted", False))
+    abstract = abstracts[idx]
+    abstract_id = abstract["abstract_id"]
 
-    # --- Show progress ---
-    st.progress((completed + 1) / total)
-    st.caption(f"Progress: {completed + 1} of {total} abstracts completed")
-
-    st.progress((completed + 1) / total)
-    st.caption(f"Progress: {completed + 1} of {total} abstracts completed")
+    st.progress((idx + 1) / total)
+    st.caption(f"Progress: {idx + 1} of {total} abstracts completed")
     st.markdown(
         """
         ### 📝 Instructions
@@ -214,6 +209,7 @@ def run_chatbot(prolific_id: str):
                 unsafe_allow_html=True,
             )
 
+            # CSS for true bottom-right fixed button across full width layout
             st.markdown(
                 """
                 <style>
@@ -257,8 +253,9 @@ def run_chatbot(prolific_id: str):
                     "pls": st.session_state.generated_summary 
                 }
 
-                # reset session
-                for key in ["show_summary", "generated_summary", "messages", "question_count"]:
-                    st.session_state.pop(key, None)
-
+                st.session_state.show_summary = False
+                st.session_state.generated_summary = ""
+                st.session_state.messages = []
+                st.session_state.question_count = 0
+                st.session_state.abstract_index += 1
                 st.switch_page("pages/short_answers.py")
