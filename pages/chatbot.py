@@ -121,7 +121,7 @@ def run_chatbot(prolific_id: str):
             st.markdown("### 💬 Chat with the Chatbot")
 
             # Scrollable chat container
-            messages = st.container(height=500, border=True)
+            messages = st.container(height=550, border=True)
             for msg in st.session_state.messages:
                 messages.chat_message(msg["role"]).write(msg["content"])
 
@@ -165,7 +165,7 @@ def run_chatbot(prolific_id: str):
                             f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
                         }},
                     )
-                    st.session_state.generating_summary = True  # NEW: triggers spinner state
+                    st.session_state.generating_summary = True
                     st.rerun()
 
         elif st.session_state.get("generating_summary", False):
