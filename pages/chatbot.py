@@ -4,6 +4,9 @@ from datetime import datetime
 import pandas as pd
 from openai import OpenAI
 import streamlit.components.v1 as components
+import markdown
+import html
+
 
 
 st.set_page_config(layout="wide")
@@ -26,6 +29,12 @@ def load_example_users():
     return pd.read_csv("example_user.csv")
 
 example_user_df = load_example_users()
+
+
+def render_message(content, role):
+    formatted = markdown.markdown(content, extensions=["fenced_code", "tables"])
+    safe_html = html.escape(formatted)
+    return safe_html
 
 def get_user_interactive_abstracts(prolific_id: str):
     user = users_collection.find_one(
@@ -194,6 +203,8 @@ def run_chatbot(prolific_id: str):
         """
 
         for msg in st.session_state.messages:
+            msg_html = markdown.markdown(msg["content"], extensions=["fenced_code", "tables"])
+
             if msg["role"] == "user":
                 chat_html += f"""
                 <div style="background-color:#DCF8C6;
@@ -202,8 +213,9 @@ def run_chatbot(prolific_id: str):
                             border-radius:16px;
                             margin:8px 0;
                             max-width:75%;
-                            align-self:flex-start;">
-                    {msg["content"]}
+                            align-self:flex-start;
+                            white-space:pre-wrap;">
+                    {msg_html}
                 </div>
                 """
             else:
@@ -215,8 +227,9 @@ def run_chatbot(prolific_id: str):
                             margin:8px 0;
                             max-width:75%;
                             align-self:flex-end;
-                            margin-left:auto;">
-                    {msg["content"]}
+                            margin-left:auto;
+                            white-space:pre-wrap;">
+                    {msg_html}
                 </div>
                 """
 
