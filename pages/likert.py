@@ -65,7 +65,7 @@ def run_likert():
     """, unsafe_allow_html=True)
 
     # --- Two-column layout for Abstract and Summary ---
-    col1, col2 = st.columns([0.8, 1.2], gap="large")
+    col1, col2 = st.columns([0.9, 1.1], gap="large")
 
     with col1:
         st.markdown(f"### 📘 Scientific Abstract")
@@ -79,7 +79,7 @@ def run_likert():
 
     spacer_left, main, spacer_right = st.columns([0.25, 1, 0.25])
     with main:
-        st.markdown("### 📊 Likert-Scale Evaluation (1–5)")
+        st.markdown("### Evaluation of the Summary")
         st.caption("1 = Very Poor  5 = Excellent")
 
         likert_scale = [1, 2, 3, 4, 5]
