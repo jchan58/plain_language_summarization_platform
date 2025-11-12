@@ -117,7 +117,7 @@ def run_chatbot(prolific_id: str):
         st.markdown("""
         <style>
         .chat-container {
-            height: 600px;
+            height: 500px;
             overflow-y: auto;
             padding: 10px;
             border: 1px solid #e0e0e0;
@@ -179,7 +179,7 @@ def run_chatbot(prolific_id: str):
 
         chat_html = """
         <div id="chat" style="
-            height: 600px;
+            height: 500px;
             overflow-y: auto;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
@@ -222,20 +222,26 @@ def run_chatbot(prolific_id: str):
         </div>
         """
         components.html(chat_html, height=500, scrolling=False)
-
-        # --- Ask your question below ---
-        st.markdown("**Ask your question:**")
-        with st.form("chat_input_form", clear_on_submit=True):
-            cols = st.columns([4, 1])
-            with cols[0]:
-                st.session_state.pending_input = st.text_input(
-                    " ", placeholder="Type your question here...", label_visibility="collapsed"
-                )
-            with cols[1]:
-                send = st.form_submit_button("Send")
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
-            st.markdown("<div style='text-align:center; margin-top:10px;'>", unsafe_allow_html=True)
-            if st.button("✅ I'm done asking questions", key="done_button"):
+            st.markdown(
+                """
+                <div style='
+                    background-color:#fafafa;
+                    border:1px solid #e0e0e0;
+                    border-top:none;
+                    border-radius:0 0 8px 8px;
+                    text-align:center;
+                    padding:12px;
+                    margin-top:-10px;
+                    margin-bottom:20px;
+                '>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            done_clicked = st.button("✅ I'm done asking questions", key="done_button")
+
+            if done_clicked:
                 conversation_log = [
                     {"role": msg["role"], "content": msg["content"], "timestamp": datetime.utcnow()}
                     for msg in st.session_state.messages
