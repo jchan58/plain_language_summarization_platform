@@ -60,6 +60,20 @@ def get_conversation():
 
 def run_chatbot(prolific_id: str):
     st.title("💬 Chat with a chatbot about the scientific abstract")
+    with st.sidebar:
+        st.markdown("### ⚙️ Session Controls")
+        st.write(f"**Logged in as:** `{prolific_id}`")
+        if st.button("Logout"):
+            users_collection.update_one(
+                {"prolific_id": prolific_id},
+                {"$set": {
+                    "phases.interactive.last_completed_index": st.session_state.get("abstract_index", 0)
+                }},
+                upsert=True
+            )
+            for key in ["messages", "question_count", "show_summary", "generated_summary", "generating_summary"]:
+                st.session_state.pop(key, None)
+            st.switch_page("app.py")
 
     abstracts = get_user_interactive_abstracts(prolific_id)
     if not abstracts:
@@ -116,12 +130,9 @@ def run_chatbot(prolific_id: str):
         )
 
     with col2:
-        # --- If summary not yet shown, display chat ---
         if not st.session_state.show_summary and not st.session_state.get("generating_summary", False):
             st.markdown("### 💬 Chat with the Chatbot")
-
-            # Scrollable chat container
-            messages = st.container(height=600, border=True)
+            messages = st.container(height=550, border=True)
             for msg in st.session_state.messages:
                 messages.chat_message(msg["role"]).write(msg["content"])
 
@@ -192,7 +203,7 @@ def run_chatbot(prolific_id: str):
                 st.session_state.generating_summary = False
                 st.rerun()
 
-        # --- Show summary after it's ready ---
+        # show summary
         else:
             st.markdown("### 🧾 Summary of Scientific Abstract")
             st.markdown(
@@ -234,10 +245,8 @@ def run_chatbot(prolific_id: str):
                 """,
                 unsafe_allow_html=True,
             )
-
-            # Only one Streamlit button (logical handler, invisible)
             next_clicked = st.session_state.get("next_clicked", False)
-            if st.session_state.get("next_triggered", False) or next_clicked or st.button("Proceed", key="hidden_next", label_visibility="hidden"):
+            if st.session_state.get("next_triggered", False) or next_clicked or st.button("Proceed", key="hidden_next"):
                 st.session_state.show_summary = False
                 st.session_state.generated_summary = ""
                 st.session_state.messages = []
