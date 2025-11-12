@@ -201,11 +201,40 @@ def run_chatbot(prolific_id: str):
                 f"{st.session_state.generated_summary}</div>",
                 unsafe_allow_html=True,
             )
-            st.divider()
-            if st.button("Next ➡️"):
-                st.session_state.show_summary = False
-                st.session_state.generated_summary = ""
-                st.session_state.messages = []
-                st.session_state.question_count = 0
-                st.session_state.abstract_index += 1
-                st.switch_page("pages/short_answers.py")
+            st.markdown(
+            """
+            <style>
+            .next-btn-container {
+                position: fixed;
+                bottom: 40px;
+                right: 60px;
+                z-index: 999;
+            }
+            .next-btn {
+                background-color: #0066cc;
+                color: white;
+                border: none;
+                padding: 0.7rem 1.4rem;
+                border-radius: 6px;
+                font-size: 16px;
+                cursor: pointer;
+                box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            }
+            .next-btn:hover {
+                background-color: #0052a3;
+            }
+            </style>
+
+            <div class="next-btn-container">
+                <button class="next-btn" id="nextButton">Next ➡️</button>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        if st.button("Next ➡️", key="next_button_hidden"):
+            st.session_state.show_summary = False
+            st.session_state.generated_summary = ""
+            st.session_state.messages = []
+            st.session_state.question_count = 0
+            st.session_state.abstract_index += 1
+            st.switch_page("pages/short_answers.py")
