@@ -144,33 +144,40 @@ def run_chatbot(prolific_id: str):
         send = False
         user_input = st.session_state.get("pending_input", "")
         if "trigger_send" in st.session_state and st.session_state.trigger_send:
-            # Step 1 — Show user message immediately
+            # Handle sending message
             st.session_state.messages.append({"role": "user", "content": user_input})
             st.session_state.question_count += 1
-            st.session_state.pending_input = ""
-            st.session_state.trigger_send = False
-            st.rerun()
 
-        # Step 2 — Handle assistant response AFTER rerun
-        if len(st.session_state.messages) % 2 == 1:
-            # That means the last message is from the user (waiting for assistant)
-            last_user_msg = st.session_state.messages[-1]["content"]
-
+            # Call OpenAI API
             conversation_context = [
                 {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts. "
                                             "Use the abstract below to answer clearly and accurately."},
                 {"role": "system", "content": f"Abstract:\n{abstract['abstract']}"}
             ] + st.session_state.messages
 
-            # Show spinner while generating response
-            with st.spinner("💭 Assistant is thinking..."):
-                response = client_openai.chat.completions.create(
-                    model="gpt-4o",
-                    messages=conversation_context,
-                )
+            response = client_openai.chat.completions.create(
+                model="gpt-4o",
+                messages=conversation_context,
+            )
 
             answer = response.choices[0].message.content.strip()
             st.session_state.messages.append({"role": "assistant", "content": answer})
+
+            # Save to Mongo
+            users_collection.update_one(
+                {"prolific_id": prolific_id},
+                {"$push": {
+                    f"phases.interactive.abstracts.{abstract_id}.conversation_log": {
+                        "user": user_input,
+                        "assistant": answer,
+                        "timestamp": datetime.utcnow(),
+                    }
+                }},
+            )
+
+            # Reset state to prevent loop
+            st.session_state.trigger_send = False
+            st.session_state.pending_input = ""
             st.rerun()
 
         # --- Render chat messages ---
@@ -206,27 +213,9 @@ def run_chatbot(prolific_id: str):
             st.session_state.trigger_send = True
             st.rerun()
 
-
-        # --- Input box below ---
-
         # if the number of questions is greater than 3 then we are good to move on
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
             if st.button("✅ I'm done asking questions", key="done_button"):
-                # Save entire chat log only once
-                conversation_log = [
-                    {
-                        "role": msg["role"],
-                        "content": msg["content"],
-                        "timestamp": datetime.utcnow()
-                    }
-                    for msg in st.session_state.messages
-                ]
-                users_collection.update_one(
-                    {"prolific_id": prolific_id},
-                    {"$set": {
-                        f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
-                    }},
-                )
                 st.session_state.generate_summary = True
 
         # --- Generate summary after rerun ---
