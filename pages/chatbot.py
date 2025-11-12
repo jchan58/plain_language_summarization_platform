@@ -61,8 +61,7 @@ def get_conversation():
 def run_chatbot(prolific_id: str):
     st.title("💬 Chat with a chatbot about the scientific abstract")
     with st.sidebar:
-        st.markdown("### ⚙️ Session Controls")
-        st.write(f"**Logged in as:** `{prolific_id}`")
+        st.write(f"**MTurk ID:** `{prolific_id}`")
         if st.button("Logout"):
             users_collection.update_one(
                 {"prolific_id": prolific_id},
@@ -179,7 +178,6 @@ def run_chatbot(prolific_id: str):
                     st.rerun()
 
         elif st.session_state.get("generating_summary", False):
-            st.markdown("### 🧾 Generating Summary...")
             with st.spinner("✨ Generating the summary, please wait..."):
                 conversation_text = get_conversation()
                 system_prompt = (
@@ -211,45 +209,44 @@ def run_chatbot(prolific_id: str):
                 f"{st.session_state.generated_summary}</div>",
                 unsafe_allow_html=True,
             )
-
-            # --- Floating "Next" button at bottom-right ---
             st.markdown(
-                """
-                <style>
-                .next-btn-container {
-                    position: fixed;
-                    bottom: 40px;
-                    right: 60px;
-                    z-index: 999;
-                }
-                .next-btn {
-                    background-color: #0066cc;
-                    color: white;
-                    border: none;
-                    padding: 0.7rem 1.4rem;
-                    border-radius: 6px;
-                    font-size: 16px;
-                    cursor: pointer;
-                    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-                }
-                .next-btn:hover {
-                    background-color: #0052a3;
-                }
-                </style>
+            """
+            <style>
+            .next-btn-container {
+                position: fixed;
+                bottom: 40px;
+                right: 60px;
+                z-index: 999;
+            }
+            .next-btn {
+                background-color: #0066cc;
+                color: white;
+                border: none;
+                padding: 0.7rem 1.4rem;
+                border-radius: 6px;
+                font-size: 16px;
+                cursor: pointer;
+                box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            }
+            .next-btn:hover {
+                background-color: #0052a3;
+            }
+            </style>
 
-                <div class="next-btn-container">
-                    <form action="#" method="post">
-                        <button class="next-btn" name="next" type="submit">Next</button>
-                    </form>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            next_clicked = st.session_state.get("next_clicked", False)
-            if st.session_state.get("next_triggered", False) or next_clicked or st.button("Proceed", key="hidden_next"):
-                st.session_state.show_summary = False
-                st.session_state.generated_summary = ""
-                st.session_state.messages = []
-                st.session_state.question_count = 0
-                st.session_state.abstract_index += 1
-                st.switch_page("pages/short_answers.py")
+            <div class="next-btn-container">
+                <form action="#" method="post">
+                    <button class="next-btn" name="next" type="submit">Next</button>
+                </form>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        next_clicked = st.session_state.get("next_clicked", False)
+        if st.session_state.get("next_triggered", False) or next_clicked:
+            st.session_state.show_summary = False
+            st.session_state.generated_summary = ""
+            st.session_state.messages = []
+            st.session_state.question_count = 0
+            st.session_state.abstract_index += 1
+            st.switch_page("pages/short_answers.py")
