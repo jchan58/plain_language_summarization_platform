@@ -47,17 +47,41 @@ def run_feedback():
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
 
-    st.markdown(
-    """
+    st.markdown("""
     <style>
-    /* Align columns at the top */
+    /* Make columns start at the same top position */
     div[data-testid="stHorizontalBlock"] {
         align-items: flex-start !important;
     }
+
+    /* Reduce Streamlit's built-in title padding */
+    h1, h2, h3 {
+        margin-top: 0rem !important;
+        margin-bottom: 0.6rem !important;
+    }
+
+    /* Tighter control of column spacing */
+    .block-container {
+        padding-top: 1rem !important;
+    }
+
+    /* Gray box styling for summary */
+    .summary-box {
+        background-color: #f7f8fa;
+        padding: 1.1rem 1.3rem;
+        border-radius: 10px;
+        border: 1px solid #e0e0e0;
+        line-height: 1.55;
+        font-size: 1.05rem;
+    }
+
+    /* Question section spacing */
+    .short-answer h3 {
+        margin-top: 1.2rem !important;
+        margin-bottom: 0.5rem !important;
+    }
     </style>
-    """,
-    unsafe_allow_html=True,
-    )
+    """, unsafe_allow_html=True)
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.title("Summary of Scientific Abstract")
