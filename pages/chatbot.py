@@ -8,6 +8,7 @@ import markdown
 import html
 
 
+
 st.set_page_config(layout="wide")
 
 @st.cache_resource
@@ -31,7 +32,7 @@ example_user_df = load_example_users()
 
 
 def render_message(content, role):
-    formatted = markdown.markdown(content, extensions=["fenced_code", "tables", "nl2br"])
+    formatted = markdown.markdown(content, extensions=["fenced_code", "tables"])
     safe_html = html.escape(formatted)
     return safe_html
 
@@ -176,7 +177,6 @@ def run_chatbot(prolific_id: str):
             st.session_state.pending_input = ""
             st.rerun()
 
-        # --- Render chat messages ---
         chat_html = """
         <div id="chat" style="
             height: 600px;
@@ -188,43 +188,41 @@ def run_chatbot(prolific_id: str):
         """
 
         for msg in st.session_state.messages:
-            msg_html = markdown.markdown(msg["content"], extensions=["fenced_code", "tables", "nl2br"])
+            msg_html = markdown.markdown(msg["content"], extensions=["nl2br"])
 
+            # Choose bubble color and alignment
             if msg["role"] == "user":
-                chat_html += f"""
-                <div style="background-color:#DCF8C6;
-                            color:black;
-                            padding:10px 14px;
-                            border-radius:16px;
-                            margin:8px 0;
-                            max-width:75%;
-                            align-self:flex-start;
-                            white-space:pre-wrap;">
-                    {msg_html}
-                </div>
-                """
+                bubble_color = "#DCF8C6" 
+                align = "flex-start"
+                margin = "margin-right:auto;"
             else:
-                chat_html += f"""
-                <div style="background-color:#E8E8E8;
-                            color:black;
-                            padding:10px 14px;
-                            border-radius:16px;
-                            margin:8px 0;
-                            max-width:75%;
-                            align-self:flex-end;
-                            margin-left:auto;
-                            white-space:pre-wrap;">
-                    {msg_html}
-                </div>
-                """
+                bubble_color = "#E8E8E8" 
+                align = "flex-end"
+                margin = "margin-left:auto;"
+
+            chat_html += f"""
+            <div style="background-color:{bubble_color};
+                        color:black;
+                        padding:10px 14px;
+                        border-radius:16px;
+                        margin:8px 0;
+                        max-width:75%;
+                        align-self:{align};
+                        {margin}
+                        white-space:normal;
+                        word-wrap:break-word;">
+                {msg_html}
+            </div>
+            """
 
         chat_html += """
         <script>
             const chatDiv = document.getElementById("chat");
-            chatDiv.scrollTop = chatDiv.scrollHeight;
+            if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
         </script>
         </div>
         """
+
         components.html(chat_html, height=650, scrolling=False)
 
         # --- Ask your question below ---
