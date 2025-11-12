@@ -141,10 +141,8 @@ def run_chatbot(prolific_id: str):
         </style>
         """, unsafe_allow_html=True)
 
-        # --- Input logic first (invisible, runs before UI) ---
         send = False
         user_input = st.session_state.get("pending_input", "")
-
         if "trigger_send" in st.session_state and st.session_state.trigger_send:
             # Handle sending message
             st.session_state.messages.append({"role": "user", "content": user_input})
@@ -221,6 +219,21 @@ def run_chatbot(prolific_id: str):
         # if the number of questions is greater than 3 then we are good to move on
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
             if st.button("✅ I'm done asking questions", key="done_button"):
+                # Save entire chat log only once
+                conversation_log = [
+                    {
+                        "role": msg["role"],
+                        "content": msg["content"],
+                        "timestamp": datetime.utcnow()
+                    }
+                    for msg in st.session_state.messages
+                ]
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {
+                        f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
+                    }},
+                )
                 st.session_state.generate_summary = True
 
         # --- Generate summary after rerun ---
@@ -243,15 +256,6 @@ def run_chatbot(prolific_id: str):
                     ],
                 )
             summary = response.choices[0].message.content
-
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$set": {
-                    f"phases.interactive.abstracts.{abstract_id}.pls": summary,
-                    f"phases.interactive.abstracts.{abstract_id}.completed": True,
-                }},
-            )
-
             st.session_state.generated_summary = summary
             st.session_state.show_summary = True
 
