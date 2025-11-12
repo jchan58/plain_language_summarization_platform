@@ -173,20 +173,6 @@ def run_chatbot(prolific_id: str):
 
             answer = response.choices[0].message.content.strip()
             st.session_state.messages.append({"role": "assistant", "content": answer})
-
-            # Save to Mongo
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$push": {
-                    f"phases.interactive.abstracts.{abstract_id}.conversation_log": {
-                        "user": user_input,
-                        "assistant": answer,
-                        "timestamp": datetime.utcnow(),
-                    }
-                }},
-            )
-
-            # Reset state to prevent loop
             st.session_state.trigger_send = False
             st.session_state.pending_input = ""
             st.rerun()
@@ -260,6 +246,20 @@ def run_chatbot(prolific_id: str):
         # if the number of questions is greater than 3 then we are good to move on
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
             if st.button("✅ I'm done asking questions", key="done_button"):
+                conversation_log = [
+                    {
+                        "role": msg["role"],
+                        "content": msg["content"],
+                        "timestamp": datetime.utcnow()
+                    }
+                    for msg in st.session_state.messages
+                ]
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {
+                        f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
+                    }},
+                )
                 st.session_state.generate_summary = True
 
         # --- Generate summary after rerun ---
