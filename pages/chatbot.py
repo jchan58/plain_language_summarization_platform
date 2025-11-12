@@ -213,10 +213,6 @@ def run_chatbot(prolific_id: str):
 
         if send and st.session_state.pending_input.strip():
             st.session_state.trigger_send = True
-            st.rerun()
-
-
-        # --- Input box below ---
 
         # if the number of questions is greater than 3 then we are good to move on
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
