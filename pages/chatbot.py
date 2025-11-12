@@ -3,6 +3,8 @@ from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from openai import OpenAI
+import streamlit.components.v1 as components
+
 
 st.set_page_config(layout="wide")
 
@@ -181,40 +183,51 @@ def run_chatbot(prolific_id: str):
             st.rerun()
 
         # --- Render chat messages ---
-        chat_html = '<div class="chat-container">'
+        chat_html = """
+        <div id="chat" style="
+            height: 600px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+            padding: 10px;">
+        """
+
         for msg in st.session_state.messages:
             if msg["role"] == "user":
-                chat_html += f'<div class="bubble-wrapper"><div class="user-bubble">{msg["content"]}</div></div>'
+                chat_html += f"""
+                <div style="background-color:#DCF8C6;
+                            color:black;
+                            padding:10px 14px;
+                            border-radius:16px;
+                            margin:8px 0;
+                            max-width:75%;
+                            align-self:flex-start;">
+                    {msg["content"]}
+                </div>
+                """
             else:
-                chat_html += f'<div class="bubble-wrapper"><div class="assistant-bubble">{msg["content"]}</div></div>'
-        chat_html += "</div>"
-        st.markdown(chat_html, unsafe_allow_html=True)
-        # allow for auto scrolling
-        st.markdown("""
-        <script>
-        setTimeout(() => {
-            const frames = window.parent.document.querySelectorAll('iframe');
-            for (const frame of frames) {
-                try {
-                    const chatDiv = frame.contentDocument.querySelector('.chat-container');
-                    if (chatDiv) {
-                        chatDiv.scrollTop = chatDiv.scrollHeight;
-                    }
-                } catch (e) {
-                    // ignore cross-origin frames
-                }
-            }
-        }, 100);
-        </script>
-        """, unsafe_allow_html=True)
+                chat_html += f"""
+                <div style="background-color:#E8E8E8;
+                            color:black;
+                            padding:10px 14px;
+                            border-radius:16px;
+                            margin:8px 0;
+                            max-width:75%;
+                            align-self:flex-end;
+                            margin-left:auto;">
+                    {msg["content"]}
+                </div>
+                """
 
-        # --- Auto-scroll ---
-        st.markdown("""
+        chat_html += """
         <script>
-        const chatDiv = window.parent.document.querySelector('.chat-container');
-        if (chatDiv) { chatDiv.scrollTop = chatDiv.scrollHeight; }
+            const chatDiv = document.getElementById("chat");
+            chatDiv.scrollTop = chatDiv.scrollHeight;
         </script>
-        """, unsafe_allow_html=True)
+        </div>
+        """
+        components.html(chat_html, height=650, scrolling=False)
 
         # --- Ask your question below ---
         st.markdown("**Ask your question:**")
