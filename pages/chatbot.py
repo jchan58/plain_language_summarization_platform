@@ -188,41 +188,39 @@ def run_chatbot(prolific_id: str):
         """
 
         for msg in st.session_state.messages:
-            msg_html = markdown.markdown(msg["content"], extensions=["nl2br"])
-
-            # Choose bubble color and alignment
             if msg["role"] == "user":
-                bubble_color = "#DCF8C6" 
-                align = "flex-start"
-                margin = "margin-right:auto;"
+                chat_html += f"""
+                <div style="background-color:#DCF8C6;
+                            color:black;
+                            padding:10px 14px;
+                            border-radius:16px;
+                            margin:8px 0;
+                            max-width:75%;
+                            align-self:flex-start;">
+                    {msg["content"]}
+                </div>
+                """
             else:
-                bubble_color = "#E8E8E8" 
-                align = "flex-end"
-                margin = "margin-left:auto;"
-
-            chat_html += f"""
-            <div style="background-color:{bubble_color};
-                        color:black;
-                        padding:10px 14px;
-                        border-radius:16px;
-                        margin:8px 0;
-                        max-width:75%;
-                        align-self:{align};
-                        {margin}
-                        white-space:normal;
-                        word-wrap:break-word;">
-                {msg_html}
-            </div>
-            """
+                chat_html += f"""
+                <div style="background-color:#E8E8E8;
+                            color:black;
+                            padding:10px 14px;
+                            border-radius:16px;
+                            margin:8px 0;
+                            max-width:75%;
+                            align-self:flex-end;
+                            margin-left:auto;">
+                    {msg["content"]}
+                </div>
+                """
 
         chat_html += """
         <script>
             const chatDiv = document.getElementById("chat");
-            if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
+            chatDiv.scrollTop = chatDiv.scrollHeight;
         </script>
         </div>
         """
-
         components.html(chat_html, height=650, scrolling=False)
 
         # --- Ask your question below ---
