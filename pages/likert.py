@@ -2,6 +2,15 @@ import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
 
+st.markdown(
+    """
+    <style>
+        [data-testid="stSidebarNav"] {display: none;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.set_page_config(layout="wide")
 
 def run_likert():

@@ -7,8 +7,14 @@ import streamlit.components.v1 as components
 import markdown
 import html
 
-
-
+st.markdown(
+    """
+    <style>
+        [data-testid="stSidebarNav"] {display: none;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 st.set_page_config(layout="wide")
 
 @st.cache_resource

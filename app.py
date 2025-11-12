@@ -5,6 +5,15 @@ import pandas as pd
 from openai import OpenAI
 from pages.chatbot import run_chatbot
 
+st.markdown(
+    """
+    <style>
+        [data-testid="stSidebarNav"] {display: none;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.set_page_config(layout="wide")
 
 @st.cache_resource
