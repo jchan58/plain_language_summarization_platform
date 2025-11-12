@@ -191,20 +191,22 @@ def run_chatbot(prolific_id: str):
         st.markdown(chat_html, unsafe_allow_html=True)
         # allow for auto scrolling
         st.markdown("""
-            <script>
-            const observer = new MutationObserver(() => {
-                const chatDiv = window.parent.document.querySelector('.chat-container');
-                if (chatDiv) {
-                    chatDiv.scrollTop = chatDiv.scrollHeight;
+        <script>
+        setTimeout(() => {
+            const frames = window.parent.document.querySelectorAll('iframe');
+            for (const frame of frames) {
+                try {
+                    const chatDiv = frame.contentDocument.querySelector('.chat-container');
+                    if (chatDiv) {
+                        chatDiv.scrollTop = chatDiv.scrollHeight;
+                    }
+                } catch (e) {
+                    // ignore cross-origin frames
                 }
-            });
-            const chatDiv = window.parent.document.querySelector('.chat-container');
-            if (chatDiv) {
-                observer.observe(chatDiv, { childList: true, subtree: true });
-                chatDiv.scrollTop = chatDiv.scrollHeight;
             }
-            </script>
-            """, unsafe_allow_html=True)
+        }, 100);
+        </script>
+        """, unsafe_allow_html=True)
 
         # --- Auto-scroll ---
         st.markdown("""
