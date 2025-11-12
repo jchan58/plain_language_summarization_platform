@@ -245,6 +245,15 @@ def run_chatbot(prolific_id: str):
             st.markdown('</div>', unsafe_allow_html=True)
 
             if next_clicked:
+                st.session_state.last_completed_abstract = {
+                    "prolific_id": prolific_id,
+                    "abstract_id": abstract_id,
+                    "title": abstract["abstract_title"],
+                    "abstract": abstract["abstract"],
+                    "pls": st.session_state.generated_summary 
+                }
+
+                # reset session
                 st.session_state.show_summary = False
                 st.session_state.generated_summary = ""
                 st.session_state.messages = []
