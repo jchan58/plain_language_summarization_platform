@@ -141,25 +141,6 @@ def run_chatbot(prolific_id: str):
         </style>
         """, unsafe_allow_html=True)
 
-        # --- Render chat messages as bubbles ---
-        chat_html = '<div class="chat-container">'
-        for msg in st.session_state.messages:
-            if msg["role"] == "user":
-                chat_html += f'<div class="bubble-wrapper"><div class="user-bubble">{msg["content"]}</div></div>'
-            else:
-                chat_html += f'<div class="bubble-wrapper"><div class="assistant-bubble">{msg["content"]}</div></div>'
-        chat_html += "</div>"
-        st.markdown(chat_html, unsafe_allow_html=True)
-
-        # --- Auto-scroll to bottom ---
-        st.markdown("""
-        <script>
-        const chatDiv = window.parent.document.querySelector('.chat-container');
-        if (chatDiv) { chatDiv.scrollTop = chatDiv.scrollHeight; }
-        </script>
-        """, unsafe_allow_html=True)
-
-        # --- Input box below ---
         st.markdown("**Ask your question:**")
         with st.form("chat_input_form", clear_on_submit=True):
             cols = st.columns([4, 1])
@@ -199,6 +180,28 @@ def run_chatbot(prolific_id: str):
                     }
                 }},
             )
+            st.rerun()
+
+
+        # --- Render chat messages as bubbles ---
+        chat_html = '<div class="chat-container">'
+        for msg in st.session_state.messages:
+            if msg["role"] == "user":
+                chat_html += f'<div class="bubble-wrapper"><div class="user-bubble">{msg["content"]}</div></div>'
+            else:
+                chat_html += f'<div class="bubble-wrapper"><div class="assistant-bubble">{msg["content"]}</div></div>'
+        chat_html += "</div>"
+        st.markdown(chat_html, unsafe_allow_html=True)
+
+        # --- Auto-scroll to bottom ---
+        st.markdown("""
+        <script>
+        const chatDiv = window.parent.document.querySelector('.chat-container');
+        if (chatDiv) { chatDiv.scrollTop = chatDiv.scrollHeight; }
+        </script>
+        """, unsafe_allow_html=True)
+
+        # --- Input box below ---
 
         # if the number of questions is greater than 3 then we are good to move on
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
