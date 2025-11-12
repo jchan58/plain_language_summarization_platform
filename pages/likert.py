@@ -108,9 +108,7 @@ def run_likert():
             st.session_state.get("faithfulness")
         ])
 
-        # --- Submit button ---
-        submit_button = st.button("✅ Submit Responses", disabled=not all_answered)
-
+        submit_button = st.button("Submit", disabled=not all_answered)
         if submit_button:
             responses = {
                 "timestamp": datetime.utcnow(),
@@ -134,8 +132,16 @@ def run_likert():
             )
 
             if result.modified_count > 0:
-                st.success("✅ Thank you! Your responses have been recorded.")
-            else:
-                st.warning("⚠️ No changes were made. Please check your connection or data.")
+                st.session_state.show_summary = False
+                st.session_state.generated_summary = ""
+                st.session_state.messages = []
+                st.session_state.question_count = 0
+                st.session_state.abstract_index = st.session_state.get("abstract_index", 0) + 1
+                st.session_state.progress_info = {
+                    "current_index": st.session_state.abstract_index,
+                    "total": st.session_state.progress_info.get("total", 1) if "progress_info" in st.session_state else 1
+                }
+                st.switch_page("pages/chatbot.py")
+    
 
 run_likert()
