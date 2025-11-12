@@ -118,13 +118,13 @@ def run_feedback():
         def update_result():
             st.session_state.feedback["result"] = st.session_state.result_box
 
-        st.markdown("### 🧠 What did the researchers in this study want to find out?")
+        st.subheader("### 🧠 What did the researchers in this study want to find out?")
         st.text_area("", key="main_idea_box", value=st.session_state.feedback["main_idea"], on_change=update_main_idea)
 
-        st.markdown("### 🧪 What was the method used in the study?")
+        st.subheader("### 🧪 What was the method used in the study?")
         st.text_area("", key="method_box", value=st.session_state.feedback["method"], on_change=update_method)
 
-        st.markdown("### 📊 What was the result of this study?")
+        st.subheader("### 📊 What was the result of this study?")
         st.text_area("", key="result_box", value=st.session_state.feedback["result"], on_change=update_result)
 
         all_filled = all([
