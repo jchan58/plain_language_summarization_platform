@@ -102,26 +102,38 @@ def run_chatbot(prolific_id: str):
     col1, col2 = st.columns([1.3, 1], gap="large")
     with col1:
         st.markdown(f"### 📘 {abstract['abstract_title']}")
-        st.markdown("**Abstract:**")
-        st.write(abstract["abstract"])
+        st.markdown(
+            f"""
+            <div style='background-color:#f2f3f5;
+                        padding:1rem;
+                        border-radius:0.5rem;
+                        line-height:1.6;
+                        border:1px solid #dcdcdc;'>
+                <strong>Abstract:</strong><br>
+                {abstract['abstract']}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     with col2:
-        if not st.session_state.show_summary:
+        # --- If summary not yet shown, display chat ---
+        if not st.session_state.show_summary and not st.session_state.get("generating_summary", False):
             st.markdown("### 💬 Chat with the Chatbot")
 
-            # --- Native scrollable message container ---
-            messages = st.container(height=650, border=True)
+            # Scrollable chat container
+            messages = st.container(height=500, border=True)
             for msg in st.session_state.messages:
                 messages.chat_message(msg["role"]).write(msg["content"])
 
-            # --- Chat input (pinned below automatically) ---
-            if prompt := (st.chat_input("Type your question here...") if not st.session_state.show_summary else None):
+            # Chat input (always pinned below)
+            if prompt := st.chat_input("Type your question here..."):
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 st.session_state.question_count += 1
                 messages.chat_message("user").write(prompt)
 
                 with messages.chat_message("assistant"):
-                    with st.spinner("Thinking..."):
+                    with st.spinner("🤔 Thinking..."):
                         conversation_context = [
                             {"role": "system", "content": (
                                 "You are a helpful assistant explaining scientific abstracts clearly and accurately. "
@@ -139,8 +151,8 @@ def run_chatbot(prolific_id: str):
                         st.session_state.messages.append({"role": "assistant", "content": full_response})
                         st.markdown(full_response)
 
-            # “I'm done asking” button (only in chat mode)
-            if st.session_state.question_count >= 3 and not st.session_state.show_summary:
+            # "I'm done asking" button
+            if st.session_state.question_count >= 3:
                 st.markdown("<br>", unsafe_allow_html=True)
                 if st.button("✅ I'm done asking questions"):
                     conversation_log = [
@@ -153,28 +165,21 @@ def run_chatbot(prolific_id: str):
                             f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
                         }},
                     )
-                    st.session_state.generate_summary = True
+                    st.session_state.generating_summary = True  # NEW: triggers spinner state
                     st.rerun()
-        else:
-            # 📄 Summary replaces the chat panel
-            st.markdown("### Summary of Scientific Abstract")
-            st.markdown(
-                f"<div style='background-color:#f5f7fa;padding:1rem;border-radius:0.5rem;'>"
-                f"{st.session_state.generated_summary}</div>",
-                unsafe_allow_html=True,
-            )
-        # --- Generate summary after rerun ---
-        if st.session_state.get("generate_summary", False):
-            st.session_state.generate_summary = False
-            conversation_text = get_conversation()
-            system_prompt = (
-                "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
-                f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
-                "Use this conversation to identify what concepts, terms, or results the reader found confusing, interesting, or important. "
-                "Then rewrite the original abstract into a clear, accurate, plain-language summary."
-            )
 
-            with st.spinner("✨ Generating the summary..."):
+        # --- While generating summary (spinner only) ---
+        elif st.session_state.get("generating_summary", False):
+            st.markdown("### 🧾 Generating Summary...")
+            with st.spinner("✨ Generating the plain-language summary, please wait..."):
+                conversation_text = get_conversation()
+                system_prompt = (
+                    "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
+                    f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
+                    "Use this conversation to identify what concepts, terms, or results the reader found confusing, interesting, or important. "
+                    "Then rewrite the original abstract into a clear, accurate, plain-language summary."
+                )
+
                 response = client_openai.chat.completions.create(
                     model="gpt-4o",
                     messages=[
@@ -182,13 +187,21 @@ def run_chatbot(prolific_id: str):
                         {"role": "user", "content": f"Rewrite this abstract:\n\n{abstract['abstract']}"},
                     ],
                 )
-            summary = response.choices[0].message.content
-            st.session_state.generated_summary = summary
-            st.session_state.show_summary = True
-            st.rerun() 
+                summary = response.choices[0].message.content.strip()
 
-        # Next button
-        if st.session_state.show_summary:
+                st.session_state.generated_summary = summary
+                st.session_state.show_summary = True
+                st.session_state.generating_summary = False
+                st.rerun()
+
+        # --- Show summary after it's ready ---
+        else:
+            st.markdown("### 🧾 Summary of Scientific Abstract")
+            st.markdown(
+                f"<div style='background-color:#f5f7fa;padding:1rem;border-radius:0.5rem;'>"
+                f"{st.session_state.generated_summary}</div>",
+                unsafe_allow_html=True,
+            )
             st.divider()
             if st.button("Next ➡️"):
                 st.session_state.show_summary = False
@@ -197,15 +210,3 @@ def run_chatbot(prolific_id: str):
                 st.session_state.question_count = 0
                 st.session_state.abstract_index += 1
                 st.switch_page("pages/short_answers.py")
-
-    st.markdown(
-        """
-        <style>
-        section[data-testid="stHorizontalBlock"] > div:first-child {
-            border-right: 2px solid #e0e0e0;
-            padding-right: 2rem;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
