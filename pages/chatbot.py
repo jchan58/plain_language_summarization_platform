@@ -143,13 +143,12 @@ def run_chatbot(prolific_id: str):
                         ] + st.session_state.messages
 
                         with client_openai.chat.completions.stream(
-                            model="gpt-4o",
+                            model="gpt-4o-mini",
                             messages=conversation_context,
                         ) as stream:
                             full_response = st.write_stream(stream)
-
-                st.session_state.messages.append({"role": "assistant", "content": full_response})
-                st.rerun()
+                        st.session_state.messages.append({"role": "assistant", "content": full_response})
+                        st.rerun()
 
         # --- “I'm done asking questions” button ---
         if st.session_state.question_count >= 3 and not st.session_state.show_summary:
