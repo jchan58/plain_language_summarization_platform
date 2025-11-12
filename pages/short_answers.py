@@ -51,8 +51,6 @@ def run_feedback():
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.title("Summary of Scientific Abstract")
-
-        # Gray box for summary
         st.markdown(f"### {data['title']}")
         st.markdown(
             f"""
@@ -70,11 +68,10 @@ def run_feedback():
         )
 
     with col2:
-        # Initialize feedback state if not already present
+        st.title("Summary of Scientific Abstract")
         if "feedback" not in st.session_state:
             st.session_state.feedback = {"main_idea": "", "method": "", "result": ""}
 
-        # Update functions
         def update_main_idea():
             st.session_state.feedback["main_idea"] = st.session_state.main_idea_box
 
@@ -84,7 +81,6 @@ def run_feedback():
         def update_result():
             st.session_state.feedback["result"] = st.session_state.result_box
 
-        # Questions
         st.markdown("### 🧠 What did the researchers in this study want to find out?")
         st.text_area("", key="main_idea_box", value=st.session_state.feedback["main_idea"], on_change=update_main_idea)
 
@@ -94,7 +90,6 @@ def run_feedback():
         st.markdown("### 📊 What was the result of this study?")
         st.text_area("", key="result_box", value=st.session_state.feedback["result"], on_change=update_result)
 
-        # Enable Next only when all fields filled
         all_filled = all([
             st.session_state.feedback["main_idea"].strip(),
             st.session_state.feedback["method"].strip(),
