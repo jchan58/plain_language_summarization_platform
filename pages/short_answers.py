@@ -118,6 +118,18 @@ def run_feedback():
         def update_result():
             st.session_state.feedback["result"] = st.session_state.result_box
 
+        st.markdown("""
+        <style>
+        div[data-testid="stMarkdownContainer"] h3 {
+            margin-bottom: 0.2rem !important;
+            margin-top: 0.8rem !important;
+        }
+        textarea {
+            margin-top: -0.3rem !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
         st.subheader("🧠 What did the researchers in this study want to find out?")
         st.text_area("", key="main_idea_box", value=st.session_state.feedback["main_idea"], on_change=update_main_idea)
 
