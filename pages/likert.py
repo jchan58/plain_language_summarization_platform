@@ -65,18 +65,16 @@ def run_likert():
     """, unsafe_allow_html=True)
 
     # --- Two-column layout for Abstract and Summary ---
-    col1, col2 = st.columns([1, 1], gap="large")
+    col1, col2 = st.columns([0.8, 1.2], gap="large")
 
     with col1:
         st.markdown(f"### 📘 Scientific Abstract")
-        st.markdown(f"#### {abstract_title}")
         st.markdown(f"<div class='content-box'>{abstract}</div>", unsafe_allow_html=True)
 
     with col2:
         st.markdown("### 🧾 Summary of Scientific Abstract")
         st.markdown(f"<div class='content-box'>{pls}</div>", unsafe_allow_html=True)
 
-    # --- Divider and Centered Likert Section ---
     st.divider()
 
     spacer_left, main, spacer_right = st.columns([0.25, 1, 0.25])
