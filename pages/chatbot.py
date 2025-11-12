@@ -266,14 +266,15 @@ def run_chatbot(prolific_id: str):
                 st.session_state.abstract_index += 1
                 st.switch_page("pages/short_answers.py")
 
-    st.markdown(
-        """
-        <style>
-        section[data-testid="stHorizontalBlock"] > div:first-child {
-            border-right: 2px solid #e0e0e0;
-            padding-right: 2rem;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown("""
+    <script>
+    const chatDiv = window.parent.document.querySelector('.chat-container');
+    if (chatDiv) {
+    // Create a MutationObserver to detect new chat bubbles
+    const observer = new MutationObserver(() => {
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    });
+    observer.observe(chatDiv, { childList: true });
+    }
+    </script>
+    """, unsafe_allow_html=True)
