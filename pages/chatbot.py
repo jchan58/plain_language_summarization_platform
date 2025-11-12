@@ -127,7 +127,7 @@ def run_chatbot(prolific_id: str):
             border-radius: 16px;
             max-width: 75%;
             align-self: flex-start;
-            margin-right: auto;   /* move to left */
+            margin-right: auto;
         }
         .assistant-bubble {
             background-color: #E8E8E8;
@@ -136,25 +136,21 @@ def run_chatbot(prolific_id: str):
             border-radius: 16px;
             max-width: 75%;
             align-self: flex-end;
-            margin-left: auto;    /* move to right */
+            margin-left: auto;
         }
         </style>
         """, unsafe_allow_html=True)
 
-        st.markdown("**Ask your question:**")
-        with st.form("chat_input_form", clear_on_submit=True):
-            cols = st.columns([4, 1])
-            with cols[0]:
-                user_input = st.text_input(" ", placeholder="Type your question here...", label_visibility="collapsed")
-            with cols[1]:
-                send = st.form_submit_button("Send")
+        # --- Input logic first (invisible, runs before UI) ---
+        send = False
+        user_input = st.session_state.get("pending_input", "")
 
-        # --- Handle sending message ---
-        if send and user_input.strip():
+        if "trigger_send" in st.session_state and st.session_state.trigger_send:
+            # Handle sending message
             st.session_state.messages.append({"role": "user", "content": user_input})
             st.session_state.question_count += 1
 
-            # Build chat context and call OpenAI
+            # Call OpenAI API
             conversation_context = [
                 {"role": "system", "content": "You are a helpful assistant explaining scientific abstracts. "
                                             "Use the abstract below to answer clearly and accurately."},
@@ -169,7 +165,7 @@ def run_chatbot(prolific_id: str):
             answer = response.choices[0].message.content.strip()
             st.session_state.messages.append({"role": "assistant", "content": answer})
 
-            # Write to DB
+            # Save to Mongo
             users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {"$push": {
@@ -180,10 +176,13 @@ def run_chatbot(prolific_id: str):
                     }
                 }},
             )
+
+            # Reset state to prevent loop
+            st.session_state.trigger_send = False
+            st.session_state.pending_input = ""
             st.rerun()
 
-
-        # --- Render chat messages as bubbles ---
+        # --- Render chat messages ---
         chat_html = '<div class="chat-container">'
         for msg in st.session_state.messages:
             if msg["role"] == "user":
@@ -193,13 +192,29 @@ def run_chatbot(prolific_id: str):
         chat_html += "</div>"
         st.markdown(chat_html, unsafe_allow_html=True)
 
-        # --- Auto-scroll to bottom ---
+        # --- Auto-scroll ---
         st.markdown("""
         <script>
         const chatDiv = window.parent.document.querySelector('.chat-container');
         if (chatDiv) { chatDiv.scrollTop = chatDiv.scrollHeight; }
         </script>
         """, unsafe_allow_html=True)
+
+        # --- Ask your question below ---
+        st.markdown("**Ask your question:**")
+        with st.form("chat_input_form", clear_on_submit=True):
+            cols = st.columns([4, 1])
+            with cols[0]:
+                st.session_state.pending_input = st.text_input(
+                    " ", placeholder="Type your question here...", label_visibility="collapsed"
+                )
+            with cols[1]:
+                send = st.form_submit_button("Send")
+
+        if send and st.session_state.pending_input.strip():
+            st.session_state.trigger_send = True
+            st.rerun()
+
 
         # --- Input box below ---
 
