@@ -3,7 +3,6 @@ from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from openai import OpenAI
-import dummy
 
 st.set_page_config(layout="wide")
 
