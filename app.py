@@ -62,6 +62,7 @@ if not st.session_state.get("logged_in", False):
                 phase_type = row["type"]  # 'static', 'interactive', or 'finetuned'
                 if phase_type == "static": 
                     raw_terms = row['terms']
+                    print("RAW TERMS:", repr(raw_terms))
                     term_list = ast.literal_eval(raw_terms)
                     structured_terms = [
                         {
