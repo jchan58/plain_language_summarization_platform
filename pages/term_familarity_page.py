@@ -62,7 +62,7 @@ def run_terms(prolific_id: str):
                 "question_count"
             ]:
                 st.session_state.pop(key, None)
-        st.switch_page("app.py")
+            st.switch_page("app.py")
 
     st.title("Term Familiarity")
     abstracts = get_user_static_abstracts(prolific_id)
