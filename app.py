@@ -46,7 +46,6 @@ if not st.session_state.get("logged_in", False):
             st.error("Sorry, your Mturk ID is not approved for this study.")
             st.stop()
 
-        # --- Fetch or create user record ---
         user = users_collection.find_one({"prolific_id": prolific_id})
         if not user:
             user_rows = user_df[user_df["user_id"] == int(prolific_id)]
@@ -60,6 +59,18 @@ if not st.session_state.get("logged_in", False):
             # loop over each row assigned to this user
             for _, row in user_rows.iterrows():
                 phase_type = row["type"]  # 'static', 'interactive', or 'finetuned'
+                if phase_type == "static": 
+                    term_list = row['terms']
+                    structured_terms = [
+                        {
+                            "term": t, 
+                            "familiar": None, 
+                            "extra_information": None
+                        }
+                        for t in term_list
+                    ] 
+                else: 
+                    structured_terms = []
                 abstract_key = str(row["abstract_id"])
                 phases[phase_type]["abstracts"][abstract_key] = {
                     "abstract_title": row["abstract_title"],
@@ -69,6 +80,7 @@ if not st.session_state.get("logged_in", False):
                         "methods": "", 
                         "results": ""
                     }, 
+                    "term_familarity": structured_terms, 
                     "completed": False
                 }
 
