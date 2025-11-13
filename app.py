@@ -4,6 +4,7 @@ import datetime
 import pandas as pd
 from openai import OpenAI
 from pages.chatbot import run_chatbot
+import ast
 
 st.markdown(
     """
@@ -60,7 +61,8 @@ if not st.session_state.get("logged_in", False):
             for _, row in user_rows.iterrows():
                 phase_type = row["type"]  # 'static', 'interactive', or 'finetuned'
                 if phase_type == "static": 
-                    term_list = row['terms']
+                    raw_terms = row['terms']
+                    term_list = ast.literal_eval(raw_terms)
                     structured_terms = [
                         {
                             "term": t, 
@@ -90,7 +92,7 @@ if not st.session_state.get("logged_in", False):
                 "accepted_terms": True,
                 "phases": phases
             })
-            user = users_collection.find_one({"prolific_id": prolific_id})  # reload fresh doc ✅
+            user = users_collection.find_one({"prolific_id": prolific_id}) 
 
         # restore progress index if available
         start_index = (
