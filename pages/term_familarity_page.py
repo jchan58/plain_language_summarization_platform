@@ -55,12 +55,6 @@ def run_terms(prolific_id: str):
             st.markdown(f"**MTurk ID:** `{st.session_state.prolific_id}`")
 
         if st.button("Logout"):
-            for key in [
-                "last_completed_abstract", "feedback", "survey_context",
-                "progress_info", "messages", "show_summary",
-                "generated_summary", "question_count"
-            ]:
-                st.session_state.pop(key, None)
             st.switch_page("app.py")
 
     st.title("Term Familiarity")
