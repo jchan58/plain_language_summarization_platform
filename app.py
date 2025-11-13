@@ -61,19 +61,20 @@ if not st.session_state.get("logged_in", False):
             for _, row in user_rows.iterrows():
                 phase_type = row["type"]  # 'static', 'interactive', or 'finetuned'
                 if phase_type == "static": 
-                    raw_terms = row['terms']
-                    print("RAW TERMS:", repr(raw_terms))
-                    term_list = ast.literal_eval(raw_terms)
+                    raw_terms = str(row["terms"]).strip()
+                    raw_terms = raw_terms.strip("[]")
+                    term_list = [t.strip() for t in raw_terms.split(",") if t.strip()]
                     structured_terms = [
                         {
-                            "term": t, 
-                            "familiar": None, 
+                            "term": t,
+                            "familiar": None,
                             "extra_information": None
                         }
                         for t in term_list
-                    ] 
-                else: 
+                    ]
+                else:
                     structured_terms = []
+
                 abstract_key = str(row["abstract_id"])
                 phases[phase_type]["abstracts"][abstract_key] = {
                     "abstract_title": row["abstract_title"],
