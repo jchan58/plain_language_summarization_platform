@@ -141,7 +141,6 @@ def run_feedback():
                 "prolific_id": prolific_id,
                 "abstract_id": abstract_id
             }
-
             st.switch_page("pages/likert.py")
 
 run_feedback()

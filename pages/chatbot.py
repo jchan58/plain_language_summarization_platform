@@ -37,11 +37,6 @@ def load_example_users():
 example_user_df = load_example_users()
 
 
-def render_message(content, role):
-    formatted = markdown.markdown(content, extensions=["fenced_code", "tables"])
-    safe_html = html.escape(formatted)
-    return safe_html
-
 def get_user_interactive_abstracts(prolific_id: str):
     user = users_collection.find_one(
         {"prolific_id": prolific_id},

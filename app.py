@@ -4,6 +4,7 @@ import datetime
 import pandas as pd
 from openai import OpenAI
 from pages.chatbot import run_chatbot
+from pages.term_familarity_page import run_terms
 import ast
 
 st.markdown(
@@ -84,7 +85,8 @@ if not st.session_state.get("logged_in", False):
                         "methods": "", 
                         "results": ""
                     }, 
-                    "term_familarity": structured_terms, 
+                    "term_familarity": structured_terms,
+                    "human_written_pls": row['human_written'],
                     "completed": False
                 }
 
@@ -111,4 +113,4 @@ if not st.session_state.get("logged_in", False):
 
 else:
     # no header here
-    run_chatbot(st.session_state.prolific_id)
+    run_terms(st.session_state.prolific_id)
