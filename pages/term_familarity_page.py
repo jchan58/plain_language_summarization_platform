@@ -55,7 +55,14 @@ def run_terms(prolific_id: str):
             st.markdown(f"**MTurk ID:** `{st.session_state.prolific_id}`")
 
         if st.button("Logout"):
-            st.switch_page("app.py")
+            for key in [
+                "static_index", "current_abstract_id", "human_written_pls",
+                "prolific_id", "messages", "feedback", "survey_context",
+                "progress_info", "show_summary", "generated_summary",
+                "question_count"
+            ]:
+                st.session_state.pop(key, None)
+        st.switch_page("app.py")
 
     st.title("Term Familiarity")
     abstracts = get_user_static_abstracts(prolific_id)
