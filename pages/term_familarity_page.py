@@ -81,7 +81,7 @@ def run_terms(prolific_id: str):
         extra_info = None
         if familiar == "No":
             extra_info = st.selectbox(
-                f"What extra info do you need for '{term}'?",
+                f"What extra information do you need for '{term}'?",
                 ["Definition", "Example", "Background"],
                 key=f"extra_{abstract_id}_{idx}"
             )
