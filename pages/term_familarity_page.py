@@ -51,9 +51,8 @@ def get_user_static_abstracts(prolific_id: str):
 
 def run_terms(prolific_id: str): 
     with st.sidebar:
-        if "last_completed_abstract" in st.session_state:
-            user_info = st.session_state.last_completed_abstract
-            st.markdown(f"**MTurk ID:** `{user_info['prolific_id']}`")
+        if "prolific_id" in st.session_state:
+            st.markdown(f"**MTurk ID:** `{st.session_state.prolific_id}`")
 
         if st.button("Logout"):
             for key in [
@@ -63,7 +62,7 @@ def run_terms(prolific_id: str):
             ]:
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
-            
+
     st.title("Term Familiarity")
     abstracts = get_user_static_abstracts(prolific_id)
 
