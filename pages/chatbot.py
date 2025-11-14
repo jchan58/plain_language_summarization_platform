@@ -115,16 +115,19 @@ def run_chatbot(prolific_id: str):
     with col1:
         st.markdown(f"### 📘 {abstract['abstract_title']}")
         st.markdown(
-            f"""
-            <div style='background-color:#f2f3f5;
-                        padding:1rem;
-                        border-radius:0.5rem;
-                        line-height:1.6;
-                        border:1px solid #dcdcdc;'>
-                {abstract['abstract']}
-            </div>
-            """,
-            unsafe_allow_html=True,
+        f"""
+        <div style='background-color:#f2f3f5;
+                    padding:1rem;
+                    border-radius:0.5rem;
+                    line-height:1.6;
+                    border:1px solid #dcdcdc;
+                    max-height: 450px;
+                    overflow-y: auto;
+                    white-space: pre-wrap;'>
+            {abstract['abstract']}
+        </div>
+        """,
+        unsafe_allow_html=True,
         )
 
     with col2:
@@ -207,7 +210,7 @@ def run_chatbot(prolific_id: str):
                 st.rerun()
 
         if st.session_state.show_summary and not st.session_state.get("generating_summary", False):
-            st.markdown("### 🧾 Summary of Scientific Abstract")
+            st.markdown("### 🧾 SUMMARY")
             st.markdown(
                 f"<div style='background-color:#f5f7fa;padding:1rem;border-radius:0.5rem;'>"
                 f"{st.session_state.generated_summary}</div>",
