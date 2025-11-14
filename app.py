@@ -112,4 +112,4 @@ if not st.session_state.get("logged_in", False):
         st.rerun()
 
 else:
-    run_chatbot(st.session_state.prolific_id)
+    run_terms(st.session_state.prolific_id)
