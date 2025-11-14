@@ -104,11 +104,11 @@ def run_chatbot(prolific_id: str):
     st.markdown(
         """
         ### 📝 Instructions
-        1. Read the scientific abstract on the **left side**.  
+        1. Read the scientific abstract on the **left side of the screen**.  
         2. Use the **question box** on the right to ask questions.  
         3. You must ask at least 3 questions.  
         4. When finished, click **“I'm done asking questions.”**  
-        5. A plain-language summary will appear on the left. Please read this summary carefully. You’ll answer questions about it on the next page.
+        5. A plain-language summary will appear on the right side of the screen where the chatbot was. Please read this summary carefully. You’ll answer questions about it on the next page.
         6. Click **Next** to move to the next page after you feel that you are ready.  
         """
     )
@@ -162,21 +162,27 @@ def run_chatbot(prolific_id: str):
                             st.markdown(full_response)
 
             # "I'm done asking" button
-            if st.session_state.question_count >= 3:
-                st.markdown("<br>", unsafe_allow_html=True)
-                if st.button("✅ I'm done asking questions"):
-                    conversation_log = [
-                        {"role": m["role"], "content": m["content"], "timestamp": datetime.utcnow()}
-                        for m in st.session_state.messages
-                    ]
-                    users_collection.update_one(
-                        {"prolific_id": prolific_id},
-                        {"$set": {
-                            f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
-                        }},
-                    )
-                    st.session_state.generating_summary = True
-                    st.rerun()
+            done_disabled = st.session_state.question_count < 3
+            st.markdown("<br>", unsafe_allow_html=True)
+            done_clicked = st.button(
+                "✅ I'm done asking questions",
+                disabled=done_disabled,
+                help="You must ask at least 3 questions before continuing."
+            )
+
+            if done_clicked and not done_disabled:
+                conversation_log = [
+                    {"role": m["role"], "content": m["content"], "timestamp": datetime.utcnow()}
+                    for m in st.session_state.messages
+                ]
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {
+                        f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
+                    }},
+                )
+                st.session_state.generating_summary = True
+                st.rerun()
 
         elif st.session_state.get("generating_summary", False):
             with st.spinner("✨ Generating the summary, please wait..."):
