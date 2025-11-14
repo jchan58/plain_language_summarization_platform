@@ -121,7 +121,7 @@ def run_chatbot(prolific_id: str):
                     border-radius:0.5rem;
                     line-height:1.6;
                     border:1px solid #dcdcdc;
-                    max-height: 450px;
+                    max-height: 550px;
                     overflow-y: auto;
                     white-space: pre-wrap;'>
             {abstract['abstract']}
