@@ -4,8 +4,6 @@ from datetime import datetime
 import pandas as pd
 from openai import OpenAI
 import streamlit.components.v1 as components
-import markdown
-import html
 
 st.markdown(
     """
