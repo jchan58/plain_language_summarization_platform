@@ -178,8 +178,8 @@ def run_terms(prolific_id: str):
         )
 
         extra_info = st.multiselect(
-            f"What additional information do you need for '{term}'?",
-            ["Definition", "Example", "Background", "No additonal information needed"],
+            f"What additional information do you need for '{term}' (optional)?",
+            ["Definition", "Example", "Background"],
             key=f"extra_{abstract_id}_{idx}"
         )
 
