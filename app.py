@@ -35,7 +35,7 @@ user_df = pd.read_csv("example_user.csv")
 if not st.session_state.get("logged_in", False):
     st.title("Making Research Articles Easier to Read – Pilot Study")
     st.markdown("""
-    By entering your Mturk ID you agree to our [Terms and Conditions](https://docs.google.com/document/d/1wfvGWg69Vg3xroLDxpJXwe1_KWY72w0Z4ut59hA5iTM/edit?usp=sharing).
+    By entering your Mturk ID you agree to our [Terms and Conditions](https://docs.google.com/document/d/1HBwhqiquyXuu47wyncbAKvA4y8TbcXaK7n-Jv8t0FPs/edit?usp=sharing).
     """, unsafe_allow_html=True)
 
     prolific_id = st.text_input("Please enter your Mturk ID to begin annotating").strip()
