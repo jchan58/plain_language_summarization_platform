@@ -236,6 +236,7 @@ def run_chatbot(prolific_id: str):
 
                 conversation_log = doc["phases"]["interactive"]["abstracts"][abstract_id].get("conversation_log", [])
                 conversation_text = "\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in conversation_log])
+                print(conversation_text)
                 system_prompt = (
                     "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
                     f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
