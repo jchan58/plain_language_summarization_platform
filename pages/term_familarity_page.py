@@ -143,12 +143,11 @@ def run_terms(prolific_id: str):
     # current abstraction 
     abs_item = abstracts[st.session_state.static_index]
     abstract_id = abs_item['abstract_id']
-
-    st.subheader(abs_item["abstract_title"])
     current_num = st.session_state.static_index + 1
     total_num = len(abstracts)
     st.progress(current_num / total_num)
     st.markdown(f"**Progress:** {current_num} / {total_num} abstracts")
+    st.subheader(abs_item["abstract_title"])
     raw_abstract = abs_item["abstract"]
     highlighted_abstract = highlight_terms_in_abstract(raw_abstract, abs_item["terms"])
     formatted_abstract = highlighted_abstract.replace("\n", "  \n")
