@@ -120,15 +120,20 @@ def run_terms(prolific_id: str):
     st.markdown(
         f"""
         <div style="
-            background-color:#f8f9fa;
-            padding: 1.1rem 1.3rem;
+            background-color: #f8f9fa;
+            padding: 0.8rem 1rem;        
             border-radius: 0.6rem;
             border: 1px solid #dfe1e5;
             max-height: 550px;
             overflow-y: auto;
-            white-space: pre-wrap;
+            white-space: normal;
         ">
-            <div style="font-size: 1rem; line-height: 1.55;">
+            <div style="
+                font-size: 1.08rem;
+                line-height: 1.55;
+                margin: 0 !important;     
+                padding: 0 !important;     
+            ">
                 {formatted_abstract}
             </div>
         </div>
