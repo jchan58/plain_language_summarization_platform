@@ -246,12 +246,17 @@ def run_chatbot(prolific_id: str):
                     for msg in conversation_log
                 )
                 system_prompt = (
-                    "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
-                    f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
-                    "Use this conversation to identify what concepts, terms, or results the reader found confusing, interesting, or important. "
-                    "Then rewrite the original abstract into a clear, accurate, plain-language summary."
+                    "You are an expert science communicator working with a reader who asked questions "
+                    "about a scientific abstract.\n\n"
+                    f"Here is the conversation between the reader and the AI assistant:\n{conversation_text}\n\n"
+                    "From this conversation, identify exactly which concepts, terms, definitions, examples, "
+                    "or background explanations the reader asked for or appeared confused about. "
+                    "You MUST address these items directly in the rewritten summary.\n\n"
+                    "Rewrite the original abstract into a clear, accurate, plain-language summary that:\n"
+                    "1. Includes the additional explanations, definitions, or background information requested by the user.\n"
+                    "2. Directly answers any user questions that reveal confusion or curiosity.\n"
+                    "3. Maintains scientific accuracy while improving clarity.\n"
                 )
-
                 response = client_openai.chat.completions.create(
                     model="gpt-4o",
                     messages=[
@@ -272,14 +277,14 @@ def run_chatbot(prolific_id: str):
                 f"""
                 <div style="
                     background-color:#f0f7ff;
-                    padding:1rem;
+                    padding: 0.6rem 0.8rem;
                     border-radius:0.5rem;
                     border: 1px solid #c9dfff;
                     max-height: 550px;
                     overflow-y: auto;
                     white-space: pre-wrap;
-                    line-height: 1.55;
-                    font-size: 1.05rem;
+                    line-height: 1.35;
+                    font-size: 1rem;
                 ">
                     {st.session_state.generated_summary}
                 </div>
