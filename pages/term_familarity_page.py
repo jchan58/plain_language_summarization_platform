@@ -140,13 +140,33 @@ def run_terms(prolific_id: str):
     if st.session_state.static_index >= len(abstracts):
         st.session_state.static_index = 0
 
-    # current abstraction 
+    # current abstract
     abs_item = abstracts[st.session_state.static_index]
     abstract_id = abs_item['abstract_id']
     current_num = st.session_state.static_index + 1
     total_num = len(abstracts)
     st.progress(current_num / total_num)
     st.markdown(f"**Progress:** {current_num} / {total_num} abstracts")
+
+    # add in the instructions 
+    st.markdown(
+    """
+    ### 📝 Instructions
+
+    In this task, you will read a scientific abstract and review **10 highlighted terms** that have been extracted from the text.  
+    For each term, you will:
+
+    1. Indicate **how familiar** you are with the term using the provided scale.  
+    2. (Optional) Select what type of **additional information** you would want to better understand the term:  
+        - definition  
+        - example  
+        - background information  
+
+    Once you have completed all **10 terms**, click **Next** to continue.
+    On the next page, you will read a **SUMMARY** of the abstract and answer **3 questions** based on it.
+    ---
+    """
+    )
     st.subheader(abs_item["abstract_title"])
     raw_abstract = abs_item["abstract"]
     highlighted_abstract = highlight_terms_in_abstract(raw_abstract, abs_item["terms"])
