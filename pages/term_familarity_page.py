@@ -1,6 +1,6 @@
 import streamlit as st
 from pymongo import MongoClient
-import datetime
+import re 
 
 st.markdown(
     """
@@ -19,6 +19,21 @@ def get_mongo_client():
 db = get_mongo_client()["pls"]
 users_collection = db["users"]
 abstracts_collection = db["abstracts"]
+
+# highlight the terms in the abstract
+def highlight_terms_in_abstract(abstract: str, terms: list):
+    highlighted = abstract
+    for term_item in terms:
+        term = term_item["term"]
+        # Escape regex chars
+        pattern = re.escape(term)
+        highlighted = re.sub(
+            fr"\b({pattern})\b",
+            r'<span style="background-color: #fffa8b; padding: 2px 4px; border-radius: 4px;">\1</span>',
+            highlighted,
+            flags=re.IGNORECASE
+        )
+    return highlighted
 
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
 def static_instructions(prolific_id):
@@ -116,7 +131,9 @@ def run_terms(prolific_id: str):
     abstract_id = abs_item['abstract_id']
 
     st.subheader(abs_item["abstract_title"])
-    formatted_abstract = abs_item["abstract"].replace("\n", "  \n")
+    raw_abstract = abs_item["abstract"]
+    highlighted_abstract = highlight_terms_in_abstract(raw_abstract, abs_item["terms"])
+    formatted_abstract = highlighted_abstract.replace("\n", "  \n")
     st.markdown(
         f"""
         <div style="
@@ -143,28 +160,29 @@ def run_terms(prolific_id: str):
 
     st.markdown("### Key Terms")
     updated_terms = []
+
     for idx, term_item in enumerate(abs_item['terms']):
         term = term_item["term"]
         st.write(f"**{term}**")
-
-        familiar = st.radio(
-            f"Are you familiar with '{term}'?",
-            ["Yes", "No"],
+        familiarity = st.slider(
+            f"How familiar are you with '{term}'?",
+            min_value=1,
+            max_value=5,
+            value=1,
+            format="%d",
             key=f"fam_{abstract_id}_{idx}"
         )
 
-        extra_info = None
-        if familiar == "No":
-            extra_info = st.selectbox(
-                f"What extra information do you need for '{term}'?",
-                ["Definition", "Example", "Background"],
-                key=f"extra_{abstract_id}_{idx}"
-            )
+        extra_info = st.multiselect(
+            f"What additional information do you need for '{term}'?",
+            ["Definition", "Example", "Background", "No additonal information needed"],
+            key=f"extra_{abstract_id}_{idx}"
+        )
 
         updated_terms.append({
             "term": term,
-            "familiar": (familiar == "Yes"),
-            "extra_information": extra_info
+            "familiarity_score": familiarity,      
+            "extra_information": extra_info if extra_info else []
         })
 
     st.markdown("---")

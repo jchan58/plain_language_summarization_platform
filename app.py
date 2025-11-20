@@ -124,7 +124,7 @@ else:
     with st.sidebar:
         st.markdown("### Navigation")
         choice = st.radio(
-            "Select a page:",
+            "Pages:",
             ["Chatbot", "Term Familiarity"],
             index=0 if st.session_state.current_page == "chatbot" else 1
         )
