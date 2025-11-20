@@ -276,20 +276,20 @@ def run_chatbot(prolific_id: str):
             st.markdown("### 🧾 SUMMARY")
 
             summary_html = f"""
-            <div style="
-                background-color:#f0f7ff;
-                padding: 0.6rem 0.8rem;
-                border-radius:0.5rem;
-                border: 1px solid #c9dfff;
-                max-height: 550px;
-                overflow-y: auto;
-                white-space: pre-wrap;
-                line-height: 1.35;
-                font-size: 1rem;
-            ">
-            {st.session_state.generated_summary}
-            </div>
-            """
+        <div style="
+            background-color:#f0f7ff;
+            padding: 0.6rem 0.8rem;
+            border-radius:0.5rem;
+            border: 1px solid #c9dfff;
+            max-height: 550px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.35;
+            font-size: 1rem;
+        ">
+        {st.session_state.generated_summary}
+        </div>
+        """
             st.markdown(summary_html, unsafe_allow_html=True)
             st.markdown(
                 """
