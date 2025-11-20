@@ -231,11 +231,22 @@ def run_chatbot(prolific_id: str):
             with st.spinner("✨ Generating the SUMMARY, please wait..."):
                 doc = users_collection.find_one(
                     {"prolific_id": prolific_id},
-                    {f"phases.interactive.abstracts.{abstract_id}.conversation_log": 1}
+                    {"phases.interactive.abstracts": 1}
                 )
 
-                conversation_log = doc["phases"]["interactive"]["abstracts"][abstract_id].get("conversation_log", [])
-                conversation_text = "\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in conversation_log])
+                abstract_key = str(abstract_id)
+                conversation_log = (
+                    doc["phases"]["interactive"]["abstracts"]
+                    .get(abstract_key, {})
+                    .get("conversation_log", [])
+                )
+
+                conversation_text = "\n".join(
+                    f"{msg['role'].capitalize()}: {msg['content']}"
+                    for msg in conversation_log
+                )
+
+                print("Conversation used in summary:")
                 print(conversation_text)
                 system_prompt = (
                     "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
