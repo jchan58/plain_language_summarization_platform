@@ -26,9 +26,7 @@ def static_instructions(prolific_id):
     ### Before you begin
 
     For this task, you will identify your **familiarity level** for each term and indicate whether you need additional information (background, example, and/or definition).
-
-    For this batch, **10 terms** have been extracted from the abstract.
-
+    For this batch, **10 terms** have been extracted from the abstract, and they are highlighted within the text.
     Please follow these steps:
 
     - For each term, indicate **how familiar** you are with it using the provided scale.
@@ -118,7 +116,25 @@ def run_terms(prolific_id: str):
     abstract_id = abs_item['abstract_id']
 
     st.subheader(abs_item["abstract_title"])
-    st.write(abs_item["abstract"])
+    formatted_abstract = abs_item["abstract"].replace("\n", "  \n")
+    st.markdown(
+        f"""
+        <div style="
+            background-color:#f8f9fa;
+            padding: 1.1rem 1.3rem;
+            border-radius: 0.6rem;
+            border: 1px solid #dfe1e5;
+            max-height: 550px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        ">
+            <div style="font-size: 1rem; line-height: 1.55;">
+                {formatted_abstract}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     st.markdown("### Key Terms")
     updated_terms = []

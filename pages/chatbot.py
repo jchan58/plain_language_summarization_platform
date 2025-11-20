@@ -153,7 +153,7 @@ def run_chatbot(prolific_id: str):
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.markdown(f"### 📘 {abstract['abstract_title']}")
-        formatted_abstract = abstract["abstract"].replace("\n", "  \n")  # Markdown line breaks
+        formatted_abstract = abstract["abstract"].replace("\n", "  \n")
         st.markdown(
             f"""
             <div style="
