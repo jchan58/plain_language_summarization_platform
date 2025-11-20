@@ -57,47 +57,45 @@ def get_conversation():
         [f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.messages]
     )
 def show_instruction_modal():
-    st.markdown("""
+    st.markdown(
+        """
         <style>
-            /* DIMMED OVERLAY */
-            .modal-overlay {
-                position: fixed;
-                top: 0; left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.55);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 999999;
-            }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+        }
 
-            /* WHITE CONTENT BOX */
-            .modal-box {
-                background: white;
-                padding: 2rem 2.2rem;
-                width: 650px;
-                max-width: 90%;
-                border-radius: 12px;
-                box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
-                line-height: 1.55;
-                font-size: 1.05rem;
-            }
+        .modal-box {
+            background: white;
+            padding: 2rem 2.2rem;
+            width: 650px;
+            max-width: 90%;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+            line-height: 1.55;
+            font-size: 1.05rem;
+        }
 
-            .modal-title {
-                font-size: 1.4rem;
-                font-weight: 700;
-                margin-bottom: 1.1rem;
-            }
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.1rem;
+        }
 
-            .modal-box ul {
-                padding-left: 1.3rem;
-            }
+        .modal-box ul {
+            padding-left: 1.3rem;
+        }
 
-            .modal-box li {
-                margin-bottom: 0.5rem;
-            }
-
+        .modal-box li {
+            margin-bottom: 0.5rem;
+        }
         </style>
 
         <div class="modal-overlay">
@@ -108,27 +106,26 @@ def show_instruction_modal():
                     <li>Read the scientific abstract on the <strong>left side of the screen</strong>.</li>
                     <li>Use the <strong>chatbot</strong> on the right to ask questions.</li>
                     <li>You must ask <strong>at least 3 questions</strong>.</li>
-                    <li>When finished asking questions, click <strong>“I'm done asking questions.”</strong></li>
+                    <li>When finished asking questions, click <strong>“I'm done asking questions.”</strong>.</li>
                     <li>
-                        A <strong>SUMMARY</strong> will appear on the right side of the screen where the chatbot was. 
-                        Please read this SUMMARY carefully. You’ll answer questions about it on the next page.
+                        A <strong>SUMMARY</strong> will appear where the chatbot was. 
+                        Please read this summary carefully — you’ll answer questions about it next.
                     </li>
-                    <li>
-                        Click <strong>Next</strong> to move to the next page after you feel 
-                        that you are ready to answer the questions.
-                    </li>
+                    <li>Click <strong>Next</strong> once you're ready to proceed.</li>
                 </ul>
 
-                <br>
                 <p style="margin-top: 1rem;"><em>Click the button below to begin.</em></p>
             </div>
         </div>
-    """, unsafe_allow_html=True)
+                """,
+        unsafe_allow_html=True,
+    )
 
-    # continue button
+    # Continue button UNDER the modal
     if st.button("Continue"):
-        st.session_state.seen_instructions = True
+        st.session_state.seen_interactive_instructions = True
         st.rerun()
+
 def run_chatbot(prolific_id: str):
     if "seen_interactive_instructions" not in st.session_state: 
         st.session_state.seen_interactive_instructions = False
