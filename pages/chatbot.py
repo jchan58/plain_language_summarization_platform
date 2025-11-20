@@ -132,7 +132,7 @@ def show_instruction_modal():
 def run_chatbot(prolific_id: str):
     if "seen_interactive_instructions" not in st.session_state: 
         st.session_state.seen_interactive_instructions = False
-    if not st.session_state.seen_instructions: 
+    if not st.session_state.seen_interactive_instructions: 
         show_instruction_modal() 
         return
     st.title("💬 Chat with a chatbot about the scientific abstract")
