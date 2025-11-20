@@ -84,9 +84,17 @@ def interactive_instructions(prolific_id):
         st.rerun()
 
 def run_chatbot(prolific_id: str):
-    if "seen_interactive_instructions" not in st.session_state: 
-        st.session_state.seen_interactive_instructions = False
-    if not st.session_state.seen_interactive_instructions: 
+    # check if user has seen the instruction for interactive already
+    user = users_collection.find_one({"prolific_id": prolific_id})
+    db_seen = (
+        user.get("phases", {})
+            .get("interactive", {})
+            .get("seen_instructions", False)
+    )
+
+    if "seen_interactive_instructions" not in st.session_state:
+        st.session_state.seen_interactive_instructions = db_seen
+    if not st.session_state.seen_interactive_instructions:
         interactive_instructions(prolific_id)
         return
     st.title("💬 Chat with a chatbot about the scientific abstract")
