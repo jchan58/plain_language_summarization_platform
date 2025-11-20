@@ -245,9 +245,6 @@ def run_chatbot(prolific_id: str):
                     f"{msg['role'].capitalize()}: {msg['content']}"
                     for msg in conversation_log
                 )
-
-                st.write("DEBUG — conversation text:")
-                st.write(conversation_text)
                 system_prompt = (
                     "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
                     f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
@@ -272,9 +269,22 @@ def run_chatbot(prolific_id: str):
         if st.session_state.show_summary and not st.session_state.get("generating_summary", False):
             st.markdown("### 🧾 SUMMARY")
             st.markdown(
-                f"<div style='background-color:#f0f7ff;padding:1rem;border-radius:0.5rem;'>"
-                f"{st.session_state.generated_summary}</div>",
-                unsafe_allow_html=True,
+                f"""
+                <div style="
+                    background-color:#f0f7ff;
+                    padding:1rem;
+                    border-radius:0.5rem;
+                    border: 1px solid #c9dfff;
+                    max-height: 550px;
+                    overflow-y: auto;
+                    white-space: pre-wrap;
+                    line-height: 1.55;
+                    font-size: 1.05rem;
+                ">
+                    {st.session_state.generated_summary}
+                </div>
+                """,
+                unsafe_allow_html=True
             )
             st.markdown(
                 """
