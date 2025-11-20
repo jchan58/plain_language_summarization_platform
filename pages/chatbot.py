@@ -56,8 +56,85 @@ def get_conversation():
     return "\n".join(
         [f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.messages]
     )
+def show_instruction_modal():
+    st.markdown("""
+        <style>
+            /* DIMMED OVERLAY */
+            .modal-overlay {
+                position: fixed;
+                top: 0; left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.55);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 999999;
+            }
 
+            /* WHITE CONTENT BOX */
+            .modal-box {
+                background: white;
+                padding: 2rem 2.2rem;
+                width: 650px;
+                max-width: 90%;
+                border-radius: 12px;
+                box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+                line-height: 1.55;
+                font-size: 1.05rem;
+            }
+
+            .modal-title {
+                font-size: 1.4rem;
+                font-weight: 700;
+                margin-bottom: 1.1rem;
+            }
+
+            .modal-box ul {
+                padding-left: 1.3rem;
+            }
+
+            .modal-box li {
+                margin-bottom: 0.5rem;
+            }
+
+        </style>
+
+        <div class="modal-overlay">
+            <div class="modal-box">
+                <div class="modal-title">📝 Instructions</div>
+
+                <ul>
+                    <li>Read the scientific abstract on the <strong>left side of the screen</strong>.</li>
+                    <li>Use the <strong>chatbot</strong> on the right to ask questions.</li>
+                    <li>You must ask <strong>at least 3 questions</strong>.</li>
+                    <li>When finished asking questions, click <strong>“I'm done asking questions.”</strong></li>
+                    <li>
+                        A <strong>SUMMARY</strong> will appear on the right side of the screen where the chatbot was. 
+                        Please read this SUMMARY carefully. You’ll answer questions about it on the next page.
+                    </li>
+                    <li>
+                        Click <strong>Next</strong> to move to the next page after you feel 
+                        that you are ready to answer the questions.
+                    </li>
+                </ul>
+
+                <br>
+                <p style="margin-top: 1rem;"><em>Click the button below to begin.</em></p>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # continue button
+    if st.button("Continue"):
+        st.session_state.seen_instructions = True
+        st.rerun()
 def run_chatbot(prolific_id: str):
+    if "seen_interactive_instructions" not in st.session_state: 
+        st.session_state.seen_interactive_instructions = False
+    if not st.session_state.seen_instructions: 
+        show_instruction_modal() 
+        return
     st.title("💬 Chat with a chatbot about the scientific abstract")
     with st.sidebar:
         st.write(f"**MTurk ID:** `{prolific_id}`")
@@ -103,11 +180,11 @@ def run_chatbot(prolific_id: str):
         """
         ### 📝 Instructions
         1. Read the scientific abstract on the **left side of the screen**.  
-        2. Use the **question box** on the right to ask questions.  
+        2. Use the **chatbot** on the right to ask questions.  
         3. You must ask at least 3 questions.  
-        4. When finished, click **“I'm done asking questions.”**  
-        5. A plain-language summary will appear on the right side of the screen where the chatbot was. Please read this summary carefully. You’ll answer questions about it on the next page.
-        6. Click **Next** to move to the next page after you feel that you are ready.  
+        4. When finished asking questions, click **“I'm done asking questions.”**  
+        5. A SUMMARY will appear on the right side of the screen where the chatbot was. Please read this SUMMARY carefully. You’ll answer questions about it on the next page.
+        6. Click **Next** to move to the next page after you feel that you are ready to answer the questions. 
         """
     )
 

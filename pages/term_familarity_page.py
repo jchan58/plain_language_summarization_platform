@@ -22,7 +22,6 @@ users_collection = db["users"]
 abstracts_collection = db["abstracts"]
 
 # go through the abstracts in the static portion 
-
 def get_user_static_abstracts(prolific_id: str):
     user = users_collection.find_one(
         {"prolific_id": prolific_id},
