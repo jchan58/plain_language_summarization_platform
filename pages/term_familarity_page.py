@@ -2,6 +2,19 @@ import streamlit as st
 from pymongo import MongoClient
 import re 
 
+TERM_COLORS = [
+    "#fffa8b",  # yellow
+    "#b3e5fc",  # light blue
+    "#c8e6c9",  # light green
+    "#ffe0b2",  # light orange
+    "#f8bbd0",  # light pink
+    "#d1c4e9",  # lavender
+    "#f0f4c3",  # pale lime
+    "#ffccbc",  # peach
+    "#dcedc8",  # mint
+    "#e1bee7"   # purple-pink
+]
+
 st.markdown(
     """
     <style>
@@ -23,13 +36,14 @@ abstracts_collection = db["abstracts"]
 # highlight the terms in the abstract
 def highlight_terms_in_abstract(abstract: str, terms: list):
     highlighted = abstract
-    for term_item in terms:
+
+    for idx, term_item in enumerate(terms):
         term = term_item["term"]
-        # Escape regex chars
+        color = TERM_COLORS[idx % len(TERM_COLORS)] 
         pattern = re.escape(term)
         highlighted = re.sub(
             fr"\b({pattern})\b",
-            r'<span style="background-color: #fffa8b; padding: 2px 4px; border-radius: 4px;">\1</span>',
+            rf'<span style="background-color: {color}; padding: 2px 4px; border-radius: 4px;">\1</span>',
             highlighted,
             flags=re.IGNORECASE
         )
@@ -167,7 +181,16 @@ def run_terms(prolific_id: str):
 
     for idx, term_item in enumerate(abs_item['terms']):
         term = term_item["term"]
-        st.write(f"**{idx + 1}. {term}**")
+        color = TERM_COLORS[idx % len(TERM_COLORS)]
+        st.markdown(
+            f"""
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:14px;height:14px;background:{color};border-radius:3px;"></div>
+                <strong>{idx + 1}. {term}</strong>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
         familiarity = st.slider(
             f"How familiar are you with '{term}'?",
             min_value=1,
