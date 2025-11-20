@@ -131,7 +131,7 @@ def run_chatbot(prolific_id: str):
         1. Read the scientific abstract on the **left side of the screen**.  
         2. Use the **chatbot** on the right to ask questions.  
         3. You must ask at least 3 questions.  
-        4. When finished asking questions, click **“I'm done asking questions.”**  
+        4. When finished asking questions, click **“I'm done asking questions.”** 
         5. A SUMMARY will appear on the right side of the screen where the chatbot was. Please read this SUMMARY carefully. You’ll answer questions about it on the next page.
         6. Click **Next** to move to the next page after you feel that you are ready to answer the questions. 
         """
@@ -140,20 +140,23 @@ def run_chatbot(prolific_id: str):
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.markdown(f"### 📘 {abstract['abstract_title']}")
+        formatted_abstract = abstract["abstract"].replace("\n", "  \n")  # Markdown line breaks
         st.markdown(
-        f"""
-        <div style='background-color:#f2f3f5;
-                    padding:1rem;
-                    border-radius:0.5rem;
-                    line-height:1.6;
-                    border:1px solid #dcdcdc;
-                    max-height: 550px;
-                    overflow-y: auto;
-                    white-space: pre-wrap;'>
-            {abstract['abstract']}
-        </div>
-        """,
-        unsafe_allow_html=True,
+            f"""
+            <div style="
+                background-color:#f8f9fa;
+                padding: 1.1rem 1.3rem;
+                border-radius: 0.6rem;
+                border: 1px solid #dfe1e5;
+                max-height: 550px;
+                overflow-y: auto;
+            ">
+                <div style="font-size: 1rem; line-height: 1.55;">
+                    {formatted_abstract}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
     with col2:
