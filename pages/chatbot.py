@@ -246,16 +246,16 @@ def run_chatbot(prolific_id: str):
                     for msg in conversation_log
                 )
                 system_prompt = (
-                    "You are an expert science communicator working with a reader who asked questions "
-                    "about a scientific abstract.\n\n"
-                    f"Here is the conversation between the reader and the AI assistant:\n{conversation_text}\n\n"
-                    "From this conversation, identify exactly which concepts, terms, definitions, examples, "
-                    "or background explanations the reader asked for or appeared confused about. "
-                    "You MUST address these items directly in the rewritten summary.\n\n"
-                    "Rewrite the original abstract into a clear, accurate, plain-language summary that:\n"
-                    "1. Includes the additional explanations, definitions, or background information requested by the user.\n"
-                    "2. Directly answers any user questions that reveal confusion or curiosity.\n"
-                    "3. Maintains scientific accuracy while improving clarity.\n"
+                    "You are an expert science communicator. Your task is to rewrite the abstract into a "
+                    "plain-language summary that MUST incorporate the reader's questions.\n\n"
+                    f"Conversation:\n{conversation_text}\n\n"
+                    "REQUIREMENTS (do NOT skip any):\n"
+                    "- Extract every concept, term, or topic the user asked about.\n"
+                    "- For each one, add the necessary explanation (definition, example, or background) "
+                    "even if the original abstract does not include it.\n"
+                    "- Integrate these explanations naturally into the rewritten summary.\n"
+                    "- Preserve accuracy while improving clarity.\n"
+                    "Failure to include the user-requested information IS NOT ALLOWED.\n"
                 )
                 response = client_openai.chat.completions.create(
                     model="gpt-4o",
