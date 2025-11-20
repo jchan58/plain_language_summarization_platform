@@ -123,4 +123,4 @@ else:
         st.session_state.seen_finetuned_instructions = False
 
     # run the page
-    run_chatbot(st.session_state.prolific_id)
+    run_terms(st.session_state.prolific_id)

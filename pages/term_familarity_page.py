@@ -1,4 +1,3 @@
-
 import streamlit as st
 from pymongo import MongoClient
 import datetime
@@ -20,6 +19,36 @@ def get_mongo_client():
 db = get_mongo_client()["pls"]
 users_collection = db["users"]
 abstracts_collection = db["abstracts"]
+
+@st.dialog("📝 Instructions", width="medium", dismissible=False)
+def static_instructions(prolific_id):
+    st.markdown("""
+    ### Before you begin
+
+    For this task, you will identify your **familiarity level** for each term and indicate whether you need additional information (background, example, and/or definition).
+
+    For this batch, **10 terms** have been extracted from the abstract.
+
+    Please follow these steps:
+
+    - For each term, indicate **how familiar** you are with it using the provided scale.
+    - If you are **not familiar**, specify what additional information you would need:
+        - **definition**
+        - **example**
+        - **background information**
+    - After completing all 10 terms, click **Next**.
+    - On the next page, you will answer **3 questions** about the **SUMMARY** of the abstract you saw on this page.
+
+    ---
+    """)
+    if st.button("Start"):
+        st.session_state.seen_static_instructions = True
+        users_collection.update_one(
+            {"prolific_id": prolific_id},
+            {"$set": {"phases.static.seen_instructions": True}},
+            upsert=True
+        )
+        st.rerun()
 
 # go through the abstracts in the static portion 
 def get_user_static_abstracts(prolific_id: str):
@@ -63,6 +92,18 @@ def run_terms(prolific_id: str):
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
+    user = users_collection.find_one({"prolific_id": prolific_id})
+    db_seen = (
+        user.get("phases", {})
+            .get("static", {})
+            .get("seen_instructions", False)
+    )
+
+    if "seen_static_instructions" not in st.session_state:
+        st.session_state.seen_static_instructions = db_seen
+    if not st.session_state.seen_static_instructions:
+        static_instructions(prolific_id)
+        return
     st.title("Term Familiarity")
     abstracts = get_user_static_abstracts(prolific_id)
 
