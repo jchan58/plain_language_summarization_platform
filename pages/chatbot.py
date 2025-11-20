@@ -3,7 +3,6 @@ from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from openai import OpenAI
-import textwrap
 import streamlit.components.v1 as components
 
 st.markdown(

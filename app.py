@@ -112,15 +112,27 @@ if not st.session_state.get("logged_in", False):
         st.rerun()
 
 else:
-    # set the variables for seen instructions
     if "seen_static_instructions" not in st.session_state:
         st.session_state.seen_static_instructions = False
-
     if "seen_interactive_instructions" not in st.session_state:
         st.session_state.seen_interactive_instructions = False
-
     if "seen_finetuned_instructions" not in st.session_state:
         st.session_state.seen_finetuned_instructions = False
+    if "current_page" not in st.session_state:
+        st.session_state.current_page = "chatbot"
 
-    # run the page
-    run_chatbot(st.session_state.prolific_id)
+    with st.sidebar:
+        st.markdown("### Navigation")
+        choice = st.radio(
+            "Select a page:",
+            ["Chatbot", "Term Familiarity"],
+            index=0 if st.session_state.current_page == "chatbot" else 1
+        )
+        st.session_state.current_page = (
+            "chatbot" if choice == "Chatbot" else "terms"
+        )
+
+    if st.session_state.current_page == "terms":
+        run_terms(st.session_state.prolific_id)
+    else:
+        run_chatbot(st.session_state.prolific_id)
