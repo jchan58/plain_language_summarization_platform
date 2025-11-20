@@ -32,7 +32,7 @@ def static_instructions(prolific_id):
     Please follow these steps:
 
     - For each term, indicate **how familiar** you are with it using the provided scale.
-    - If you are **not familiar**, specify what additional information you would need:
+    - If you **want additional information**, specify what type of information you need for each term:
         - **definition**
         - **example**
         - **background information**
