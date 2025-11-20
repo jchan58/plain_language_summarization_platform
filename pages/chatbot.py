@@ -58,7 +58,7 @@ def get_conversation():
     )
 
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
-def interactive_instructions():
+def interactive_instructions(prolific_id):
     st.markdown("""
     ### Before you begin
 
@@ -76,13 +76,18 @@ def interactive_instructions():
 
     if st.button("Start"):
         st.session_state.seen_interactive_instructions = True
+        users_collection.update_one(
+            {"prolific_id": prolific_id},
+            {"$set": {"phases.interactive.seen_instructions": True}},
+            upsert=True
+        )
         st.rerun()
 
 def run_chatbot(prolific_id: str):
     if "seen_interactive_instructions" not in st.session_state: 
         st.session_state.seen_interactive_instructions = False
     if not st.session_state.seen_interactive_instructions: 
-        interactive_instructions()
+        interactive_instructions(prolific_id)
         return
     st.title("💬 Chat with a chatbot about the scientific abstract")
     with st.sidebar:
