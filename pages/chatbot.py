@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from datetime import datetime
 import pandas as pd
 from openai import OpenAI
+import textwrap
 import streamlit.components.v1 as components
 
 st.markdown(
@@ -273,24 +274,23 @@ def run_chatbot(prolific_id: str):
 
         if st.session_state.show_summary and not st.session_state.get("generating_summary", False):
             st.markdown("### 🧾 SUMMARY")
-            st.markdown(
-                f"""
-                <div style="
-                    background-color:#f0f7ff;
-                    padding: 0.6rem 0.8rem;
-                    border-radius:0.5rem;
-                    border: 1px solid #c9dfff;
-                    max-height: 550px;
-                    overflow-y: auto;
-                    white-space: pre-wrap;
-                    line-height: 1.35;
-                    font-size: 1rem;
-                ">
-                    {st.session_state.generated_summary}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+
+            summary_html = f"""
+            <div style="
+                background-color:#f0f7ff;
+                padding: 0.6rem 0.8rem;
+                border-radius:0.5rem;
+                border: 1px solid #c9dfff;
+                max-height: 550px;
+                overflow-y: auto;
+                white-space: pre-wrap;
+                line-height: 1.35;
+                font-size: 1rem;
+            ">
+            {st.session_state.generated_summary}
+            </div>
+            """
+            st.markdown(summary_html, unsafe_allow_html=True)
             st.markdown(
                 """
                 <style>
