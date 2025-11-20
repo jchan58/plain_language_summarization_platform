@@ -56,73 +56,25 @@ def get_conversation():
     return "\n".join(
         [f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.messages]
     )
-def show_instruction_modal():
-    st.markdown(
-        """
-        <style>
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.55);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999999;
-        }
 
-        .modal-box {
-            background: white;
-            padding: 2rem 2.2rem;
-            width: 650px;
-            max-width: 90%;
-            border-radius: 12px;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
-            line-height: 1.55;
-            font-size: 1.05rem;
-        }
+@st.dialog("📝 Instructions", width="medium", dismissible=False)
+def interactive_instructions():
+    st.markdown("""
+    ### Before you begin
 
-        .modal-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 1.1rem;
-        }
+    Please follow these steps:
 
-        .modal-box ul {
-            padding-left: 1.3rem;
-        }
+    - Read the scientific abstract on the **left side of the screen**.
+    - Use the **chatbot** on the right to ask questions.
+    - You must ask **at least 3 questions** before continuing.
+    - When you’re done, click **“I'm done asking questions.”**
+    - A **summary** will appear where the chatbot was — read it carefully.
+    - Click **Next** to move to the comprehension page.
 
-        .modal-box li {
-            margin-bottom: 0.5rem;
-        }
-        </style>
+    ---
+    """)
 
-        <div class="modal-overlay">
-            <div class="modal-box">
-                <div class="modal-title">📝 Instructions</div>
-
-                <ul>
-                    <li>Read the scientific abstract on the <strong>left side of the screen</strong>.</li>
-                    <li>Use the <strong>chatbot</strong> on the right to ask questions.</li>
-                    <li>You must ask <strong>at least 3 questions</strong>.</li>
-                    <li>When finished asking questions, click <strong>“I'm done asking questions.”</strong>.</li>
-                    <li>
-                        A <strong>SUMMARY</strong> will appear where the chatbot was. 
-                        Please read this summary carefully — you’ll answer questions about it next.
-                    </li>
-                    <li>Click <strong>Next</strong> once you're ready to proceed.</li>
-                </ul>
-
-                <p style="margin-top: 1rem;"><em>Click the button below to begin.</em></p>
-            </div>
-        </div>
-                """,
-        unsafe_allow_html=True,
-    )
-
-    # Continue button UNDER the modal
-    if st.button("Continue"):
+    if st.button("Start"):
         st.session_state.seen_interactive_instructions = True
         st.rerun()
 
@@ -130,7 +82,7 @@ def run_chatbot(prolific_id: str):
     if "seen_interactive_instructions" not in st.session_state: 
         st.session_state.seen_interactive_instructions = False
     if not st.session_state.seen_interactive_instructions: 
-        show_instruction_modal() 
+        interactive_instructions()
         return
     st.title("💬 Chat with a chatbot about the scientific abstract")
     with st.sidebar:
