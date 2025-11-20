@@ -263,7 +263,7 @@ def run_chatbot(prolific_id: str):
                 st.rerun()
 
         elif st.session_state.get("generating_summary", False):
-            with st.spinner("✨ Generating the summary, please wait..."):
+            with st.spinner("✨ Generating the SUMMARY, please wait..."):
                 conversation_text = get_conversation()
                 system_prompt = (
                     "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
@@ -293,8 +293,6 @@ def run_chatbot(prolific_id: str):
                 f"{st.session_state.generated_summary}</div>",
                 unsafe_allow_html=True,
             )
-
-            # CSS for true bottom-right fixed button across full width layout
             st.markdown(
                 """
                 <style>
