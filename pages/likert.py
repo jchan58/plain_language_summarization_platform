@@ -36,8 +36,8 @@ def run_likert():
     st.markdown(
         """
         ### 📝 Instructions
-        1. Read the scientific abstract and the **summary** shown below.  
-        2. Fill out the survey questions about the **summary**.  
+        1. Read the scientific abstract and the **SUMMARY** shown below.  
+        2. Fill out the survey questions about the **SUMMARY**.  
         3. When you have finished answering all questions, click the **Submit** button below.  
         """,
     )
@@ -72,8 +72,6 @@ def run_likert():
     }
     </style>
     """, unsafe_allow_html=True)
-
-    # --- Two-column layout for Abstract and Summary ---
     col1, col2 = st.columns([0.9, 1.1], gap="large")
 
     with col1:
@@ -81,7 +79,7 @@ def run_likert():
         st.markdown(f"<div class='content-box'>{abstract}</div>", unsafe_allow_html=True)
 
     with col2:
-        st.markdown("### 🧾 Summary of Scientific Abstract")
+        st.markdown("### 🧾 SUMMARY")
         st.markdown(f"<div class='content-box'>{pls}</div>", unsafe_allow_html=True)
 
     st.divider()
@@ -93,15 +91,15 @@ def run_likert():
 
         likert_scale = [1, 2, 3, 4, 5]
 
-        q1 = st.radio("How easy was the summary to understand?",
+        q1 = st.radio("How easy was the SUMMARY to understand?",
                       likert_scale, horizontal=True, key="simplicity")
-        q2 = st.radio("How well-structured and logically organized was the summary?",
+        q2 = st.radio("How well-structured and logically organized was the SUMMARY?",
                       likert_scale, horizontal=True, key="coherence")
-        q3 = st.radio("How well did the summary capture the abstract’s main ideas?",
+        q3 = st.radio("How well did the SUMMARY capture the abstract’s main ideas?",
                       likert_scale, horizontal=True, key="informativeness")
-        q4 = st.radio("Was necessary background information included?",
+        q4 = st.radio("Was necessary background information included in the SUMMARY?",
                       likert_scale, horizontal=True, key="background")
-        q5 = st.radio("How accurately did the summary reflect the original abstract?",
+        q5 = st.radio("How trustworthy is the SUMMARY?",
                       likert_scale, horizontal=True, key="faithfulness")
 
         # --- MongoDB setup ---
