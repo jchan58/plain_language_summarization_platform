@@ -112,4 +112,15 @@ if not st.session_state.get("logged_in", False):
         st.rerun()
 
 else:
+    # set the variables for seen instructions
+    if "seen_static_instructions" not in st.session_state:
+        st.session_state.seen_static_instructions = False
+
+    if "seen_interactive_instructions" not in st.session_state:
+        st.session_state.seen_interactive_instructions = False
+
+    if "seen_finetuned_instructions" not in st.session_state:
+        st.session_state.seen_finetuned_instructions = False
+
+    # run the page
     run_chatbot(st.session_state.prolific_id)
