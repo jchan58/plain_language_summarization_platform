@@ -246,8 +246,8 @@ def run_chatbot(prolific_id: str):
                     for msg in conversation_log
                 )
 
-                print("Conversation used in summary:")
-                print(conversation_text)
+                st.write("DEBUG — conversation text:")
+                st.write(conversation_text)
                 system_prompt = (
                     "You are an expert science communicator working with a reader who asked questions about a scientific abstract.\n\n"
                     f"Here is the conversation between the reader and an AI assistant:\n{conversation_text}\n\n"
