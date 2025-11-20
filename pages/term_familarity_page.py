@@ -131,6 +131,10 @@ def run_terms(prolific_id: str):
     abstract_id = abs_item['abstract_id']
 
     st.subheader(abs_item["abstract_title"])
+    current_num = st.session_state.static_index + 1
+    total_num = len(abstracts)
+    st.progress(current_num / total_num)
+    st.markdown(f"**Progress:** {current_num} / {total_num} abstracts")
     raw_abstract = abs_item["abstract"]
     highlighted_abstract = highlight_terms_in_abstract(raw_abstract, abs_item["terms"])
     formatted_abstract = highlighted_abstract.replace("\n", "  \n")
@@ -163,7 +167,7 @@ def run_terms(prolific_id: str):
 
     for idx, term_item in enumerate(abs_item['terms']):
         term = term_item["term"]
-        st.write(f"**{term}**")
+        st.write(f"**{idx + 1}. {term}**")
         familiarity = st.slider(
             f"How familiar are you with '{term}'?",
             min_value=1,
