@@ -49,6 +49,8 @@ def run_feedback():
         4. When you have finished answering all questions, click the **Next** button to continue.  
         """
     )
+    if "summary_font_size" not in st.session_state:
+        st.session_state.summary_font_size = 18
 
     if "last_completed_abstract" not in st.session_state:
         st.warning("Please complete the interactive session first.")
@@ -60,26 +62,48 @@ def run_feedback():
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.title("SUMMARY")
+        btn_col1, btn_col2, btn_col3 = st.columns([0.25, 0.5, 0.25])
+        with btn_col1:
+            if st.button("Decrease text size"):
+                st.session_state.summary_font_size = max(12, st.session_state.summary_font_size - 2)
+                st.rerun()
+
+        with btn_col2:
+            st.write("")
+
+        with btn_col3:
+            if st.button("Increase text size"):
+                st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
+                st.rerun()
         st.markdown(
-        f"""
-        <div style="
-            background-color:#e8f4ff;
-            padding: 1.1rem 1.3rem;
-            border-radius: 0.6rem;
-            border: 1px solid #dfe1e5;
-            max-height: 550px;
-            overflow-y: auto;
-        ">
-            <div style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.6rem;">
-                {data['title']}
+            f"""
+            <div style="
+                background-color:#e8f4ff;
+                padding: 1.1rem 1.3rem;
+                border-radius: 0.6rem;
+                border: 1px solid #dfe1e5;
+                max-height: 550px;
+                overflow-y: auto;
+                font-size: {st.session_state.summary_font_size}px;
+                line-height: 1.55;
+            ">
+                <!-- Title -->
+                <div style="
+                    font-size: {st.session_state.summary_font_size + 4}px;
+                    font-weight: 600;
+                    margin-bottom: 0.6rem;
+                ">
+                    {data['title']}
+                </div>
+
+                <!-- Summary text -->
+                <div style="line-height: 1.55;">
+                    {data['pls']}
+                </div>
             </div>
-            <div style="font-size: 1rem; line-height: 1.55;">
-                {data['pls']}
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+            """,
+            unsafe_allow_html=True
+        )
 
     with col2:
         st.title("Short Answer Questions")
