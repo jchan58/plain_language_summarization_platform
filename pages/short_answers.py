@@ -56,22 +56,27 @@ def run_feedback():
     abstract_id = data["abstract_id"]
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
-        st.title("Summary of Scientific Abstract")
-        st.markdown(f"### {data['title']}")
+        st.title("SUMMARY")
         st.markdown(
-            f"""
-            <div class="no-select" style="
-                background-color:#f2f3f5;
-                padding:1rem;
-                border-radius:0.5rem;
-                line-height:1.6;
-                border:1px solid #dcdcdc;
-                margin-bottom:1rem;">
-                {data["pls"]}
+        f"""
+        <div style="
+            background-color:#e8f4ff;
+            padding: 1.1rem 1.3rem;
+            border-radius: 0.6rem;
+            border: 1px solid #dfe1e5;
+            max-height: 550px;
+            overflow-y: auto;
+        ">
+            <div style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.6rem;">
+                {data['title']}
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            <div style="font-size: 1rem; line-height: 1.55;">
+                {data['pls']}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     with col2:
         st.title("Short Answer Questions")
