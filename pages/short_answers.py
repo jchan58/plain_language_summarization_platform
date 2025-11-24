@@ -4,7 +4,23 @@ from datetime import datetime
 
 # define minium character count 
 MIN_CHARS = 75
+st.markdown("""
+<script>
+function attachLiveCounter(wrapperId, counterId) {
+    const wrapper = parent.document.getElementById(wrapperId);
+    if (!wrapper) return;
 
+    const ta = wrapper.querySelector("textarea");
+    const counter = parent.document.getElementById(counterId);
+
+    if (ta && counter) {
+        ta.addEventListener("input", () => {
+            counter.innerHTML = ta.value.length + " characters";
+        });
+    }
+}
+</script>
+""", unsafe_allow_html=True)
 st.markdown(
     """
     <style>
@@ -15,6 +31,22 @@ st.markdown(
 )
 
 st.set_page_config(layout="wide")
+def text_area_with_counter(label, key_name, state_key):
+    st.subheader(label)
+    wrapper_id = f"{key_name}_wrapper"
+    counter_id = f"{key_name}_count"
+    st.markdown(f"<div id='{wrapper_id}'>", unsafe_allow_html=True)
+    st.text_area("", key=key_name, value=st.session_state.feedback[state_key])
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.caption(
+        f"<span id='{counter_id}'>{len(st.session_state.feedback[state_key])} characters</span>",
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        f"<script>attachLiveCounter('{wrapper_id}', '{counter_id}');</script>",
+        unsafe_allow_html=True
+    )
+    st.session_state.feedback[state_key] = st.session_state[key_name]
 
 def show_progress():
     if "progress_info" in st.session_state:
@@ -107,17 +139,14 @@ def run_feedback():
         </style>
         """, unsafe_allow_html=True)
 
-        st.subheader("🧠 What did the researchers in this study want to find out?")
-        st.text_area("", key="main_idea_box", value=st.session_state.feedback["main_idea"], on_change=update_main_idea)
-        st.caption(f"{len(st.session_state.feedback['main_idea'])} characters")
+        text_area_with_counter("🧠 What did the researchers in this study want to find out?",
+                       "main_idea_box", "main_idea")
 
-        st.subheader("🧪 What was the method used in the study?")
-        st.text_area("", key="method_box", value=st.session_state.feedback["method"], on_change=update_method)
-        st.caption(f"{len(st.session_state.feedback['method'])} characters")
+        text_area_with_counter("🧪 What was the method used in the study?",
+                            "method_box", "method")
 
-        st.subheader("📊 What was the result of this study?")
-        st.text_area("", key="result_box", value=st.session_state.feedback["result"], on_change=update_result)
-        st.caption(f"{len(st.session_state.feedback['result'])} characters")
+        text_area_with_counter("📊 What was the result of this study?",
+                            "result_box", "result")
 
 
         all_filled = all([
@@ -128,7 +157,7 @@ def run_feedback():
 
         if not all_filled:
             st.warning(
-                f"❗ Each response must be at least {MIN_CHARS} characters long. Please expand your answer(s)."
+                f"❗Each response must be at least {MIN_CHARS} characters long. Please expand your answer(s)."
             )
 
         if st.button("Next", disabled=not all_filled):
