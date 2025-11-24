@@ -194,50 +194,41 @@ def run_chatbot(prolific_id: str):
         """
     )
 
-    col1, col2 = st.columns([1, 1], gap="large")
-    with col1:
-        st.markdown(f"### ABSTRACT")
-        # add button controls 
-        btn_col1, btn_col2, btn_col3 = st.columns([0.2, 0.2, 0.2])
-        with btn_col1:
-            if st.button("A−"):
-                st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
-                st.rerun()
+    st.markdown(
+    """
+    ### 📝 Instructions
+    1. Read the scientific abstract on the **left side of the screen**.  
+    2. Use the **chatbot** on the right to ask questions.  
+    3. You must ask at least 3 questions.  
+    4. When finished asking questions, click **“I'm done asking questions.”** 
+    5. A SUMMARY will appear on the right side of the screen where the chatbot was.  
+       Please read this SUMMARY carefully. You’ll answer questions about it on the next page.
+    6. Click **Next** to move to the next page after you feel that you are ready to answer the questions. 
+    """
+)
 
-        with btn_col2:
-            st.write("")  # spacer
-            st.markdown("<div style='text-align:center;'>A</div>", unsafe_allow_html=True)
+# MAIN TWO-COLUMN LAYOUT
+col1, col2 = st.columns([1, 1], gap="large")
 
-        with btn_col3:
-            if st.button("A+"):
-                st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
-                st.rerun()
-        formatted_abstract = abstract["abstract"].replace("\n", "  \n")
-        abstract_title = abstract["abstract_title"]
-        st.markdown(
-            f"""
-            <div style="
-                background-color:#f8f9fa;
-                padding: 1.1rem 1.3rem;
-                border-radius: 0.6rem;
-                border: 1px solid #dfe1e5;
-                max-height: 550px;
-                overflow-y: auto;
-                font-size: {st.session_state.abstract_font_size}px;
-                line-height: 1.55;
-            ">
-                <div style="font-size: {st.session_state.abstract_font_size + 4}px; 
-                            font-weight: 600; 
-                            margin-bottom: 0.6rem;">
-                    {abstract_title}
-                </div>
-                <div>
-                    {formatted_abstract}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+with col1:
+    st.markdown("### ABSTRACT")
+    btn_col1, btn_col2, btn_col3, btn_col4 = st.columns([0.4, 0.3, 0.3, 0.3])
+
+    with btn_col1:
+        if st.button("A−"):
+            st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
+            st.rerun()
+
+    with btn_col2:
+        st.write("")
+
+    with btn_col3:
+        st.write("")
+
+    with btn_col4:
+        if st.button("A+"):
+            st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
+            st.rerun()
 
     with col2:
         if not st.session_state.show_summary and not st.session_state.get("generating_summary", False):
