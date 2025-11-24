@@ -34,6 +34,21 @@ def load_example_users():
 
 example_user_df = load_example_users()
 
+@st.dialog("Are you sure you are done asking questions?")
+def show_done_dialog():
+    st.write(
+        "You will be answering questions about this abstract on the next page. "
+    )
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("⬅️ No"):
+            st.stop()
+
+    with col2:
+        if st.button("Yes ➡️"):
+            st.session_state.generating_summary = True
+            st.rerun()
+
 
 def get_user_interactive_abstracts(prolific_id: str):
     user = users_collection.find_one(
@@ -228,8 +243,7 @@ def run_chatbot(prolific_id: str):
                         f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
                     }},
                 )
-                st.session_state.generating_summary = True
-                st.rerun()
+                show_done_dialog()
 
         elif st.session_state.get("generating_summary", False):
             with st.spinner("✨ Generating the SUMMARY, please wait..."):
@@ -271,75 +285,21 @@ def run_chatbot(prolific_id: str):
                 summary = response.choices[0].message.content.strip()
 
                 st.session_state.generated_summary = summary
-                st.session_state.show_summary = True
                 st.session_state.generating_summary = False
-                st.rerun()
 
-        if st.session_state.show_summary and not st.session_state.get("generating_summary", False):
-            st.markdown("### SUMMARY")
-
-            summary_html = f"""
-        <div style="
-            background-color:#f0f7ff;
-            padding: 0.6rem 0.8rem;
-            border-radius:0.5rem;
-            border: 1px solid #c9dfff;
-            max-height: 550px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            line-height: 1.35;
-            font-size: 1rem;
-        ">
-        {st.session_state.generated_summary}
-        </div>
-        """
-            st.markdown(summary_html, unsafe_allow_html=True)
-            st.markdown(
-                """
-                <style>
-                .next-btn-container {
-                    position: fixed;
-                    bottom: 40px;
-                    right: 60px;
-                    z-index: 9999;
-                    pointer-events: none;  /* prevents layout issues */
-                }
-                .next-btn-container button {
-                    pointer-events: auto;  /* re-enable interaction for the button itself */
-                    background-color: #0066cc;
-                    color: white;
-                    border: none;
-                    padding: 0.7rem 1.4rem;
-                    border-radius: 6px;
-                    font-size: 16px;
-                    cursor: pointer;
-                    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-                }
-                .next-btn-container button:hover {
-                    background-color: #0052a3;
-                }
-                </style>
-                """,
-                unsafe_allow_html=True
-            )
-
-            # HTML wrapper for fixed positioning
-            st.markdown('<div class="next-btn-container">', unsafe_allow_html=True)
-            next_clicked = st.button("Next ➡️", key="next_button", help="Go to the next page")
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            if next_clicked:
+                # store the summary
                 st.session_state.last_completed_abstract = {
                     "prolific_id": prolific_id,
                     "abstract_id": abstract_id,
                     "title": abstract["abstract_title"],
                     "abstract": abstract["abstract"],
-                    "pls": st.session_state.generated_summary 
+                    "pls": summary
                 }
 
-                st.session_state.show_summary = False
-                st.session_state.generated_summary = ""
+                # Reset chat state
                 st.session_state.messages = []
                 st.session_state.question_count = 0
                 st.session_state.abstract_index += 1
+
+                # Go to short answers page
                 st.switch_page("pages/short_answers.py")
