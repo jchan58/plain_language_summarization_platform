@@ -174,8 +174,6 @@ def run_terms(prolific_id: str):
     2. Select any **additional information** you would want (definition, example, background, or none).  
     ---
     """)
-
-    # === ABSTRACT (Sticky) ===
     st.markdown(
         f"""
         <div class="sticky-abs">
@@ -235,7 +233,7 @@ def run_terms(prolific_id: str):
             for idx in range(len(abs_item["terms"]))
         )
 
-        if st.button("Next (Additional Info →)") and all_fam_filled:
+        if st.button("Next") and all_fam_filled:
             st.session_state.stage_static = "extra_info"
             st.session_state.updated_terms_tmp = updated_terms
             st.rerun()
@@ -303,7 +301,7 @@ def run_terms(prolific_id: str):
         if not all_extra_filled:
             st.warning("⚠️ Please select at least one option for each term (including 'None').")
 
-        if st.button("Finish and Continue →", disabled=not all_extra_filled):
+        if st.button("Next", disabled=not all_extra_filled):
             users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {
