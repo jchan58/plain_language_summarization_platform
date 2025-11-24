@@ -61,12 +61,20 @@ def show_done_dialog():
     st.markdown(
         """You will be answering questions about this abstract on the next page and will not be able to return to this page."""
     )
-    if st.button("⬅️ No"):
-        st.stop()
-    if st.button("Yes ➡️"):
+
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+
+    with col1:
+        no_clicked = st.button("⬅️ No")
+
+    with col4:
+        yes_clicked = st.button("Yes ➡️")
+    if no_clicked:
+        pass  
+
+    if yes_clicked:
         st.session_state.generating_summary = True
         st.rerun()
-
 
 def get_user_interactive_abstracts(prolific_id: str):
     user = users_collection.find_one(
