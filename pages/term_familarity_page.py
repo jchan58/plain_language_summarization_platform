@@ -151,8 +151,6 @@ def run_terms(prolific_id: str):
 
     st.progress(current_num / total_num)
     st.markdown(f"**Progress:** {current_num} / {total_num} abstracts**")
-
-    # ===== Sticky Abstract CSS =====
     st.markdown("""
     <style>
     .sticky-abs {
@@ -174,6 +172,7 @@ def run_terms(prolific_id: str):
     2. Select any **additional information** you would want (definition, example, background, or none).  
     ---
     """)
+    st.markdown(f"### ABSTRACT")
     st.markdown(
         f"""
         <div class="sticky-abs">
@@ -183,12 +182,13 @@ def run_terms(prolific_id: str):
                 border-radius: 0.6rem;
                 border: 1px solid #dfe1e5;
                 max-height: 550px;
+                font-size: {st.session_state.abstract_font_size}px;
                 overflow-y: auto;
             ">
-                <div style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.6rem;">
+                <div style="font-size:{st.session_state.abstract_font_size + 4}px; font-weight: 600; margin-bottom: 0.6rem;">
                     {abs_item['abstract_title']}
                 </div>
-                <div style="font-size: 1rem; line-height: 1.55;">
+                <div style="font-size:{st.session_state.abstract_font_size + 4}px; line-height: 1.55;">
                     {highlight_terms_in_abstract(abs_item["abstract"], abs_item["terms"]).replace("\n", "<br>")}
                 </div>
             </div>

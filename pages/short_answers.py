@@ -87,7 +87,6 @@ def run_feedback():
                 font-size: {st.session_state.summary_font_size}px;
                 line-height: 1.55;
             ">
-                <!-- Title -->
                 <div style="
                     font-size: {st.session_state.summary_font_size + 4}px;
                     font-weight: 600;
@@ -95,8 +94,6 @@ def run_feedback():
                 ">
                     {data['title']}
                 </div>
-
-                <!-- Summary text -->
                 <div style="line-height: 1.55;">
                     {data['pls']}
                 </div>
