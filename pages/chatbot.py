@@ -59,8 +59,7 @@ st.markdown("""
 def show_done_dialog():
 
     st.markdown(
-        """You will be answering questions about this abstract on the next page  
-        and will not be able to return to this page."""
+        """You will be answering questions about this abstract on the next page and will not be able to return to this page."""
     )
     if st.button("⬅️ No"):
         st.stop()
