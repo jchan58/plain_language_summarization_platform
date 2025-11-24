@@ -34,21 +34,35 @@ def load_example_users():
 
 example_user_df = load_example_users()
 
-@st.dialog("Are you sure you are done asking questions?")
+st.markdown("""
+    <style>
+        /* Center the dialog title text */
+        .stDialog > div > div > div:nth-child(1) {
+            text-align: center !important;
+            width: 100%;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+
+@st.dialog("Are you sure you are done asking questions?", dismissible=False)
 def show_done_dialog():
-    st.write(
-        "You will be answering questions about this abstract on the next page. "
+    st.markdown(
+        """
+        <div style="text-align: center; font-size: 1.05rem; margin-bottom: 1rem;">
+            You will be answering questions about this abstract on the next page<br>
+            and will not be able to return to this page.
+        </div>
+        """,
+        unsafe_allow_html=True
     )
-    col1, col2 = st.columns(2)
-    with col1:
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
         if st.button("⬅️ No"):
             st.stop()
-
-    with col2:
         if st.button("Yes ➡️"):
             st.session_state.generating_summary = True
             st.rerun()
-
 
 def get_user_interactive_abstracts(prolific_id: str):
     user = users_collection.find_one(
