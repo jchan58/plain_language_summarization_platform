@@ -166,34 +166,31 @@ def run_terms(prolific_id: str):
     ---
     """
     )
-    st.subheader(abs_item["abstract_title"])
+    st.subheader("ABSTRACT")
     raw_abstract = abs_item["abstract"]
+    abs_title = abs_item["abstract_title"]
     highlighted_abstract = highlight_terms_in_abstract(raw_abstract, abs_item["terms"])
     formatted_abstract = highlighted_abstract.replace("\n", "  \n")
     st.markdown(
         f"""
         <div style="
-            background-color: #f8f9fa;
-            padding: 0.8rem 1rem;        
+            background-color:#f8f9fa;
+            padding: 1.1rem 1.3rem;
             border-radius: 0.6rem;
             border: 1px solid #dfe1e5;
             max-height: 550px;
             overflow-y: auto;
-            white-space: normal;
         ">
-            <div style="
-                font-size: 1.08rem;
-                line-height: 1.55;
-                margin: 0 !important;     
-                padding: 0 !important;     
-            ">
+            <div style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.6rem;">
+                {abs_title}
+            </div>
+            <div style="font-size: 1rem; line-height: 1.55;">
                 {formatted_abstract}
             </div>
         </div>
         """,
         unsafe_allow_html=True
     )
-
     st.markdown("### Key Terms")
     updated_terms = []
 
