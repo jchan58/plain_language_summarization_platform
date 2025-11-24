@@ -75,11 +75,11 @@ def run_likert():
     col1, col2 = st.columns([0.9, 1.1], gap="large")
 
     with col1:
-        st.markdown(f"### 📘 Scientific Abstract")
+        st.markdown(f"### ABSTRACT")
         st.markdown(f"<div class='content-box'>{abstract}</div>", unsafe_allow_html=True)
 
     with col2:
-        st.markdown("### 🧾 SUMMARY")
+        st.markdown("### SUMMARY")
         st.markdown(f"<div class='content-box'>{pls}</div>", unsafe_allow_html=True)
 
     st.divider()

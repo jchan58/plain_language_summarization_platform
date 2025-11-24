@@ -62,7 +62,7 @@ def run_feedback():
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.title("SUMMARY")
-        btn_col1, btn_col2, btn_col3 = st.columns([0.25, 0.65, 0.10])
+        btn_col1, btn_col2, btn_col3 = st.columns([0.25, 0.55, 0.20])
         with btn_col1:
             if st.button("Decrease text size"):
                 st.session_state.summary_font_size = max(12, st.session_state.summary_font_size - 2)
