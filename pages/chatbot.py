@@ -55,60 +55,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
 @st.dialog("Are you sure you are done asking questions?", dismissible=False)
 def show_done_dialog():
-    st.markdown("""
-        <style>
-        .stButton > button {
-            width: 130px !important;
-            padding: 0.55rem 1rem !important;
-            font-weight: 600 !important;
-            border-radius: 8px !important;
-            font-size: 0.95rem !important;
-        }
 
-        /* NO button (pink) */
-        div[data-testid="stDialog"] div[id="no_btn"] > button {
-            background-color: #ffb3c6 !important;
-            color: black !important;
-            border: none !important;
-        }
-        div[data-testid="stDialog"] div[id="no_btn"] > button:hover {
-            background-color: #ff8eab !important;
-        }
-
-        /* YES button (green) */
-        div[data-testid="stDialog"] div[id="yes_btn"] > button {
-            background-color: #b6eeb3 !important;
-            color: black !important;
-            border: none !important;
-        }
-        div[data-testid="stDialog"] div[id="yes_btn"] > button:hover {
-            background-color: #9fe79b !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
     st.markdown(
-        """
-        <div style='text-align:center; font-size:1.05rem; margin-bottom:1rem;'>
-            You will be answering questions about this abstract on the next page<br>
-            and will not be able to return to this page.
-        </div>
-        """,
-        unsafe_allow_html=True
+        """You will be answering questions about this abstract on the next page  
+        and will not be able to return to this page."""
     )
-    col_sp1, col_no, col_yes, col_sp2 = st.columns([1, 1, 1, 1])
-
-    with col_no:
-        no_clicked = st.button("⬅️ No", key="no_btn")
-
-    with col_yes:
-        yes_clicked = st.button("Yes ➡️", key="yes_btn")
-    if no_clicked:
+    if st.button("⬅️ No"):
         st.stop()
-
-    if yes_clicked:
+    if st.button("Yes ➡️"):
         st.session_state.generating_summary = True
         st.rerun()
 
