@@ -191,41 +191,39 @@ def run_terms(prolific_id: str):
         """,
         unsafe_allow_html=True
     )
-    st.markdown("### Key Terms")
-    updated_terms = []
+    st.markdown("### Familiarity (1–5)")
 
-    for idx, term_item in enumerate(abs_item['terms']):
+    updated_terms = []
+    for idx, term_item in enumerate(abs_item["terms"]):
         term = term_item["term"]
-        color = TERM_COLORS[idx % len(TERM_COLORS)]
-        st.markdown(
-            f"""
-            <div style="display:flex;align-items:center;gap:8px;">
-                <div style="width:14px;height:14px;background:{color};border-radius:3px;"></div>
-                <strong>{idx + 1}. {term}</strong>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
         familiarity = st.slider(
-            f"How familiar are you with '{term}'?",
+            label=f"{idx+1}. {term}",
             min_value=1,
             max_value=5,
-            value=1,
-            format="%d",
-            key=f"fam_{abstract_id}_{idx}"
+            value=3,
+            step=1,
+            key=f"fam_{abstract_id}_{idx}",
+            help="1 = Not familiar, 5 = Extremely familiar"
         )
+        updated_terms.append({
+            "term": term,
+            "familiarity_score": familiarity,
+            "extra_information": []
+        })
+
+    st.markdown("---")
+    st.markdown("### Additional Information Needed")
+    for idx, term_item in enumerate(abs_item["terms"]):
+        term = term_item["term"]
 
         extra_info = st.multiselect(
-            f"What additional information do you need for '{term}' (optional)?",
-            ["Definition", "Example", "Background"],
+            label=f"{idx+1}. {term}",
+            options=["Definition", "Example", "Background"],
             key=f"extra_{abstract_id}_{idx}"
         )
 
-        updated_terms.append({
-            "term": term,
-            "familiarity_score": familiarity,      
-            "extra_information": extra_info if extra_info else []
-        })
+        updated_terms[idx]["extra_information"] = extra_info
+
 
     st.markdown("---")
 
