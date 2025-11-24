@@ -315,7 +315,7 @@ def run_terms(prolific_id: str):
         )
 
         if not all_extra_filled:
-            st.warning("⚠️ Please select at least one option for each term (including 'None').")
+            st.warning("⚠️ Please select at least one option for each term.")
 
         if st.button("Next", disabled=not all_extra_filled):
             users_collection.update_one(
