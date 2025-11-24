@@ -296,7 +296,7 @@ def run_terms(prolific_id: str):
         st.markdown("---")
 
         all_extra_filled = all(
-            st.session_state.get(f"extra_{abstract_id}_{idx}") is not None
+            any(st.session_state[f"extra_{abstract_id}_{idx}"].values())
             for idx in range(len(abs_item["terms"]))
         )
 
