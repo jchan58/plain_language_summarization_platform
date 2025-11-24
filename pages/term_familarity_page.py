@@ -229,13 +229,23 @@ def run_terms(prolific_id: str):
     for idx, term_item in enumerate(abs_item["terms"]):
         term = term_item["term"]
 
-        extra_info = st.multiselect(
+        # include the options we have
+        options = ["Definition", "Example", "Background", "None"]
+
+        selection = st.multiselect(
             label=f"{idx+1}. {term}",
-            options=["Definition", "Example", "Background", "None"],
+            options=options,
             key=f"extra_{abstract_id}_{idx}"
         )
 
-        updated_terms[idx]["extra_information"] = extra_info
+        if "None" in selection and len(selection) > 1:
+            selection = ["None"]
+            st.session_state[f"extra_{abstract_id}_{idx}"] = ["None"]
+
+        elif "None" not in selection and st.session_state.get(f"extra_{abstract_id}_{idx}") == ["None"]:
+            st.session_state[f"extra_{abstract_id}_{idx}"] = selection
+
+        updated_terms[idx]["extra_information"] = selection
 
     st.markdown("---")
     all_fam_filled = all(
