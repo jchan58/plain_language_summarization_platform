@@ -109,18 +109,27 @@ def run_feedback():
 
         st.subheader("🧠 What did the researchers in this study want to find out?")
         st.text_area("", key="main_idea_box", value=st.session_state.feedback["main_idea"], on_change=update_main_idea)
+        st.caption(f"{len(st.session_state.feedback['main_idea'])} characters")
 
         st.subheader("🧪 What was the method used in the study?")
         st.text_area("", key="method_box", value=st.session_state.feedback["method"], on_change=update_method)
+        st.caption(f"{len(st.session_state.feedback['method'])} characters")
 
         st.subheader("📊 What was the result of this study?")
         st.text_area("", key="result_box", value=st.session_state.feedback["result"], on_change=update_result)
+        st.caption(f"{len(st.session_state.feedback['result'])} characters")
+
 
         all_filled = all([
             len(st.session_state.feedback["main_idea"].strip()) >= MIN_CHARS,
             len(st.session_state.feedback["method"].strip()) >= MIN_CHARS,
             len(st.session_state.feedback["result"].strip()) >= MIN_CHARS
         ])
+
+        if not all_filled:
+            st.warning(
+                f"❗ Each response must be at least {MIN_CHARS} characters long. Please expand your answer(s)."
+            )
 
         if st.button("Next", disabled=not all_filled):
             feedback_data = {
