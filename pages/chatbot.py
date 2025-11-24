@@ -69,8 +69,9 @@ def show_done_dialog():
 
     with col4:
         yes_clicked = st.button("Yes ➡️")
+        
     if no_clicked:
-        pass  
+        st.rerun()
 
     if yes_clicked:
         st.session_state.generating_summary = True
