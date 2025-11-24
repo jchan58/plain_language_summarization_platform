@@ -131,71 +131,83 @@ def run_terms(prolific_id: str):
     if not st.session_state.seen_static_instructions:
         static_instructions(prolific_id)
         return
-    st.title("Term Familiarity")
-    abstracts = get_user_static_abstracts(prolific_id)
 
+    st.title("Term Familiarity")
+
+    abstracts = get_user_static_abstracts(prolific_id)
     if "static_index" not in st.session_state: 
         st.session_state.static_index = 0
-    
+
     if st.session_state.static_index >= len(abstracts):
         st.session_state.static_index = 0
 
-    # current abstract
     abs_item = abstracts[st.session_state.static_index]
     abstract_id = abs_item['abstract_id']
     current_num = st.session_state.static_index + 1
     total_num = len(abstracts)
+
     st.progress(current_num / total_num)
-    st.markdown(f"**Progress:** {current_num} / {total_num} abstracts")
+    st.markdown(f"**Progress:** {current_num} / {total_num} abstracts**")
 
-    # add in the instructions 
-    st.markdown(
-    """
+    # ===== Sticky Abstract CSS =====
+    st.markdown("""
+    <style>
+    .sticky-abs {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        padding-bottom: 8px;
+        background: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Instructions
+    st.markdown("""
     ### 📝 Instructions
-    In this task, you will read a scientific abstract and review **10 highlighted terms** that have been extracted from the text.  
-    For each term, you will:
-
-    1. Indicate **how familiar** you are with the term using the provided scale.  
-    2. (Optional) Select what type of **additional information** you would want to better understand the term:  
-        - definition  
-        - example  
-        - background information  
-
-    Once you have completed all **10 terms**, click **Next** to continue.
-    On the next page, you will read a **SUMMARY** of the abstract and answer **3 questions** based on it.
+    In this task, you will read a scientific abstract and review **10 highlighted terms** extracted from the text.  
+    For each term:
+    1. Rate your **familiarity** using the slider (1–5).  
+    2. Select any **additional information** you would want (definition, example, background, or none).  
     ---
-    """
-    )
-    st.subheader("ABSTRACT")
-    raw_abstract = abs_item["abstract"]
-    abs_title = abs_item["abstract_title"]
-    highlighted_abstract = highlight_terms_in_abstract(raw_abstract, abs_item["terms"])
-    formatted_abstract = highlighted_abstract.replace("\n", "  \n")
+    """)
+
+    # === ABSTRACT (Sticky) ===
     st.markdown(
         f"""
-        <div style="
-            background-color:#f8f9fa;
-            padding: 1.1rem 1.3rem;
-            border-radius: 0.6rem;
-            border: 1px solid #dfe1e5;
-            max-height: 550px;
-            overflow-y: auto;
-        ">
-            <div style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.6rem;">
-                {abs_title}
-            </div>
-            <div style="font-size: 1rem; line-height: 1.55;">
-                {formatted_abstract}
+        <div class="sticky-abs">
+            <div style="
+                background-color:#f8f9fa;
+                padding: 1.1rem 1.3rem;
+                border-radius: 0.6rem;
+                border: 1px solid #dfe1e5;
+                max-height: 550px;
+                overflow-y: auto;
+            ">
+                <div style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.6rem;">
+                    {abs_item['abstract_title']}
+                </div>
+                <div style="font-size: 1rem; line-height: 1.55;">
+                    {highlight_terms_in_abstract(abs_item["abstract"], abs_item["terms"]).replace("\n", "<br>")}
+                </div>
             </div>
         </div>
         """,
         unsafe_allow_html=True
     )
-    st.markdown("### Familiarity (1–5)")
-
+    st.subheader("How familiar are you with each term?")
+    st.markdown("""
+    **Familiarity Scale**  
+    1 = Not familiar  
+    2 = Somewhat unfamiliar  
+    3 = Moderately familiar  
+    4 = Familiar  
+    5 = Extremely familiar  
+    """)
     updated_terms = []
     for idx, term_item in enumerate(abs_item["terms"]):
         term = term_item["term"]
+
         familiarity = st.slider(
             label=f"{idx+1}. {term}",
             min_value=1,
@@ -205,6 +217,7 @@ def run_terms(prolific_id: str):
             key=f"fam_{abstract_id}_{idx}",
             help="1 = Not familiar, 5 = Extremely familiar"
         )
+
         updated_terms.append({
             "term": term,
             "familiarity_score": familiarity,
@@ -212,22 +225,33 @@ def run_terms(prolific_id: str):
         })
 
     st.markdown("---")
-    st.markdown("### Additional Information Needed")
+    st.markdown("### What additional information would you like for each term?")
     for idx, term_item in enumerate(abs_item["terms"]):
         term = term_item["term"]
 
         extra_info = st.multiselect(
             label=f"{idx+1}. {term}",
-            options=["Definition", "Example", "Background"],
+            options=["Definition", "Example", "Background", "None"],
             key=f"extra_{abstract_id}_{idx}"
         )
 
         updated_terms[idx]["extra_information"] = extra_info
 
-
     st.markdown("---")
+    all_fam_filled = all(
+        st.session_state.get(f"fam_{abstract_id}_{idx}") is not None
+        for idx in range(len(abs_item["terms"]))
+    )
+    all_extra_filled = all(
+        st.session_state.get(f"extra_{abstract_id}_{idx}") is not None
+        for idx in range(len(abs_item["terms"]))
+    )
 
-    if st.button("Next"):
+    all_completed = all_fam_filled and all_extra_filled
+
+    if not all_completed:
+        st.warning("⚠️ Please complete tasks before continuing.")
+    if st.button("Next", disabled=not all_completed):
         users_collection.update_one(
             {"prolific_id": prolific_id},
             {
@@ -240,5 +264,3 @@ def run_terms(prolific_id: str):
         st.session_state.human_written_pls = abs_item['human_written_pls']
         st.session_state.prolific_id = prolific_id
         st.switch_page("static_summary")
-
-
