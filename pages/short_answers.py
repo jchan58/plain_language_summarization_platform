@@ -2,6 +2,9 @@ import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
 
+# define minium character count 
+MIN_CHARS = 75
+
 st.markdown(
     """
     <style>
@@ -114,9 +117,9 @@ def run_feedback():
         st.text_area("", key="result_box", value=st.session_state.feedback["result"], on_change=update_result)
 
         all_filled = all([
-            st.session_state.feedback["main_idea"].strip(),
-            st.session_state.feedback["method"].strip(),
-            st.session_state.feedback["result"].strip()
+            len(st.session_state.feedback["main_idea"].strip()) >= MIN_CHARS,
+            len(st.session_state.feedback["method"].strip()) >= MIN_CHARS,
+            len(st.session_state.feedback["result"].strip()) >= MIN_CHARS
         ])
 
         if st.button("Next", disabled=not all_filled):
