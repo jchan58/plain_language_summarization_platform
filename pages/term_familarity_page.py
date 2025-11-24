@@ -152,7 +152,6 @@ def run_terms(prolific_id: str):
     st.markdown(
     """
     ### 📝 Instructions
-
     In this task, you will read a scientific abstract and review **10 highlighted terms** that have been extracted from the text.  
     For each term, you will:
 

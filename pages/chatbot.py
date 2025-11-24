@@ -152,25 +152,29 @@ def run_chatbot(prolific_id: str):
 
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
-        st.markdown(f"### 📘 {abstract['abstract_title']}")
+        st.markdown(f"### ABSTRACT")
         formatted_abstract = abstract["abstract"].replace("\n", "  \n")
+        abstract_title = abstract["abstract_title"]
         st.markdown(
-            f"""
-            <div style="
-                background-color:#f8f9fa;
-                padding: 1.1rem 1.3rem;
-                border-radius: 0.6rem;
-                border: 1px solid #dfe1e5;
-                max-height: 550px;
-                overflow-y: auto;
-            ">
-                <div style="font-size: 1rem; line-height: 1.55;">
-                    {formatted_abstract}
-                </div>
+        f"""
+        <div style="
+            background-color:#f8f9fa;
+            padding: 1.1rem 1.3rem;
+            border-radius: 0.6rem;
+            border: 1px solid #dfe1e5;
+            max-height: 550px;
+            overflow-y: auto;
+        ">
+            <div style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.6rem;">
+                {abstract_title}
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+            <div style="font-size: 1rem; line-height: 1.55;">
+                {formatted_abstract}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     with col2:
         if not st.session_state.show_summary and not st.session_state.get("generating_summary", False):
@@ -272,7 +276,7 @@ def run_chatbot(prolific_id: str):
                 st.rerun()
 
         if st.session_state.show_summary and not st.session_state.get("generating_summary", False):
-            st.markdown("### 🧾 SUMMARY")
+            st.markdown("### SUMMARY")
 
             summary_html = f"""
         <div style="
