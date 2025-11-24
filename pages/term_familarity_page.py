@@ -131,6 +131,9 @@ def run_terms(prolific_id: str):
     if not st.session_state.seen_static_instructions:
         static_instructions(prolific_id)
         return
+    
+    if "stage_static" not in st.session_state:
+        st.session_state.stage_static = "familiarity"
 
     st.title("Term Familiarity")
 
@@ -195,82 +198,93 @@ def run_terms(prolific_id: str):
         """,
         unsafe_allow_html=True
     )
-    st.subheader("How familiar are you with each term?")
-    st.markdown("""
-    **Familiarity Scale**  
-    1 = Not familiar  
-    2 = Somewhat unfamiliar  
-    3 = Moderately familiar  
-    4 = Familiar  
-    5 = Extremely familiar  
-    """)
-    updated_terms = []
-    for idx, term_item in enumerate(abs_item["terms"]):
-        term = term_item["term"]
+    if st.session_state.stage_static == "familiarity":
+        st.subheader("How familiar are you with each term?")
+        st.markdown("""
+        **Familiarity Scale**  
+        1 = Not familiar  
+        2 = Somewhat unfamiliar  
+        3 = Moderately familiar  
+        4 = Familiar  
+        5 = Extremely familiar  
+        """)
 
-        familiarity = st.slider(
-            label=f"{idx+1}. {term}",
-            min_value=1,
-            max_value=5,
-            value=3,
-            step=1,
-            key=f"fam_{abstract_id}_{idx}",
-            help="1 = Not familiar, 5 = Extremely familiar"
+        updated_terms = []
+
+        for idx, term_item in enumerate(abs_item["terms"]):
+            term = term_item["term"]
+
+            familiarity = st.slider(
+                label=f"{idx+1}. {term}",
+                min_value=1,
+                max_value=5,
+                value=3,
+                step=1,
+                key=f"fam_{abstract_id}_{idx}"
+            )
+
+            updated_terms.append({
+                "term": term,
+                "familiarity_score": familiarity,
+                "extra_information": []
+            })
+
+        st.markdown("---")
+        all_fam_filled = all(
+            st.session_state.get(f"fam_{abstract_id}_{idx}") is not None
+            for idx in range(len(abs_item["terms"]))
         )
 
-        updated_terms.append({
-            "term": term,
-            "familiarity_score": familiarity,
-            "extra_information": []
-        })
+        if st.button("Next (Additional Info →)") and all_fam_filled:
+            st.session_state.stage_static = "extra_info"
+            st.session_state.updated_terms_tmp = updated_terms
+            st.rerun()
 
-    st.markdown("---")
-    st.markdown("### What additional information would you like for each term?")
-    for idx, term_item in enumerate(abs_item["terms"]):
-        term = term_item["term"]
+        if not all_fam_filled:
+            st.warning("⚠️ Please answer all familiarity questions before continuing.")
 
-        # include the options we have
-        options = ["Definition", "Example", "Background", "None"]
+    if st.session_state.stage_static == "extra_info":
+        st.subheader("What additional information would you like for each term?")
+        updated_terms = st.session_state.updated_terms_tmp
+        for idx, term_item in enumerate(abs_item["terms"]):
+            term = term_item["term"]
+            options = ["Definition", "Example", "Background", "None"]
 
-        selection = st.multiselect(
-            label=f"{idx+1}. {term}",
-            options=options,
-            key=f"extra_{abstract_id}_{idx}"
+            selection = st.multiselect(
+                label=f"{idx+1}. {term}",
+                options=options,
+                key=f"extra_{abstract_id}_{idx}"
+            )
+            if "None" in selection and len(selection) > 1:
+                selection = ["None"]
+                st.session_state[f"extra_{abstract_id}_{idx}"] = ["None"]
+            elif "None" not in selection and st.session_state.get(f"extra_{abstract_id}_{idx}") == ["None"]:
+                st.session_state[f"extra_{abstract_id}_{idx}"] = selection
+
+            updated_terms[idx]["extra_information"] = selection
+
+        st.markdown("---")
+
+        all_extra_filled = all(
+            st.session_state.get(f"extra_{abstract_id}_{idx}") is not None
+            for idx in range(len(abs_item["terms"]))
         )
 
-        if "None" in selection and len(selection) > 1:
-            selection = ["None"]
-            st.session_state[f"extra_{abstract_id}_{idx}"] = ["None"]
+        if not all_extra_filled:
+            st.warning("⚠️ Please select at least one option for each term (including 'None').")
 
-        elif "None" not in selection and st.session_state.get(f"extra_{abstract_id}_{idx}") == ["None"]:
-            st.session_state[f"extra_{abstract_id}_{idx}"] = selection
-
-        updated_terms[idx]["extra_information"] = selection
-
-    st.markdown("---")
-    all_fam_filled = all(
-        st.session_state.get(f"fam_{abstract_id}_{idx}") is not None
-        for idx in range(len(abs_item["terms"]))
-    )
-    all_extra_filled = all(
-        st.session_state.get(f"extra_{abstract_id}_{idx}") is not None
-        for idx in range(len(abs_item["terms"]))
-    )
-
-    all_completed = all_fam_filled and all_extra_filled
-
-    if not all_completed:
-        st.warning("⚠️ Please complete tasks before continuing.")
-    if st.button("Next", disabled=not all_completed):
-        users_collection.update_one(
-            {"prolific_id": prolific_id},
-            {
-                "$set": {
-                    f"phases.static.abstracts.{abstract_id}.term_familarity": updated_terms
+        if st.button("Finish and Continue →", disabled=not all_extra_filled):
+            users_collection.update_one(
+                {"prolific_id": prolific_id},
+                {
+                    "$set": {
+                        f"phases.static.abstracts.{abstract_id}.term_familarity": updated_terms
+                    }
                 }
-            }
-        )
-        st.session_state.current_abstract_id = abstract_id
-        st.session_state.human_written_pls = abs_item['human_written_pls']
-        st.session_state.prolific_id = prolific_id
-        st.switch_page("static_summary")
+            )
+
+            st.session_state.current_abstract_id = abstract_id
+            st.session_state.human_written_pls = abs_item["human_written_pls"]
+            st.session_state.prolific_id = prolific_id
+            st.session_state.stage_static = "familiarity"
+            st.switch_page("static_summary")
