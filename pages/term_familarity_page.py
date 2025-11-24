@@ -132,6 +132,9 @@ def run_terms(prolific_id: str):
         static_instructions(prolific_id)
         return
     
+    if "abstract_font_size" not in st.session_state:
+        st.session_state.abstract_font_size = 18
+    
     if "stage_static" not in st.session_state:
         st.session_state.stage_static = "familiarity"
 
@@ -173,6 +176,19 @@ def run_terms(prolific_id: str):
     ---
     """)
     st.markdown(f"### ABSTRACT")
+    btn_col1, btn_col2, btn_col3 = st.columns([0.25, 0.5, 0.25])
+    with btn_col1:
+        if st.button("Decrease text size"):
+            st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
+            st.rerun()
+
+    with btn_col2:
+        st.write("")
+
+    with btn_col3:
+        if st.button("Increase text size"):
+            st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
+            st.rerun()
     st.markdown(
         f"""
         <div class="sticky-abs">
