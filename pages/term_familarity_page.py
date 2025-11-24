@@ -248,20 +248,50 @@ def run_terms(prolific_id: str):
         updated_terms = st.session_state.updated_terms_tmp
         for idx, term_item in enumerate(abs_item["terms"]):
             term = term_item["term"]
-            options = ["Definition", "Example", "Background", "None"]
+            base_key = f"extra_{abstract_id}_{idx}"
+            if base_key not in st.session_state:
+                st.session_state[base_key] = {
+                    "Definition": False,
+                    "Example": False,
+                    "Background": False,
+                    "None": False,
+                }
 
-            selection = st.multiselect(
-                label=f"{idx+1}. {term}",
-                options=options,
-                key=f"extra_{abstract_id}_{idx}"
+            state = st.session_state[base_key]
+
+            st.markdown(f"**{idx+1}. {term}**")
+            none_selected = state["None"]
+            other_selected = state["Definition"] or state["Example"] or state["Background"]
+            state["Definition"] = st.checkbox(
+                "Definition", 
+                value=state["Definition"], 
+                key=f"{base_key}_definition",
+                disabled=none_selected
             )
-            if "None" in selection and len(selection) > 1:
-                selection = ["None"]
-                st.session_state[f"extra_{abstract_id}_{idx}"] = ["None"]
-            elif "None" not in selection and st.session_state.get(f"extra_{abstract_id}_{idx}") == ["None"]:
-                st.session_state[f"extra_{abstract_id}_{idx}"] = selection
-
-            updated_terms[idx]["extra_information"] = selection
+            state["Example"] = st.checkbox(
+                "Example", 
+                value=state["Example"], 
+                key=f"{base_key}_example",
+                disabled=none_selected
+            )
+            state["Background"] = st.checkbox(
+                "Background", 
+                value=state["Background"], 
+                key=f"{base_key}_background",
+                disabled=none_selected
+            )
+            state["None"] = st.checkbox(
+                "None", 
+                value=state["None"], 
+                key=f"{base_key}_none",
+                disabled=other_selected
+            )
+            if state["None"]:
+                updated_terms[idx]["extra_information"] = ["None"]
+            else:
+                updated_terms[idx]["extra_information"] = [
+                    opt for opt, val in state.items() if val and opt != "None"
+                ]
 
         st.markdown("---")
 
