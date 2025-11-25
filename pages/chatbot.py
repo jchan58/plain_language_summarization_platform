@@ -310,9 +310,14 @@ def run_chatbot(prolific_id: str):
                     for msg in conversation_log
                 )
                 system_prompt = (
-                    "You are an expert science communicator. Your task is to rewrite the abstract into a "
-                    "personalized plain-language summary that MUST incorporate all the answers to reader’s questions from the conversation.\n\n"
+                    "You are an expert science communicator. Rewrite the abstract into a personalized plain-language "
+                    "summary that MUST incorporate all answers to the reader’s questions using the conversation.\n\n"
                     f"Conversation:\n{conversation_text}\n\n"
+                    "BEFORE writing the summary, do the following steps:\n"
+                    "1. Extract every question the reader asked in the conversation.\n" 
+                    "2. For each question, produce a short note describing the answer found in the conversation.\n"
+                    "3. Then rewrite the abstract into a personalized plain-language summary that integrates ALL of these answers.\n"
+                    "4. Absolutely NO question may be omitted.\n"
                 )
                 response = client_openai.chat.completions.create(
                     model="gpt-4o",
