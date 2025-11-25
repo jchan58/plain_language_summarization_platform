@@ -311,15 +311,8 @@ def run_chatbot(prolific_id: str):
                 )
                 system_prompt = (
                     "You are an expert science communicator. Your task is to rewrite the abstract into a "
-                    "plain-language summary that MUST incorporate the reader's questions.\n\n"
+                    "personalized plain-language summary that MUST incorporate the reader’s questions.\n\n"
                     f"Conversation:\n{conversation_text}\n\n"
-                    "REQUIREMENTS (do NOT skip any):\n"
-                    "- Extract every concept, term, or topic the user asked about.\n"
-                    "- For each one, add the necessary explanation (definition, example, or background) "
-                    "even if the original abstract does not include it.\n"
-                    "- Integrate these explanations naturally into the rewritten summary.\n"
-                    "- Preserve accuracy while improving clarity.\n"
-                    "Failure to include the user-requested information IS NOT ALLOWED.\n"
                 )
                 response = client_openai.chat.completions.create(
                     model="gpt-4o",
