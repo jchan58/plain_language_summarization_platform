@@ -313,13 +313,12 @@ def run_chatbot(prolific_id: str):
                     "You are an expert science communicator. Rewrite the abstract into a personalized plain-language "
                     "summary that MUST incorporate all answers to the reader’s questions using the conversation.\n\n"
                     f"Conversation:\n{conversation_text}\n\n"
-                    "Before writing the summary, do the following steps:\n"
+                    "Before writing the summary, do the following steps internally:\n"
                     "1. Extract every question the reader asked in the conversation.\n" 
                     "2. For each question, produce a short note describing the answer found in the conversation.\n"
                     "3. Then rewrite the abstract into a personalized plain-language summary that integrates ALL of these answers while preserving the content of the orginal abstract.\n"
-                    "4. Absolutely NO question may be omitted.\n"
-                    "5. Only output the personalized plain language summary. \n"
-                )
+                    "4. Absolutely NO question may be omitted.\n" 
+               )
                 response = client_openai.chat.completions.create(
                     model="gpt-4o",
                     messages=[
