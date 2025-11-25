@@ -316,7 +316,7 @@ def run_chatbot(prolific_id: str):
                     "Before writing the summary, do the following steps internally:\n"
                     "1. Extract every question the reader asked in the conversation.\n" 
                     "2. For each question, produce a short note describing the answer found in the conversation.\n"
-                    "3. Then rewrite the abstract into a personalized plain-language summary that integrates ALL of these answers while preserving the content of the orginal abstract.\n"
+                    "3. Then rewrite the abstract into a personalized plain-language summary that integrates ALL of these answers while preserving the content of the orginal abstract with no extraneous information.\n"
                     "4. Absolutely NO question may be omitted.\n" 
                )
                 response = client_openai.chat.completions.create(
