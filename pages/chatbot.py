@@ -318,6 +318,7 @@ def run_chatbot(prolific_id: str):
                     "2. For each question, produce a short note describing the answer found in the conversation.\n"
                     "3. Then rewrite the abstract into a personalized plain-language summary that integrates ALL of these answers while preserving the content of the orginal abstract.\n"
                     "4. Absolutely NO question may be omitted.\n"
+                    "5. Only output the personalized plain language summary. \n"
                 )
                 response = client_openai.chat.completions.create(
                     model="gpt-4o",
