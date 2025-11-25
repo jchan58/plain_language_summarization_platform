@@ -45,6 +45,13 @@ def run_likert():
     if "survey_context" not in st.session_state:
         st.warning("Please complete the interactive session first.")
         st.stop()
+    
+    if "abstract_font_size" not in st.session_state:
+        st.session_state.abstract_font_size = 16
+    
+    if "summary_font_size" not in st.session_state:
+        st.session_state.summary_font_size = 16
+    
 
     data = st.session_state.survey_context
     prolific_id = data["prolific_id"]
@@ -54,33 +61,108 @@ def run_likert():
     abstract_title = data["abstract_title"]
 
     st.markdown("""
-    <style>
-    div[data-testid="stHorizontalBlock"] {
-        align-items: flex-start !important; /* align columns at top */
-    }
-    .content-box {
-        background-color: #f7f8fa;
-        border: 1px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 1rem 1.3rem;
-        line-height: 1.55;
-        font-size: 1.05rem;
-    }
-    h3 {
-        margin-top: 0.5rem !important;
-        margin-bottom: 0.6rem !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    col1, col2 = st.columns([0.9, 1.1], gap="large")
+        <style>
+        div[data-testid="stHorizontalBlock"] {
+            align-items: flex-start !important;
+        }
+        .content-box {
+            background-color: #f7f8fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            line-height: 1.55;
+            font-size: 1.05rem;
+        }
+        .summary-box {
+            background-color: #e8f4ff;       /* your new blue color */
+            border: 1px solid #c6ddf7;       /* slight matching border */
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            line-height: 1.55;
+            font-size: 1.05rem;
+        }
+        h3 {
+            margin-top: 0.5rem !important;
+            margin-bottom: 0.6rem !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1, 1], gap="large")
 
     with col1:
         st.markdown(f"### ABSTRACT")
-        st.markdown(f"<div class='content-box'>{abstract}</div>", unsafe_allow_html=True)
+        btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
+
+        with btn1:
+            if st.button("Decrease text size (Abstract)"):
+                st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
+                st.rerun()
+
+        with btn2:
+            st.write("")  
+
+        with btn3:
+            if st.button("Increase text size (Abstract)"):
+                st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
+                st.rerun()
+
+        st.markdown(
+            f"""
+            <div style="
+                background-color:#e8f4ff;
+                padding: 1.1rem 1.3rem;
+                border-radius: 0.6rem;
+                border: 1px solid #dfe1e5;
+                max-height: 550px;
+                overflow-y: auto;
+                font-size: {st.session_state.abstract_font_size}px;
+                line-height: 1.55;
+            ">
+                <div style="line-height: 1.55;">
+                    {abstract}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
 
     with col2:
         st.markdown("### SUMMARY")
-        st.markdown(f"<div class='content-box'>{pls}</div>", unsafe_allow_html=True)
+        btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
+
+        with btn1:
+            if st.button("Decrease text size"):
+                st.session_state.summary_font_size = max(12, st.session_state.summary_font_size - 2)
+                st.rerun()
+
+        with btn2:
+            st.write("")
+
+        with btn3:
+            if st.button("Increase text size"):
+                st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
+                st.rerun()
+        st.markdown(
+            f"""
+            <div style="
+                background-color:#f8f9fa;
+                padding: 1.1rem 1.3rem;
+                border-radius: 0.6rem;
+                border: 1px solid #dfe1e5;
+                max-height: 550px;
+                overflow-y: auto;
+                font-size: {st.session_state.summary_font_size}px;
+                line-height: 1.55;
+            ">
+                <div style="line-height: 1.55;">
+                    {pls}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     st.divider()
 
@@ -99,10 +181,9 @@ def run_likert():
                       likert_scale, horizontal=True, key="informativeness")
         q4 = st.radio("Was necessary background information included in the SUMMARY?",
                       likert_scale, horizontal=True, key="background")
-        q5 = st.radio("How trustworthy is the SUMMARY?",
+        q5 = st.radio("How much do you trust the SUMMARY?",
                       likert_scale, horizontal=True, key="faithfulness")
 
-        # --- MongoDB setup ---
         client = MongoClient(st.secrets["MONGO_URI"])
         db = client["pls"]
         users_collection = db["users"]
