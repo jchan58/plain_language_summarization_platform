@@ -311,7 +311,7 @@ def run_chatbot(prolific_id: str):
                 )
                 system_prompt = (
                     "You are an expert science communicator. Your task is to rewrite the abstract into a "
-                    "personalized plain-language summary that MUST incorporate the answers to reader’s questions.\n\n"
+                    "personalized plain-language summary that MUST incorporate all the answers to reader’s questions.\n\n"
                     f"Conversation:\n{conversation_text}\n\n"
                 )
                 response = client_openai.chat.completions.create(
