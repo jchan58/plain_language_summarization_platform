@@ -95,7 +95,7 @@ def run_likert():
         btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
 
         with btn1:
-            if st.button("Decrease text size (Abstract)"):
+            if st.button("Decrease text size"):
                 st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
                 st.rerun()
 
@@ -103,7 +103,7 @@ def run_likert():
             st.write("")  
 
         with btn3:
-            if st.button("Increase text size (Abstract)"):
+            if st.button("Increase text size"):
                 st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
                 st.rerun()
 
@@ -147,7 +147,7 @@ def run_likert():
         st.markdown(
             f"""
             <div style="
-                background-color:#f8f9fa;
+                background-color:#e8f4ff;
                 padding: 1.1rem 1.3rem;
                 border-radius: 0.6rem;
                 border: 1px solid #dfe1e5;
@@ -168,8 +168,15 @@ def run_likert():
 
     spacer_left, main, spacer_right = st.columns([0.25, 1, 0.25])
     with main:
-        st.markdown("### Evaluation of the Summary")
-        st.caption("1 = Very Poor  5 = Excellent")
+        st.markdown("### Comparing the SUMMARY to the ABSTRACT")
+        st.markdown("""
+        ### Rating Scale  
+        **1 = Very Poor**  
+        **2 = Poor**  
+        **3 = Fair**  
+        **4 = Good**  
+        **5 = Excellent**  
+        """)
 
         likert_scale = [1, 2, 3, 4, 5]
 
