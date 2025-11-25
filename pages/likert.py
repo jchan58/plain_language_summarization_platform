@@ -74,8 +74,8 @@ def run_likert():
             font-size: 1.05rem;
         }
         .summary-box {
-            background-color: #e8f4ff;       /* your new blue color */
-            border: 1px solid #c6ddf7;       /* slight matching border */
+            background-color: #e8f4ff;      
+            border: 1px solid #c6ddf7;      
             border-radius: 10px;
             padding: 1rem 1.3rem;
             line-height: 1.55;
@@ -89,28 +89,27 @@ def run_likert():
         """, unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 1], gap="large")
-
     with col1:
         st.markdown(f"### ABSTRACT")
         btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
 
         with btn1:
-            if st.button("Decrease text size"):
+            if st.button("Decrease text size", key="abs_decrease"):
                 st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
                 st.rerun()
 
         with btn2:
-            st.write("")  
+            st.write("")
 
         with btn3:
-            if st.button("Increase text size"):
+            if st.button("Increase text size", key="abs_increase"):
                 st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
                 st.rerun()
 
         st.markdown(
             f"""
             <div style="
-                background-color:#e8f4ff;
+                background-color:#f8f9fa;
                 padding: 1.1rem 1.3rem;
                 border-radius: 0.6rem;
                 border: 1px solid #dfe1e5;
@@ -133,7 +132,7 @@ def run_likert():
         btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
 
         with btn1:
-            if st.button("Decrease text size"):
+            if st.button("Decrease text size", key="sum_decrease"):
                 st.session_state.summary_font_size = max(12, st.session_state.summary_font_size - 2)
                 st.rerun()
 
@@ -141,9 +140,10 @@ def run_likert():
             st.write("")
 
         with btn3:
-            if st.button("Increase text size"):
+            if st.button("Increase text size", key="sum_increase"):
                 st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
                 st.rerun()
+
         st.markdown(
             f"""
             <div style="
