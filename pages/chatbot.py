@@ -57,6 +57,13 @@ st.markdown("""
 
 @st.dialog("Are you sure you are done asking questions?", dismissible=False)
 def show_done_dialog():
+    if st.session_state.get("generate_now", False):
+        st.markdown("### ⏳ Generating SUMMARY…")
+        with st.spinner("Please wait..."):
+            st.session_state.generating_summary = True
+            st.rerun()
+
+        return 
 
     st.markdown(
         """You will be answering questions about this abstract on the next page and will not be able to return to this page."""
