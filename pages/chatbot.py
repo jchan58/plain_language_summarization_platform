@@ -62,7 +62,7 @@ def show_done_dialog():
     if st.session_state.get("generate_now", False):
         st.markdown("### ⏳ Generating SUMMARY…")
         with st.spinner("Please wait..."):
-            st.session_state.generating_summary = True
+            pass 
         return
 
     # Confirmation UI
@@ -84,7 +84,7 @@ def show_done_dialog():
 
     if yes_clicked:
         st.session_state.generate_now = True
-        st.session_state.generating_summary = True
+        st.rerun()
 
 def get_user_interactive_abstracts(prolific_id: str):
     user = users_collection.find_one(
@@ -299,9 +299,12 @@ def run_chatbot(prolific_id: str):
                     }},
                 )
                 show_done_dialog()
-                if st.session_state.get("generate_now", False):
-                    show_done_dialog()
+                return
 
+        if st.session_state.get("generate_now", False) and not st.session_state.get("generating_summary", False):
+            show_done_dialog()
+            st.session_state.generating_summary = True
+            return
         elif st.session_state.get("generating_summary", False):
             with st.spinner(""):
                 doc = users_collection.find_one(
