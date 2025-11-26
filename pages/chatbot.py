@@ -61,8 +61,6 @@ def show_done_dialog():
         st.markdown("### ⏳ Generating SUMMARY…")
         with st.spinner("Please wait..."):
             st.session_state.generating_summary = True
-            st.rerun()
-
         return 
 
     st.markdown(
