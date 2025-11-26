@@ -81,6 +81,7 @@ def show_done_dialog():
         st.rerun()
 
     if yes_clicked:
+        st.session_state.generate_now = True
         st.session_state.generating_summary = True
         st.rerun()
 
