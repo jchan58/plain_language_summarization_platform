@@ -57,14 +57,18 @@ st.markdown("""
 
 @st.dialog("Are you sure you are done asking questions?", dismissible=False)
 def show_done_dialog():
+
+    # Spinner state
     if st.session_state.get("generate_now", False):
         st.markdown("### ⏳ Generating SUMMARY…")
         with st.spinner("Please wait..."):
             st.session_state.generating_summary = True
-        return 
+        return
 
+    # Confirmation UI
     st.markdown(
-        """You will be answering questions about this abstract on the next page and will not be able to return to this page."""
+        """You will be answering questions about this abstract on the next page 
+        and will not be able to return."""
     )
 
     col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
@@ -81,7 +85,6 @@ def show_done_dialog():
     if yes_clicked:
         st.session_state.generate_now = True
         st.session_state.generating_summary = True
-        show_done_dialog()
 
 def get_user_interactive_abstracts(prolific_id: str):
     user = users_collection.find_one(
@@ -296,6 +299,8 @@ def run_chatbot(prolific_id: str):
                     }},
                 )
                 show_done_dialog()
+                if st.session_state.get("generate_now", False):
+                    show_done_dialog()
 
         elif st.session_state.get("generating_summary", False):
             with st.spinner(""):
