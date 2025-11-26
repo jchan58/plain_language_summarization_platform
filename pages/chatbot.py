@@ -62,7 +62,7 @@ def show_done_dialog():
     if st.session_state.get("generate_now", False):
         st.markdown("### ⏳ Generating SUMMARY…")
         with st.spinner("Please wait..."):
-            pass 
+            pass
         return
 
     # Confirmation UI
@@ -84,6 +84,7 @@ def show_done_dialog():
 
     if yes_clicked:
         st.session_state.generate_now = True
+        st.session_state.generating_summary = True 
         st.rerun()
 
 def get_user_interactive_abstracts(prolific_id: str):
