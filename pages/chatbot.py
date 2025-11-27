@@ -117,10 +117,6 @@ def show_done_dialog():
         st.rerun()
 
 def get_user_interactive_abstracts(prolific_id: str):
-    if prolific_id:
-        print(f">>>> prolific_id OK: {prolific_id}", file=sys.stderr)
-    else:
-        print(">>>> WARNING: prolific_id is missing!", file=sys.stderr)
     user = users_collection.find_one(
         {"prolific_id": prolific_id},
         {"_id": 0, "phases.interactive.abstracts": 1}
@@ -166,6 +162,10 @@ def interactive_instructions(prolific_id):
         st.rerun()
 
 def run_chatbot(prolific_id: str):
+    if prolific_id:
+        print(f">>>> prolific_id OK: {prolific_id}", file=sys.stderr)
+    else:
+        print(">>>> WARNING: prolific_id is missing!", file=sys.stderr)
     # set all the variables
     if "messages" not in st.session_state:
         st.session_state.messages = []
