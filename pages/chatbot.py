@@ -171,6 +171,9 @@ def run_chatbot(prolific_id: str):
         st.error("No interactive abstracts found for this user.")
         return
 
+    # ---------------------------
+    # Initialize core state keys
+    # ---------------------------
     for key, default in {
         "abstract_index": 0,
         "messages": [],
@@ -181,13 +184,40 @@ def run_chatbot(prolific_id: str):
         if key not in st.session_state:
             st.session_state[key] = default
 
-    total = len(abstracts)
     idx = st.session_state.abstract_index
+    total = len(abstracts)
+
+    # If out of abstracts
     if idx >= total:
         st.success("🎉 You've completed all interactive abstracts!")
         return
 
-    abstract = abstracts[idx]
+    # ---------------------------------------------------------
+    # PRIORITY 1: Use abstract passed from short_answers.py
+    # ---------------------------------------------------------
+    if (
+        "current_abstract" in st.session_state and
+        "abstract_title" in st.session_state and
+        "current_abstract_id" in st.session_state
+    ):
+        abstract = {
+            "abstract": st.session_state.current_abstract,
+            "abstract_title": st.session_state.abstract_title,
+            "abstract_id": st.session_state.current_abstract_id,
+        }
+
+    # ---------------------------------------------------------
+    # PRIORITY 2: Default — load using abstract_index
+    # ---------------------------------------------------------
+    else:
+        abstract = abstracts[idx]
+
+        # Save for next page use
+        st.session_state.current_abstract = abstract["abstract"]
+        st.session_state.abstract_title = abstract["abstract_title"]
+        st.session_state.current_abstract_id = abstract["abstract_id"]
+
+    # Extract ID
     abstract_id = abstract["abstract_id"]
 
     st.progress((idx + 1) / total)

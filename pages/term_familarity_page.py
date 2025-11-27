@@ -207,7 +207,6 @@ def run_terms(prolific_id: str):
         for idx, term_item in enumerate(abs_item["terms"]):
             term = term_item["term"]
             color = TERM_COLORS[idx % len(TERM_COLORS)]
-
             col_label, col_slider = st.columns([0.45, 0.55])
 
             with col_label:
