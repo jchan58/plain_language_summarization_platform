@@ -241,7 +241,7 @@ def run_terms(prolific_id: str):
                     font-weight:600;
                     display:flex;
                     align-items:center;
-                    height:42px;
+                    height:22px;
                 ">
                     {idx+1}. {term}
                 </div>

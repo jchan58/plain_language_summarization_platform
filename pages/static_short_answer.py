@@ -21,6 +21,8 @@ abstract = st.session_state.get("current_abstract", "")
 abstract_title = st.session_state.get("abstract_title", "")
 human_pls = st.session_state.get("human_written_pls", "")
 abstract_id = st.session_state.get("current_abstract_id", 0)
+
+
 def show_progress():
     if "progress_info" in st.session_state:
         progress = st.session_state.progress_info
