@@ -55,6 +55,27 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+def get_next_incomplete_abstract(prolific_id: str):
+    user = users_collection.find_one(
+        {"prolific_id": prolific_id},
+        {"phases.interactive.abstracts": 1, "_id": 0}
+    )
+
+    if not user:
+        return None
+
+    abstracts = user["phases"]["interactive"]["abstracts"]
+    for abstract_id in sorted(abstracts.keys(), key=lambda x: int(x)):
+        a = abstracts[abstract_id]
+        if not a.get("completed", False):
+            return {
+                "abstract_id": abstract_id,
+                "abstract": a.get("abstract", ""),
+                "abstract_title": a.get("abstract_title", "")
+            }
+
+    return None
+
 @st.dialog("Are you sure you are done asking questions?", dismissible=False)
 def show_done_dialog():
 
@@ -166,73 +187,36 @@ def run_chatbot(prolific_id: str):
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
-    abstracts = get_user_interactive_abstracts(prolific_id)
-    if not abstracts:
-        st.error("No interactive abstracts found for this user.")
-        return
-
-    # ---------------------------
-    # Initialize core state keys
-    # ---------------------------
-    for key, default in {
-        "abstract_index": 0,
-        "messages": [],
-        "question_count": 0,
-        "show_summary": False,
-        "generated_summary": "",
-    }.items():
-        if key not in st.session_state:
-            st.session_state[key] = default
-
-    idx = st.session_state.abstract_index
-    total = len(abstracts)
-
-    # If out of abstracts
-    if idx >= total:
+    abstract_dict = get_next_incomplete_abstract(prolific_id)
+    if not abstract_dict:
         st.success("🎉 You've completed all interactive abstracts!")
         return
 
-    # ---------------------------------------------------------
-    # PRIORITY 1: Use abstract passed from short_answers.py
-    # ---------------------------------------------------------
-    if (
-        "current_abstract" in st.session_state and
-        "abstract_title" in st.session_state and
-        "current_abstract_id" in st.session_state
-    ):
-        abstract = {
-            "abstract": st.session_state.current_abstract,
-            "abstract_title": st.session_state.abstract_title,
-            "abstract_id": st.session_state.current_abstract_id,
-        }
+    # Use dict for titles, ids, metadata
+    abstract_id = abstract_dict["abstract_id"]
+    abstract_title = abstract_dict["abstract_title"]
+    abstract = abstract_dict["abstract"]
 
-    # ---------------------------------------------------------
-    # PRIORITY 2: Default — load using abstract_index
-    # ---------------------------------------------------------
-    else:
-        abstract = abstracts[idx]
-
-        # Save for next page use
-        st.session_state.current_abstract = abstract["abstract"]
-        st.session_state.abstract_title = abstract["abstract_title"]
-        st.session_state.current_abstract_id = abstract["abstract_id"]
-
-    # Extract ID
-    abstract_id = abstract["abstract_id"]
-
-    st.progress((idx + 1) / total)
-    st.caption(f"Progress: {idx + 1} of {total} abstracts completed")
-    st.markdown(
-        """
-        ### 📝 Instructions
-        1. Read the scientific abstract on the **left side of the screen**.  
-        2. Use the **chatbot** on the right to ask questions.  
-        3. You must ask at least 3 questions.  
-        4. When finished asking questions, click **“I'm done asking questions.”** 
-        5. A SUMMARY will appear on the right side of the screen where the chatbot was. Please read this SUMMARY carefully. You’ll answer questions about it on the next page.
-        6. Click **Next** to move to the next page after you feel that you are ready to answer the questions. 
-        """
+    user = users_collection.find_one(
+    {"prolific_id": prolific_id},
+    {"phases.interactive.abstracts": 1, "_id": 0}
     )
+
+    abstracts_dict = user["phases"]["interactive"]["abstracts"]
+    total = len(abstracts_dict)
+    completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
+    progress_ratio = completed / total if total > 0 else 0
+
+    st.progress(progress_ratio)
+    st.markdown("""
+    ### 📝 Instructions
+    1. Read the scientific abstract on the **left side of the screen**.  
+    2. Use the **chatbot** on the right to ask questions.  
+    3. You must ask at least 3 questions.  
+    4. When finished asking questions, click **“I'm done asking questions.”**  
+    5. A SUMMARY will appear where the chatbot was — read it carefully.  
+    6. Click **Next** to move on.  
+    """)
 
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
@@ -250,8 +234,7 @@ def run_chatbot(prolific_id: str):
             if st.button("Increase text size"):
                 st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
                 st.rerun()
-        formatted_abstract = abstract["abstract"].replace("\n", "  \n")
-        abstract_title = abstract["abstract_title"]
+        formatted_abstract = abstract.replace("\n", "  \n")
         st.markdown(
             f"""
             <div style="
@@ -297,7 +280,7 @@ def run_chatbot(prolific_id: str):
                                     "You are a helpful assistant explaining scientific abstracts clearly and accurately. "
                                     "Use the abstract below to provide detailed but easy-to-understand answers."
                                 )},
-                                {"role": "system", "content": f"Abstract:\n{abstract['abstract']}"},
+                                {"role": "system", "content": f"Abstract:\n{abstract}"},
                             ] + st.session_state.messages
 
                             response = client_openai.chat.completions.create(
@@ -363,7 +346,7 @@ def run_chatbot(prolific_id: str):
                     model="gpt-4o",
                     messages=[
                         {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": f"Rewrite this abstract:\n\n{abstract['abstract']}"},
+                        {"role": "user", "content": f"Rewrite this abstract:\n\n{abstract}"},
                     ],
                 )
                 summary = response.choices[0].message.content.strip()
@@ -375,8 +358,8 @@ def run_chatbot(prolific_id: str):
                 st.session_state.last_completed_abstract = {
                     "prolific_id": prolific_id,
                     "abstract_id": abstract_id,
-                    "title": abstract["abstract_title"],
-                    "abstract": abstract["abstract"],
+                    "title": abstract_title,
+                    "abstract": abstract,
                     "pls": summary
                 }
 

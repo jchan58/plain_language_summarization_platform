@@ -221,7 +221,8 @@ def run_likert():
                 {
                     "$set": {
                         f"phases.interactive.abstracts.{abstract_id}.likert": responses,
-                        f"phases.interactive.abstracts.{abstract_id}.likert_submitted": True
+                        f"phases.interactive.abstracts.{abstract_id}.likert_submitted": True,
+                        f"phases.interactive.abstracts.{abstract_id}.completed": True
                     }
                 }
             )
