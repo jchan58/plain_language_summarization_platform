@@ -58,7 +58,6 @@ def run_likert():
     abstract_id = data["abstract_id"]
     abstract = data["abstract"]
     pls = data["pls"]
-    abstract_title = data["abstract_title"]
 
     st.markdown("""
         <style>

@@ -7,6 +7,13 @@ import streamlit.components.v1 as components
 
 import sys
 print(">>>> ENTERED CHATBOT PAGE <<<<", file=sys.stderr)
+if "next_interactive_abstract" in st.session_state:
+    print(">>>> next_interactive_abstract EXISTS:", 
+          st.session_state["next_interactive_abstract"],
+          type(st.session_state["next_interactive_abstract"]),
+          file=sys.stderr)
+else:
+    print(">>>> next_interactive_abstract DOES NOT EXIST", file=sys.stderr)
 
 st.markdown(
     """
