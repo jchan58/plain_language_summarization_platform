@@ -134,16 +134,13 @@ def get_conversation():
 def interactive_instructions(prolific_id):
     st.markdown("""
     ### Before you begin
-
     Please follow these steps:
-
     - Read the scientific abstract on the **left side of the screen**.
     - Use the **chatbot** on the right to ask questions.
     - You must ask **at least 3 questions** before continuing.
     - When you’re done, click **“I'm done asking questions.”**
     - A **summary** will appear where the chatbot was — read it carefully.
     - Click **Next** to move to the comprehension page.
-
     ---
     """)
 
@@ -197,6 +194,7 @@ def run_chatbot(prolific_id: str):
             st.switch_page("app.py")
 
     abstract_dict = get_next_incomplete_abstract(prolific_id)
+    st.write("DEBUG abstract_dict:", abstract_dict)
     if not abstract_dict:
         st.success("🎉 You've completed all interactive abstracts!")
         return
