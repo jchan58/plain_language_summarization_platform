@@ -92,7 +92,6 @@ def get_user_static_abstracts(prolific_id: str):
     return abstracts
 
 
-
 def run_terms(prolific_id: str):
 
     # ---------------- SIDEBAR ---------------- #
