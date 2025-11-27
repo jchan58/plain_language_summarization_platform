@@ -14,7 +14,6 @@ if "next_interactive_abstract" in st.session_state:
           file=sys.stderr)
 else:
     print(">>>> next_interactive_abstract DOES NOT EXIST", file=sys.stderr)
-
 st.markdown(
     """
     <style>

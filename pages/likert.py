@@ -256,9 +256,6 @@ def run_likert():
                 "abstract_title": next_abstract["abstract_title"]
             }
             st.write(next_abstract)
-            # ---------------------------------------------------------
-
-            # Clean session state so chatbot loads fresh
             for k in [
                 "survey_context",
                 "last_completed_abstract",
