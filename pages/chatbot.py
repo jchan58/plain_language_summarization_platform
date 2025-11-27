@@ -176,6 +176,23 @@ def run_chatbot(prolific_id: str):
     # set the font size 
     if "abstract_font_size" not in st.session_state:
         st.session_state.abstract_font_size = 18
+    if "next_interactive_abstract" in st.session_state:
+        abstract_dict = st.session_state.next_interactive_abstract
+    else:
+        abstract_dict = get_next_incomplete_abstract(prolific_id)
+
+    print(">>>> final abstract_dict:", abstract_dict, file=sys.stderr)
+
+    if not abstract_dict:
+        st.warning("No abstract available.")
+        return
+
+    # Use dict for titles, ids, metadata
+    abstract_id = abstract_dict["abstract_id"]
+    abstract_title = abstract_dict["abstract_title"]
+    abstract = abstract_dict["abstract"]
+    prolific_id = abstract_dict["prolific_id"]
+
     user = users_collection.find_one({"prolific_id": prolific_id})
     db_seen = (
         user.get("phases", {})
@@ -202,22 +219,6 @@ def run_chatbot(prolific_id: str):
             for key in ["messages", "question_count", "show_summary", "generated_summary", "generating_summary"]:
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
-    
-    if "next_interactive_abstract" in st.session_state:
-        abstract_dict = st.session_state.next_interactive_abstract
-    else:
-        abstract_dict = get_next_incomplete_abstract(prolific_id)
-
-    print(">>>> final abstract_dict:", abstract_dict, file=sys.stderr)
-
-    if not abstract_dict:
-        st.warning("No abstract available.")
-        return
-
-    # Use dict for titles, ids, metadata
-    abstract_id = abstract_dict["abstract_id"]
-    abstract_title = abstract_dict["abstract_title"]
-    abstract = abstract_dict["abstract"]
 
     user = users_collection.find_one(
     {"prolific_id": prolific_id},

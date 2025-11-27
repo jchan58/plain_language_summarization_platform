@@ -242,9 +242,19 @@ def run_likert():
                         "abstract_title": abstracts[aid].get("abstract_title", "")
                     }
                     break
-
+            
+            if next_abstract is None:
+                # user finished ALL abstracts → go to a completion page
+                st.session_state.next_interactive_abstract = None
+                st.switch_page("pages/completed.py")
+                return
             # Store for chatbot.py to use immediately
-            st.session_state.next_interactive_abstract = next_abstract
+            st.session_state.next_interactive_abstract = {
+                "prolific_id": prolific_id,
+                "abstract": next_abstract["abstract"],
+                "abstract_id": next_abstract["abstract_id"],
+                "abstract_title": next_abstract["abstract_title"]
+            }
             st.write(next_abstract)
             # ---------------------------------------------------------
 
