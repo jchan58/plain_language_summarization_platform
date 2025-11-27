@@ -58,33 +58,34 @@ st.markdown("""
 @st.dialog("Are you sure you are done asking questions?", dismissible=False)
 def show_done_dialog():
 
-    # Spinner state
-    if st.session_state.get("generate_now", False):
-        st.markdown("### ⏳ Generating SUMMARY…")
-        with st.spinner("Please wait..."):
-            pass
-        return
+    # If generating_summary was triggered
+    if st.session_state.get("dialog_generating", False):
+        st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
+        st.markdown("### ✍️ Generating SUMMARY...")
+        st.markdown("Please wait.")
+        st.spinner("")
 
-    # Confirmation UI
+        st.markdown("</div>", unsafe_allow_html=True)
+        return 
     st.markdown(
-        """You will be answering questions about this abstract on the next page 
-        and will not be able to return."""
+        """You will be answering questions about this abstract on the next page and will not be able to return to this page."""
     )
 
-    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+    col1, col2 = st.columns([1, 1])
 
     with col1:
         no_clicked = st.button("⬅️ No")
 
-    with col4:
+    with col2:
         yes_clicked = st.button("Yes ➡️")
 
     if no_clicked:
         st.rerun()
 
     if yes_clicked:
-        st.session_state.generate_now = True
-        st.session_state.generating_summary = True 
+        st.session_state.generating_summary = True
+        st.session_state.dialog_generating = True
+        st.rerun()
 
 def get_user_interactive_abstracts(prolific_id: str):
     user = users_collection.find_one(
@@ -299,12 +300,7 @@ def run_chatbot(prolific_id: str):
                     }},
                 )
                 show_done_dialog()
-                return
 
-        if st.session_state.get("generate_now", False) and not st.session_state.get("generating_summary", False):
-            show_done_dialog()
-            st.session_state.generating_summary = True
-            return
         elif st.session_state.get("generating_summary", False):
             with st.spinner(""):
                 doc = users_collection.find_one(
