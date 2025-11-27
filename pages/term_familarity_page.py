@@ -403,6 +403,15 @@ def run_terms(prolific_id: str):
             # RESET for next abstract
             st.session_state.stage_static = "familiarity"
             st.session_state.extra_info_state = {}
+            for key in [
+                    "qa_index",
+                    "feedback",
+                    "main_idea_box",
+                    "method_box",
+                    "result_box",
+                ]:
+                    if key in st.session_state:
+                        st.session_state.pop(key)
             st.switch_page("pages/static_short_answer.py")
 
 if "prolific_id" in st.session_state:
