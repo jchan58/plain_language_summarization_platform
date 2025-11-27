@@ -146,13 +146,13 @@ def run_feedback():
 
         with nav_col1:
             if st.session_state.qa_index > 0:
-                if st.button("⬅️ Back"):
+                if st.button("⬅ Previous Question"):
                     st.session_state.qa_index -= 1
                     st.rerun()
 
         with nav_col3:
             if st.session_state.qa_index < len(questions) - 1:
-                if st.button("Next ➡️"):
+                if st.button("Next Question ➡"):
                     st.session_state.qa_index += 1
                     st.rerun()
 

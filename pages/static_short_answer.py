@@ -16,14 +16,6 @@ st.markdown(
 
 st.set_page_config(layout="wide")
 
-# extract what was passed in 
-abstract = st.session_state.get("current_abstract", "")
-abstract_title = st.session_state.get("abstract_title", "")
-human_pls = st.session_state.get("human_written_pls", "")
-abstract_id = st.session_state.get("current_abstract_id", 0)
-prolific_id = st.session_state.get("prolific_id", 0)
-
-
 def show_progress():
     if "progress_info" in st.session_state:
         progress = st.session_state.progress_info
@@ -68,10 +60,7 @@ def run_feedback():
         "abstract_id": st.session_state.get("current_abstract_id", "")
     }
 
-    # ---------------- LAYOUT ---------------- #
     col1, col2 = st.columns([1, 1], gap="large")
-
-    # ---------------- SUMMARY COLUMN ---------------- #
     with col1:
         st.title("SUMMARY")
 
@@ -85,6 +74,7 @@ def run_feedback():
             if st.button("Increase Text Size"):
                 st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
                 st.rerun()
+
         st.markdown(
             f"""
             <div style="
@@ -102,8 +92,6 @@ def run_feedback():
             """,
             unsafe_allow_html=True
         )
-
-    # ---------------- QUESTIONS COLUMN ---------------- #
     with col2:
         st.title("Short Answer Questions")
 
@@ -136,7 +124,6 @@ def run_feedback():
             )
         )
 
-        # Character count
         st.caption(f"{len(st.session_state.feedback[key])} characters")
         st.markdown(
             f"<span style='color:#555;'>Each response must be at least {MIN_CHARS} characters.</span>",
@@ -157,13 +144,13 @@ def run_feedback():
         nav1, nav2, nav3 = st.columns([1, 2, 1])
 
         with nav1:
-            if st.session_state.qa_index > 0 and st.button("⬅ Back"):
+            if st.session_state.qa_index > 0 and st.button("⬅ Previous Question"):
                 st.session_state.qa_index -= 1
                 st.rerun()
 
         with nav3:
             if st.session_state.qa_index < 2:
-                if st.button("Next ➡"):
+                if st.button("Next Question ➡"):
                     st.session_state.qa_index += 1
                     st.rerun()
             else:
@@ -188,7 +175,6 @@ def run_feedback():
                         }}
                     )
 
-                    # pass context forward
                     st.session_state.survey_context = {
                         "abstract_title": data["title"],
                         "abstract": data["abstract"],
@@ -196,8 +182,7 @@ def run_feedback():
                         "prolific_id": data["prolific_id"],
                         "abstract_id": data["abstract_id"]
                     }
-
-                    st.switch_page("pages/likert.py")
+                    st.switch_page("pages/static_likert.py")
 
 
 run_feedback()

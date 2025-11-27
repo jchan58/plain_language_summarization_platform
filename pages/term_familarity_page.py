@@ -191,10 +191,6 @@ def run_terms(prolific_id: str):
         unsafe_allow_html=True
     )
 
-
-    # ------------------------------------------------------------------ #
-    # ---------------------- FAMILIARITY PAGE -------------------------- #
-    # ------------------------------------------------------------------ #
     if st.session_state.stage_static == "familiarity":
 
         st.subheader("How familiar are you with each term?")
@@ -268,11 +264,7 @@ def run_terms(prolific_id: str):
             st.warning("⚠️ Please answer all familiarity questions before continuing.")
 
         return  # IMPORTANT — stops rendering here when on the familiarity page
-
-
-    # ------------------------------------------------------------------ #
-    # ---------------------- EXTRA INFO PAGE --------------------------- #
-    # ------------------------------------------------------------------ #
+    
     if st.session_state.stage_static == "extra_info":
 
         st.subheader("What additional information would you like for each term?")
@@ -375,12 +367,13 @@ def run_terms(prolific_id: str):
                 {"prolific_id": prolific_id},
                 {"$set": {f"phases.static.abstracts.{abstract_id}.term_familarity": final_terms}}
             )
-
             st.session_state.current_abstract_id = abstract_id
             st.session_state.current_abstract = abs_item["abstract"]
             st.session_state.human_written_pls = abs_item["human_written_pls"]
             st.session_state.abstract_title = abs_item["abstract_title"]
             st.session_state.prolific_id = prolific_id
+
+            # RESET for next abstract
             st.session_state.stage_static = "familiarity"
             st.session_state.extra_info_state = {}
             st.switch_page("pages/static_short_answer.py")
