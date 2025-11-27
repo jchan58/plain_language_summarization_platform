@@ -227,15 +227,29 @@ def run_terms(prolific_id: str):
 
         for idx, term_item in enumerate(abs_item["terms"]):
             term = term_item["term"]
+            color = TERM_COLORS[idx % len(TERM_COLORS)]
+
+            # Colored label for slider
+            colored_label = (
+                f"<span style='background-color:{color}; "
+                f"padding:4px 6px; border-radius:4px;'>"
+                f"{idx+1}. {term}"
+                f"</span>"
+            )
 
             familiarity = st.slider(
-                label=f"{idx+1}. {term}",
+                label=colored_label,
                 min_value=1,
                 max_value=5,
                 value=3,
                 step=1,
-                key=f"fam_{abstract_id}_{idx}"
+                key=f"fam_{abstract_id}_{idx}",
+                help=None,
+                format="%d",
             )
+
+            # Render the HTML for the label
+            st.markdown(colored_label, unsafe_allow_html=True)
 
             updated_terms.append({
                 "term": term,
@@ -244,6 +258,7 @@ def run_terms(prolific_id: str):
             })
 
         st.markdown("---")
+
         all_fam_filled = all(
             st.session_state.get(f"fam_{abstract_id}_{idx}") is not None
             for idx in range(len(abs_item["terms"]))
@@ -259,6 +274,7 @@ def run_terms(prolific_id: str):
 
     if st.session_state.stage_static == "extra_info":
         st.subheader("What additional information would you like for each term?")
+        st.markdown("Choose at least one option per term, unless you select “None.")
 
         terms = [t["term"] for t in abs_item["terms"]]
 
@@ -360,9 +376,6 @@ def run_terms(prolific_id: str):
 
         # Validation check
         all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
-        if not all_filled:
-            st.warning("⚠️ Please choose at least one option for every term.")
-
         if st.button("Next", disabled=not all_filled):
             final_terms = st.session_state.updated_terms_tmp
 
