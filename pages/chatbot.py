@@ -157,7 +157,6 @@ def interactive_instructions(prolific_id):
         st.rerun()
 
 def run_chatbot(prolific_id: str):
-    
     # set all the variables
     if "messages" not in st.session_state:
         st.session_state.messages = []

@@ -182,7 +182,7 @@ def run_feedback():
                         }}
                     )
 
-                    st.session_state.last_completed_abstract = {
+                    st.session_state.survey_context= {
                         "abstract_title": data["title"],
                         "abstract": data["abstract"],
                         "pls": data["pls"],
