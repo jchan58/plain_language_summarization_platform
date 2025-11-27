@@ -244,10 +244,13 @@ def run_likert():
                     break
             
             if next_abstract is None:
-                # user finished ALL abstracts → go to a completion page
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {"phases.interactive.completed": True}}
+                )
                 st.session_state.next_interactive_abstract = None
                 st.switch_page("pages/completed.py")
-                retur
+                return
             # Store for chatbot.py to use immediately
             st.session_state.next_interactive_abstract = {
                 "abstract": next_abstract["abstract"],
