@@ -247,14 +247,17 @@ def run_likert():
                 # user finished ALL abstracts → go to a completion page
                 st.session_state.next_interactive_abstract = None
                 st.switch_page("pages/completed.py")
-                return
+                retur
             # Store for chatbot.py to use immediately
             st.session_state.next_interactive_abstract = {
-                "prolific_id": prolific_id,
                 "abstract": next_abstract["abstract"],
                 "abstract_id": next_abstract["abstract_id"],
                 "abstract_title": next_abstract["abstract_title"]
             }
+            st.write(next_abstract)
+            # ---------------------------------------------------------
+
+            # Clean session state so chatbot loads fresh
             for k in [
                 "survey_context",
                 "last_completed_abstract",

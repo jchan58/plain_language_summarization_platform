@@ -118,6 +118,7 @@ def show_done_dialog():
         st.rerun()
 
 def get_user_interactive_abstracts(prolific_id: str):
+    print(f"prolific_id: {prolific_id}")
     user = users_collection.find_one(
         {"prolific_id": prolific_id},
         {"_id": 0, "phases.interactive.abstracts": 1}
@@ -190,7 +191,6 @@ def run_chatbot(prolific_id: str):
     abstract_id = abstract_dict["abstract_id"]
     abstract_title = abstract_dict["abstract_title"]
     abstract = abstract_dict["abstract"]
-    prolific_id = abstract_dict["prolific_id"]
 
     user = users_collection.find_one({"prolific_id": prolific_id})
     db_seen = (
