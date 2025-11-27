@@ -399,3 +399,4 @@ def run_chatbot(prolific_id: str):
                 st.session_state.messages = []
                 st.session_state.question_count = 0
                 st.switch_page("pages/short_answers.py")
+print(">>>> BOTTOM OF FILE REACHED", file=sys.stderr)
