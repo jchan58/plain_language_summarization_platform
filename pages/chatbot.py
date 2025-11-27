@@ -4,7 +4,6 @@ from datetime import datetime
 import pandas as pd
 from openai import OpenAI
 import streamlit.components.v1 as components
-
 import sys
 print(">>>> ENTERED CHATBOT PAGE <<<<", file=sys.stderr)
 if "next_interactive_abstract" in st.session_state:
@@ -118,7 +117,7 @@ def show_done_dialog():
         st.rerun()
 
 def get_user_interactive_abstracts(prolific_id: str):
-    print(f"prolific_id: {prolific_id}")
+    print(f">>>> get_user_interactive_abstracts() prolific_id: {prolific_id}", file=sys.stderr)
     user = users_collection.find_one(
         {"prolific_id": prolific_id},
         {"_id": 0, "phases.interactive.abstracts": 1}
