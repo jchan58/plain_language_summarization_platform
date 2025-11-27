@@ -170,8 +170,8 @@ def run_feedback():
                     users_collection.update_one(
                         {"prolific_id": data["prolific_id"]},
                         {"$set": {
-                            f"phases.interactive.abstracts.{data['abstract_id']}.short_answers": feedback_data,
-                            f"phases.interactive.abstracts.{data['abstract_id']}.feedback_submitted": True
+                            f"phases.static.abstracts.{data['abstract_id']}.short_answers": feedback_data,
+                            f"phases.static.abstracts.{data['abstract_id']}.feedback_submitted": True
                         }}
                     )
 

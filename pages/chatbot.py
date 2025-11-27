@@ -12,13 +12,13 @@ if "prolific_id" in st.session_state:
     print("VALUE = ", st.session_state.prolific_id, file=sys.stderr)
 else:
     print("VALUE = MISSING", file=sys.stderr)
-if "next_interactive_abstract" in st.session_state:
-    print(">>>> next_interactive_abstract EXISTS:", 
-          st.session_state["next_interactive_abstract"],
-          type(st.session_state["next_interactive_abstract"]),
+if "next_static_abstract" in st.session_state:
+    print(">>>> next_static_abstract EXISTS:", 
+          st.session_state["next_static_abstract"],
+          type(st.session_state["next_static_abstract"]),
           file=sys.stderr)
 else:
-    print(">>>> next_interactive_abstract DOES NOT EXIST", file=sys.stderr)
+    print(">>>> next_static_abstract DOES NOT EXIST", file=sys.stderr)
 st.markdown(
     """
     <style>

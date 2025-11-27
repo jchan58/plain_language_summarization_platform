@@ -1,6 +1,22 @@
 import streamlit as st
 from pymongo import MongoClient
 import re
+import sys
+
+print(">>>> ENTERED CHATBOT PAGE <<<<", file=sys.stderr)
+print(">>>> chatbot.py LOADED", file=sys.stderr)
+print("prolific_id IN SESSION? ", "prolific_id" in st.session_state, file=sys.stderr)
+if "prolific_id" in st.session_state:
+    print("VALUE = ", st.session_state.prolific_id, file=sys.stderr)
+else:
+    print("VALUE = MISSING", file=sys.stderr)
+if "next_interactive_abstract" in st.session_state:
+    print(">>>> next_static_abstract EXISTS:", 
+          st.session_state["next_interactive_abstract"],
+          type(st.session_state["next_interactive_abstract"]),
+          file=sys.stderr)
+else:
+    print(">>>> next_interactive_abstract DOES NOT EXIST", file=sys.stderr)
 
 TERM_COLORS = [
     "#fffa8b",  # yellow
