@@ -195,12 +195,18 @@ def run_chatbot(prolific_id: str):
             for key in ["messages", "question_count", "show_summary", "generated_summary", "generating_summary"]:
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
+    
+    if "next_interactive_abstract" in st.session_state:
+        abstract_dict = st.session_state.next_interactive_abstract
+        st.session_state.pop("next_interactive_abstract", None)
 
-    abstract_dict = get_next_incomplete_abstract(prolific_id)
-    print(">>>> abstract_dict:", abstract_dict, file=sys.stderr)
-    st.write("DEBUG abstract_dict:", abstract_dict)
+    else:
+        abstract_dict = get_next_incomplete_abstract(prolific_id)
+
+    print(">>>> final abstract_dict:", abstract_dict, file=sys.stderr)
+
     if not abstract_dict:
-        st.success("🎉 You've completed all interactive abstracts!")
+        st.warning("No abstract available.")
         return
 
     # Use dict for titles, ids, metadata

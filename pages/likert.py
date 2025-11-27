@@ -221,10 +221,32 @@ def run_likert():
                 {
                     "$set": {
                         f"phases.interactive.abstracts.{abstract_id}.likert": responses,
-                        f"phases.interactive.abstracts.{abstract_id}.likert_submitted": True
+                        f"phases.interactive.abstracts.{abstract_id}.likert_submitted": True,
+                        f"phases.interactive.abstracts.{abstract_id}.completed": True
                     }
                 }
             )
+
+            user = users_collection.find_one(
+                {"prolific_id": prolific_id},
+                {"phases.interactive.abstracts": 1, "_id": 0}
+            )
+
+            abstracts = user["phases"]["interactive"]["abstracts"]
+
+            next_abstract = None
+            for aid in sorted(abstracts.keys(), key=lambda x: int(x)):
+                if not abstracts[aid].get("completed", False):
+                    next_abstract = {
+                        "abstract_id": aid,
+                        "abstract": abstracts[aid].get("abstract", ""),
+                        "abstract_title": abstracts[aid].get("abstract_title", "")
+                    }
+                    break
+
+            # Store for chatbot.py to use immediately
+            st.session_state.next_interactive_abstract = next_abstract
+            # ---------------------------------------------------------
 
             # Clean session state so chatbot loads fresh
             for k in [
@@ -238,6 +260,7 @@ def run_likert():
                 st.session_state.pop(k, None)
 
             st.switch_page("pages/chatbot.py")
+
             
 
 run_likert()
