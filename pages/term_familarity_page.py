@@ -376,20 +376,11 @@ def run_terms(prolific_id: str):
                 {"$set": {f"phases.static.abstracts.{abstract_id}.term_familarity": final_terms}}
             )
 
-            st.session_state.last_completed_abstract = {
-                "abstract_title": abs_item["abstract_title"],
-                "abstract": abs_item["abstract"],
-                "human_written_pls": abs_item["human_written_pls"],
-                "abstract_id": abstract_id,
-                "prolific_id": prolific_id
-            }
             st.session_state.current_abstract_id = abstract_id
             st.session_state.current_abstract = abs_item["abstract"]
             st.session_state.human_written_pls = abs_item["human_written_pls"]
             st.session_state.abstract_title = abs_item["abstract_title"]
             st.session_state.prolific_id = prolific_id
-
-            # RESET for next abstract
             st.session_state.stage_static = "familiarity"
             st.session_state.extra_info_state = {}
             st.switch_page("pages/static_short_answer.py")

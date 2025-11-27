@@ -59,8 +59,7 @@ def run_feedback():
     # Font size
     if "summary_font_size" not in st.session_state:
         st.session_state.summary_font_size = 18
-
-    # Load directly from session state (no last_completed_abstract needed)
+        
     data = {
         "title": st.session_state.get("abstract_title", ""),
         "abstract": st.session_state.get("current_abstract", ""),
