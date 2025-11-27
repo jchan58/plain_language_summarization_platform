@@ -5,8 +5,8 @@ import pandas as pd
 from openai import OpenAI
 import streamlit.components.v1 as components
 import sys
-print(">>>> ENTERED CHATBOT PAGE <<<<", file=sys.stderr)
-print(">>>> chatbot.py LOADED", file=sys.stderr)
+print(">>>> ENTERED TERM PAGE <<<<", file=sys.stderr)
+print(">>>> term_familarity.py LOADED", file=sys.stderr)
 print("prolific_id IN SESSION? ", "prolific_id" in st.session_state, file=sys.stderr)
 if "prolific_id" in st.session_state:
     print("VALUE = ", st.session_state.prolific_id, file=sys.stderr)
