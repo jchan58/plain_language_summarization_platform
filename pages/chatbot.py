@@ -217,6 +217,7 @@ def run_chatbot(prolific_id: str):
     progress_ratio = completed / total if total > 0 else 0
 
     st.progress(progress_ratio)
+    st.caption(f"Completed {completed} of {total} abstracts")
     st.markdown("""
     ### 📝 Instructions
     1. Read the scientific abstract on the **left side of the screen**.  
@@ -359,11 +360,8 @@ def run_chatbot(prolific_id: str):
                     ],
                 )
                 summary = response.choices[0].message.content.strip()
-
                 st.session_state.generated_summary = summary
                 st.session_state.generating_summary = False
-
-                # store the summary
                 st.session_state.last_completed_abstract = {
                     "prolific_id": prolific_id,
                     "abstract_id": abstract_id,
@@ -378,9 +376,6 @@ def run_chatbot(prolific_id: str):
                         f"phases.interactive.abstracts.{abstract_id}.completed": True
                     }}
                 )
-
-                # Reset chat state
                 st.session_state.messages = []
                 st.session_state.question_count = 0
-                # Go to short answers page
                 st.switch_page("pages/short_answers.py")
