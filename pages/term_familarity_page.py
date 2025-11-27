@@ -260,79 +260,99 @@ def run_terms(prolific_id: str):
     if st.session_state.stage_static == "extra_info":
         st.subheader("What additional information would you like for each term?")
 
-        # --------------------------------------------------
-        # Initialize table only once
-        # --------------------------------------------------
         terms = [t["term"] for t in abs_item["terms"]]
 
-        if "extra_table" not in st.session_state:
-            st.session_state.extra_table = [
-                {"Term": t, "Extra Information": []}
-                for t in terms
-            ]
+        # Initialize once
+        if "extra_info_state" not in st.session_state:
+            st.session_state.extra_info_state = {
+                term: [] for term in terms
+            }
 
-        # --------------------------------------------------
-        # Render editor
-        # --------------------------------------------------
-        edited_extra = st.data_editor(
-            st.session_state.extra_table,
-            key="extra_editor",
-            hide_index=True,
-            column_config={
-                "Extra Information": st.column_config.MultiselectColumn(
-                    label="Additional Information Needed",
-                    options=["Definition", "Example", "Background", "None"],
-                )
-            },
-            use_container_width=True,
-        )
-
-        # --------------------------------------------------
-        # Apply "None" logic BEFORE updating session state
-        # --------------------------------------------------
         cleaned_extra = []
-        for row in edited_extra:
-            selections = row["Extra Information"]
 
-            # If "None" is chosen, strip all other selections
-            if "None" in selections:
-                selections = ["None"]
+        for idx, term in enumerate(terms):
+            st.markdown(f"### {idx + 1}. {term}")
+
+            # Checkbox keys must be unique
+            base_key = f"extra_{abstract_id}_{idx}"
+
+            # Current selections
+            current = st.session_state.extra_info_state.get(term, [])
+
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                def_checked = "Definition" in current
+                if st.checkbox("Definition", value=def_checked, key=f"{base_key}_def"):
+                    current = [x for x in current if x != "None"]
+                    if "Definition" not in current:
+                        current.append("Definition")
+                else:
+                    current = [x for x in current if x != "Definition"]
+
+            with col2:
+                ex_checked = "Example" in current
+                if st.checkbox("Example", value=ex_checked, key=f"{base_key}_ex"):
+                    current = [x for x in current if x != "None"]
+                    if "Example" not in current:
+                        current.append("Example")
+                else:
+                    current = [x for x in current if x != "Example"]
+
+            with col3:
+                bg_checked = "Background" in current
+                if st.checkbox("Background", value=bg_checked, key=f"{base_key}_bg"):
+                    current = [x for x in current if x != "None"]
+                    if "Background" not in current:
+                        current.append("Background")
+                else:
+                    current = [x for x in current if x != "Background"]
+
+            with col4:
+                none_checked = "None" in current
+                if st.checkbox("None", value=none_checked, key=f"{base_key}_none"):
+                    # If selecting None, wipe all others
+                    current = ["None"]
+                else:
+                    # If unchecking None
+                    if "None" in current:
+                        current = []
+
+            # Update session
+            st.session_state.extra_info_state[term] = current
 
             cleaned_extra.append({
-                "Term": row["Term"],
-                "Extra Information": selections
+                "term": term,
+                "extra_information": current
             })
 
-        # Save cleaned version so table updates correctly on next rerun
-        st.session_state.extra_table = cleaned_extra
+            st.markdown("---")
 
-        # --------------------------------------------------
         # Validation check
-        # --------------------------------------------------
-        all_filled = all(len(row["Extra Information"]) > 0 for row in cleaned_extra)
+        all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
         if not all_filled:
-            st.warning("⚠️ Please select at least one option for each term.")
+            st.warning("⚠️ Please choose at least one option for every term.")
 
-        # --------------------------------------------------
-        # NEXT BUTTON
-        # --------------------------------------------------
+        # Next button
         if st.button("Next", disabled=not all_filled):
             final_terms = st.session_state.updated_terms_tmp
 
-            # Merge familiarity + extra_info
-            for i, row in enumerate(cleaned_extra):
-                final_terms[i]["extra_information"] = row["Extra Information"]
+            # merge familiarity + extra info
+            for i, extra_row in enumerate(cleaned_extra):
+                final_terms[i]["extra_information"] = extra_row["extra_information"]
 
             users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {"$set": {
                     f"phases.static.abstracts.{abstract_id}.term_familarity": final_terms
-                }},
+                }}
             )
 
-            # Reset state
+            # Reset session state for next abstract
+            st.session_state.stage_static = "familiarity"
+            st.session_state.extra_info_state = {}
+
             st.session_state.current_abstract_id = abstract_id
             st.session_state.human_written_pls = abs_item["human_written_pls"]
-            st.session_state.stage_static = "familiarity"
 
             st.switch_page("static_summary")
