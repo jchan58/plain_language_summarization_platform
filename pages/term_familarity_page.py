@@ -286,6 +286,7 @@ def run_terms(prolific_id: str):
         st.session_state.stage_static = "extra_info"
         st.session_state.updated_terms_tmp = updated_terms
         st.rerun()
+        return 
 
     if not all_fam_filled:
         st.warning("⚠️ Please answer all familiarity questions before continuing.")
@@ -416,3 +417,4 @@ def run_terms(prolific_id: str):
             st.session_state.human_written_pls = abs_item["human_written_pls"]
             st.session_state.prolific_id = prolific_id
             st.switch_page("pages/static_short_answer.py")
+            return 
