@@ -391,3 +391,11 @@ def run_terms(prolific_id: str):
             st.session_state.stage_static = "familiarity"
             st.session_state.extra_info_state = {}
             st.switch_page("pages/static_short_answer.py")
+
+if "prolific_id" in st.session_state:
+    run_terms(st.session_state.prolific_id)
+else:
+    st.error("No MTurk / Prolific ID found in session. Please log in again.")
+    print(">>>> ERROR: prolific_id missing when trying to run_chatbot", file=sys.stderr)
+
+print(">>>> BOTTOM OF FILE REACHED", file=sys.stderr)

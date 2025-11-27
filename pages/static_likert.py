@@ -234,6 +234,7 @@ def run_likert():
 
             abstracts = user["phases"]["static"]["abstracts"]
 
+            # Find next uncompleted static abstract
             next_abstract = None
             for aid in sorted(abstracts.keys(), key=lambda x: int(x)):
                 if not abstracts[aid].get("completed", False):
@@ -243,22 +244,26 @@ def run_likert():
                         "abstract_title": abstracts[aid].get("abstract_title", "")
                     }
                     break
-            
+
+            # If NO more abstracts → mark static phase complete
             if next_abstract is None:
                 users_collection.update_one(
                     {"prolific_id": prolific_id},
                     {"$set": {"phases.static.completed": True}}
                 )
+
                 st.session_state.next_static_abstract = None
                 st.switch_page("pages/completed.py")
                 return
-            # Store for chatbot.py to use immediately
+
+            # Otherwise → save next abstract and move forward
             st.session_state.next_static_abstract = {
                 "abstract": next_abstract["abstract"],
                 "abstract_id": next_abstract["abstract_id"],
                 "abstract_title": next_abstract["abstract_title"]
             }
-            st.write(next_abstract)
+
+            # Clear old data from last abstract
             for k in [
                 "survey_context",
                 "last_completed_abstract",
