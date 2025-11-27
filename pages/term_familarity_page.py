@@ -253,7 +253,7 @@ def run_terms(prolific_id: str):
             # This div lifts the slider upward to align with the label
             st.markdown(
                 """
-                <div style="margin-top:-10px;">
+                <div style="margin-top:-25px;">
                 """,
                 unsafe_allow_html=True,
             )
@@ -412,7 +412,7 @@ def run_terms(prolific_id: str):
             # Reset for next abstract
             st.session_state.stage_static = "familiarity"
             st.session_state.extra_info_state = {}
-
+            st.session_state.current_abstract = abs_item["abstract"]
             st.session_state.current_abstract_id = abstract_id
             st.session_state.human_written_pls = abs_item["human_written_pls"]
 
