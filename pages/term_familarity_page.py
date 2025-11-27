@@ -49,6 +49,20 @@ db = get_mongo_client()["pls"]
 users_collection = db["users"]
 abstracts_collection = db["abstracts"]
 
+# get number of abstracts 
+def get_static_progress(prolific_id):
+    user = users_collection.find_one(
+        {"prolific_id": prolific_id},
+        {"phases.static.abstracts": 1, "_id": 0}
+    )
+
+    if not user:
+        return 0, 0
+    abstracts = user["phases"]["static"]["abstracts"]
+    total = len(abstracts)
+    completed = sum(1 for a in abstracts.values() if a.get("completed", False))
+    return completed, total
+
 # highlight the terms in the abstract
 def highlight_terms_in_abstract(abstract: str, terms: list):
     highlighted = abstract
@@ -159,11 +173,10 @@ def run_terms(prolific_id: str):
     abs_item = abstracts[st.session_state.static_index]
     abstract_id = abs_item["abstract_id"]
 
-    current_num = st.session_state.static_index + 1
-    total_num = len(abstracts)
-
-    st.progress(current_num / total_num)
-    st.markdown(f"**Progress:** {current_num} / {total_num} abstracts**")
+    completed, total = get_static_progress(prolific_id)
+    current = completed + 1  
+    st.progress(current / total)
+    st.markdown(f"**Progress:** {current} / {total} abstracts**")
 
     # ABSTRACT HEADER
     st.markdown("""<style>.sticky-abs {position:sticky;top:0;z-index:50;padding-bottom:8px;background:white;}</style>""",
