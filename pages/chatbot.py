@@ -397,15 +397,14 @@ def run_chatbot(prolific_id: str):
                 st.session_state.messages = []
                 st.session_state.question_count = 0
                 for key in [
+                    "qa_index",
                     "feedback",
-                    "main_idea",
-                    "method",
-                    "result",
-                    "main_idea_text",
-                    "method_text",
-                    "result_text",
+                    "main_idea_box",
+                    "method_box",
+                    "result_box",
                 ]:
-                    st.session_state.pop(key, None)
+                    if key in st.session_state:
+                        st.session_state.pop(key)
                 st.switch_page("pages/short_answers.py")
 if "prolific_id" in st.session_state:
     run_chatbot(st.session_state.prolific_id)
