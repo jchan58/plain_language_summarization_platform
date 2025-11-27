@@ -212,66 +212,64 @@ def run_terms(prolific_id: str):
         """,
         unsafe_allow_html=True
     )
-    if st.session_state.stage_static == "familiarity":
-        st.subheader("How familiar are you with each term?")
-        st.markdown("""
-        **Familiarity Scale**  
-        1 = Not familiar  
-        2 = Somewhat unfamiliar  
-        3 = Moderately familiar  
-        4 = Familiar  
-        5 = Extremely familiar  
-        """)
+    st.subheader("How familiar are you with each term?")
+    st.markdown("""
+    **Familiarity Scale**  
+    1 = Not familiar  
+    2 = Somewhat unfamiliar  
+    3 = Moderately familiar  
+    4 = Familiar  
+    5 = Extremely familiar  
+    """)
 
-        updated_terms = []
+    updated_terms = []
 
-        for idx, term_item in enumerate(abs_item["terms"]):
-            term = term_item["term"]
-            color = TERM_COLORS[idx % len(TERM_COLORS)]
+    for idx, term_item in enumerate(abs_item["terms"]):
+        term = term_item["term"]
+        color = TERM_COLORS[idx % len(TERM_COLORS)]
 
-            # Colored label for slider
-            colored_label = (
-                f"<span style='background-color:{color}; "
-                f"padding:4px 6px; border-radius:4px;'>"
-                f"{idx+1}. {term}"
-                f"</span>"
+        # Two column row: term (left), slider (right)
+        col_label, col_slider = st.columns([0.45, 0.55])
+
+        with col_label:
+            st.markdown(
+                f"<div style='background-color:{color}; padding:6px 10px; "
+                f"border-radius:6px; font-size:16px; font-weight:600;'>"
+                f"{idx+1}. {term}</div>",
+                unsafe_allow_html=True,
             )
 
+        with col_slider:
             familiarity = st.slider(
-                label=colored_label,
+                " ",  # empty label so slider aligns cleanly
                 min_value=1,
                 max_value=5,
                 value=3,
                 step=1,
                 key=f"fam_{abstract_id}_{idx}",
-                help=None,
-                format="%d",
             )
 
-            # Render the HTML for the label
-            st.markdown(colored_label, unsafe_allow_html=True)
+        updated_terms.append({
+            "term": term,
+            "familiarity_score": familiarity,
+            "extra_information": []
+        })
 
-            updated_terms.append({
-                "term": term,
-                "familiarity_score": familiarity,
-                "extra_information": []
-            })
+    st.markdown("---")
 
-        st.markdown("---")
+    all_fam_filled = all(
+        st.session_state.get(f"fam_{abstract_id}_{idx}") is not None
+        for idx in range(len(abs_item["terms"]))
+    )
 
-        all_fam_filled = all(
-            st.session_state.get(f"fam_{abstract_id}_{idx}") is not None
-            for idx in range(len(abs_item["terms"]))
-        )
+    if st.button("Next") and all_fam_filled:
+        st.session_state.stage_static = "extra_info"
+        st.session_state.updated_terms_tmp = updated_terms
+        st.rerun()
 
-        if st.button("Next") and all_fam_filled:
-            st.session_state.stage_static = "extra_info"
-            st.session_state.updated_terms_tmp = updated_terms
-            st.rerun()
-
-        if not all_fam_filled:
-            st.warning("⚠️ Please answer all familiarity questions before continuing.")
-
+    if not all_fam_filled:
+        st.warning("⚠️ Please answer all familiarity questions before continuing.")
+    
     if st.session_state.stage_static == "extra_info":
         st.subheader("What additional information would you like for each term?")
         st.markdown("Choose at least one option per term, unless you select “None.")
