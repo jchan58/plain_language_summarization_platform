@@ -405,7 +405,7 @@ def run_chatbot(prolific_id: str):
                     "method_text",
                     "result_text",
                 ]:
-                st.session_state.pop(key, None)
+                    st.session_state.pop(key, None)
                 st.switch_page("pages/short_answers.py")
 if "prolific_id" in st.session_state:
     run_chatbot(st.session_state.prolific_id)
