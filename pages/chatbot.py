@@ -261,13 +261,13 @@ def run_chatbot(prolific_id: str):
         )
 
     with col2:
-        if not st.session_state.show_summary and not st.session_state.get("generating_summary", False):
+        if not st.session_state.get("show_summary", False) and not st.session_state.get("generating_summary", False):
             st.markdown("### 💬 Chat with the Chatbot")
             messages = st.container(height=550, border=True)
             for msg in st.session_state.messages:
                 messages.chat_message(msg["role"]).write(msg["content"])
 
-            if not st.session_state.show_summary and not st.session_state.get("generating_summary", False):
+            if not st.session_state.get("show_summary", False) and not st.session_state.get("generating_summary", False):
                 if prompt := st.chat_input("Type your question here..."):
                     st.session_state.messages.append({"role": "user", "content": prompt})
                     st.session_state.question_count += 1
