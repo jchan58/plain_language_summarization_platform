@@ -246,6 +246,7 @@ def run_likert():
 
             # Store for chatbot.py to use immediately
             st.session_state.next_interactive_abstract = next_abstract
+            st.write(next_abstract)
             # ---------------------------------------------------------
 
             # Clean session state so chatbot loads fresh
