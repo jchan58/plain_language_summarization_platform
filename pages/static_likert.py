@@ -43,7 +43,7 @@ def run_likert():
     )
 
     if "survey_context" not in st.session_state:
-        st.warning("Please complete the interactive session first.")
+        st.warning("Please complete previous task.")
         st.stop()
     
     if "abstract_font_size" not in st.session_state:
@@ -237,8 +237,9 @@ def run_likert():
                 {"prolific_id": prolific_id},
                 {
                     "$set": {
-                        f"phases.interactive.abstracts.{abstract_id}.likert": responses,
-                        f"phases.interactive.abstracts.{abstract_id}.likert_submitted": True
+                        f"phases.static.abstracts.{abstract_id}.likert": responses,
+                        f"phases.static.abstracts.{abstract_id}.likert_submitted": True, 
+                        f"phases.static.abstracts.{abstract_id}.completed": True
                     }
                 }
             )
