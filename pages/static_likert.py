@@ -165,24 +165,7 @@ def run_likert():
         )
 
     st.divider()
-    st.markdown("""
-    <style>
-        .likert-box {
-            background-color: #e8f4ff;
-            border: 1px solid #c6ddf7;
-            border-radius: 10px;
-            padding: 1.2rem 1.4rem;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-            font-size: 1.15rem !important;
-            line-height: 1.65;
-        }
-        .likert-box h3 {
-            margin-top: 0 !important;
-            font-size: 1.35rem !important;
-        }
-    </style>
-""", unsafe_allow_html=True)
+
     spacer_left, main, spacer_right = st.columns([0.25, 1, 0.25])
     with main:
         st.markdown("### Comparing the SUMMARY to the ABSTRACT")
@@ -233,28 +216,61 @@ def run_likert():
                 }
             }
 
-            result = users_collection.update_one(
+            users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {
                     "$set": {
                         f"phases.static.abstracts.{abstract_id}.likert": responses,
-                        f"phases.static.abstracts.{abstract_id}.likert_submitted": True, 
+                        f"phases.static.abstracts.{abstract_id}.likert_submitted": True,
                         f"phases.static.abstracts.{abstract_id}.completed": True
                     }
                 }
             )
 
-            if result.modified_count > 0:
-                st.session_state.show_summary = False
-                st.session_state.generated_summary = ""
-                st.session_state.messages = []
-                st.session_state.question_count = 0
-                st.session_state.abstract_index = st.session_state.get("abstract_index", 0) + 1
-                st.session_state.progress_info = {
-                    "current_index": st.session_state.abstract_index,
-                    "total": st.session_state.progress_info.get("total", 1) if "progress_info" in st.session_state else 1
-                }
-                st.switch_page("pages/chatbot.py")
-    
+            user = users_collection.find_one(
+                {"prolific_id": prolific_id},
+                {"phases.static.abstracts": 1, "_id": 0}
+            )
+
+            abstracts = user["phases"]["static"]["abstracts"]
+
+            next_abstract = None
+            for aid in sorted(abstracts.keys(), key=lambda x: int(x)):
+                if not abstracts[aid].get("completed", False):
+                    next_abstract = {
+                        "abstract_id": aid,
+                        "abstract": abstracts[aid].get("abstract", ""),
+                        "abstract_title": abstracts[aid].get("abstract_title", "")
+                    }
+                    break
+            
+            if next_abstract is None:
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {"phases.static.completed": True}}
+                )
+                st.session_state.next_static_abstract = None
+                st.switch_page("pages/completed.py")
+                return
+            # Store for chatbot.py to use immediately
+            st.session_state.next_static_abstract = {
+                "abstract": next_abstract["abstract"],
+                "abstract_id": next_abstract["abstract_id"],
+                "abstract_title": next_abstract["abstract_title"]
+            }
+            st.write(next_abstract)
+            for k in [
+                "survey_context",
+                "last_completed_abstract",
+                "messages",
+                "question_count",
+                "generated_summary",
+                "show_summary",
+            ]:
+                st.session_state.pop(k, None)
+
+            st.switch_page("pages/term_familarity_page.py")
+
+            
 
 run_likert()
