@@ -104,81 +104,90 @@ def run_feedback():
 
     with col2:
         st.title("Short Answer Questions")
+
+        # Track which question we are on
+        if "qa_index" not in st.session_state:
+            st.session_state.qa_index = 0
+
+        # Ensure feedback dict exists
         if "feedback" not in st.session_state:
             st.session_state.feedback = {"main_idea": "", "method": "", "result": ""}
 
-        def update_main_idea():
-            st.session_state.feedback["main_idea"] = st.session_state.main_idea_box
+        # Define questions
+        questions = [
+            {"key": "main_idea", "label": "🧠 What did the researchers in this study want to find out?"},
+            {"key": "method", "label": "🧪 What was the method used in the study?"},
+            {"key": "result", "label": "📊 What was the result of this study?"}
+        ]
 
-        def update_method():
-            st.session_state.feedback["method"] = st.session_state.method_box
+        q = questions[st.session_state.qa_index]
+        key = q["key"]
 
-        def update_result():
-            st.session_state.feedback["result"] = st.session_state.result_box
+        # UI
+        st.subheader(q["label"])
+        st.text_area(
+            "",
+            key=f"{key}_box",
+            value=st.session_state.feedback[key],
+            on_change=lambda k=key: st.session_state.feedback.__setitem__(k, st.session_state[f"{k}_box"])
+        )
 
-        st.markdown("""
-        <style>
-        div[data-testid="stMarkdownContainer"] h3 {
-            margin-bottom: 0.2rem !important;
-            margin-top: 0.8rem !important;
-        }
-        textarea {
-            margin-top: -0.3rem !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        st.caption(f"{len(st.session_state.feedback[key])} characters")
 
-        st.subheader("🧠 What did the researchers in this study want to find out?")
-        st.text_area("", key="main_idea_box", value=st.session_state.feedback["main_idea"], on_change=update_main_idea)
-        st.caption(f"{len(st.session_state.feedback['main_idea'])} characters")
+        # Navigation buttons
+        nav_col1, nav_col2, nav_col3 = st.columns([1, 2, 1])
 
-        st.subheader("🧪 What was the method used in the study?")
-        st.text_area("", key="method_box", value=st.session_state.feedback["method"], on_change=update_method)
-        st.caption(f"{len(st.session_state.feedback['method'])} characters")
+        with nav_col1:
+            if st.session_state.qa_index > 0:
+                if st.button("⬅️ Back"):
+                    st.session_state.qa_index -= 1
+                    st.rerun()
 
-        st.subheader("📊 What was the result of this study?")
-        st.text_area("", key="result_box", value=st.session_state.feedback["result"], on_change=update_result)
-        st.caption(f"{len(st.session_state.feedback['result'])} characters")
+        with nav_col3:
+            if st.session_state.qa_index < len(questions) - 1:
+                if st.button("Next ➡️"):
+                    st.session_state.qa_index += 1
+                    st.rerun()
 
+        # Final submit button shown only on last question
+        all_filled = all(
+            len(st.session_state.feedback[k].strip()) >= MIN_CHARS
+            for k in ["main_idea", "method", "result"]
+        )
 
-        all_filled = all([
-            len(st.session_state.feedback["main_idea"].strip()) >= MIN_CHARS,
-            len(st.session_state.feedback["method"].strip()) >= MIN_CHARS,
-            len(st.session_state.feedback["result"].strip()) >= MIN_CHARS
-        ])
+        if st.session_state.qa_index == len(questions) - 1:
+            if not all_filled:
+                st.warning(f"❗Each response must be at least {MIN_CHARS} characters long.")
 
-        if not all_filled:
-            st.warning(
-                f"❗Each response must be at least {MIN_CHARS} characters long. Please expand your answer(s)."
-            )
+            if st.button("Submit", disabled=not all_filled):
+                feedback_data = {
+                    "main_idea": st.session_state.feedback["main_idea"].strip(),
+                    "methods": st.session_state.feedback["method"].strip(),
+                    "results": st.session_state.feedback["result"].strip(),
+                    "submitted_at": datetime.utcnow()
+                }
 
-        if st.button("Next", disabled=not all_filled):
-            feedback_data = {
-                "main_idea": st.session_state.feedback["main_idea"].strip(),
-                "methods": st.session_state.feedback["method"].strip(),
-                "results": st.session_state.feedback["result"].strip(),
-                "submitted_at": datetime.utcnow()
-            }
+                client = MongoClient(st.secrets["MONGO_URI"])
+                db = client["pls"]
+                users_collection = db["users"]
 
-            client = MongoClient(st.secrets["MONGO_URI"])
-            db = client["pls"]
-            users_collection = db["users"]
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {
+                        f"phases.interactive.abstracts.{abstract_id}.short_answers": feedback_data,
+                        f"phases.interactive.abstracts.{abstract_id}.feedback_submitted": True
+                    }}
+                )
 
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$set": {
-                    f"phases.interactive.abstracts.{abstract_id}.short_answers": feedback_data,
-                    f"phases.interactive.abstracts.{abstract_id}.feedback_submitted": True
-                }}
-            )
+                st.session_state.survey_context = {
+                    "abstract_title": data["title"],
+                    "abstract": data["abstract"],
+                    "pls": data["pls"],
+                    "prolific_id": prolific_id,
+                    "abstract_id": abstract_id
+                }
 
-            st.session_state.survey_context = {
-                "abstract_title": data["title"],
-                "abstract": data["abstract"],
-                "pls": data["pls"],
-                "prolific_id": prolific_id,
-                "abstract_id": abstract_id
-            }
-            st.switch_page("pages/likert.py")
+                st.switch_page("pages/likert.py")
+
 
 run_feedback()
