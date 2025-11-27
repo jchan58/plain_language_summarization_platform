@@ -228,32 +228,53 @@ def run_terms(prolific_id: str):
         term = term_item["term"]
         color = TERM_COLORS[idx % len(TERM_COLORS)]
 
-        # Two column row: term (left), slider (right)
         col_label, col_slider = st.columns([0.45, 0.55])
 
         with col_label:
             st.markdown(
-                f"<div style='background-color:{color}; padding:6px 10px; "
-                f"border-radius:6px; font-size:16px; font-weight:600;'>"
-                f"{idx+1}. {term}</div>",
+                f"""
+                <div style="
+                    background-color:{color};
+                    padding:8px 12px;
+                    border-radius:6px;
+                    font-size:16px;
+                    font-weight:600;
+                    display:flex;
+                    align-items:center;
+                    height:42px;
+                ">
+                    {idx+1}. {term}
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
 
         with col_slider:
+            # This div lifts the slider upward to align with the label
+            st.markdown(
+                """
+                <div style="margin-top:-10px;">
+                """,
+                unsafe_allow_html=True,
+            )
             familiarity = st.slider(
-                " ",  # empty label so slider aligns cleanly
+                label=" ",  
                 min_value=1,
                 max_value=5,
                 value=3,
                 step=1,
                 key=f"fam_{abstract_id}_{idx}",
             )
+            st.markdown("</div>", unsafe_allow_html=True)
 
         updated_terms.append({
             "term": term,
             "familiarity_score": familiarity,
             "extra_information": []
         })
+
+        # Small spacing between rows
+        st.markdown("<div style='margin-top:4px;'></div>", unsafe_allow_html=True)
 
     st.markdown("---")
 
@@ -262,7 +283,7 @@ def run_terms(prolific_id: str):
         for idx in range(len(abs_item["terms"]))
     )
 
-    if st.button("Next") and all_fam_filled:
+    if st.button("Next", disabled=not all_fam_filled):
         st.session_state.stage_static = "extra_info"
         st.session_state.updated_terms_tmp = updated_terms
         st.rerun()
