@@ -168,10 +168,8 @@ def interactive_instructions(prolific_id):
         st.rerun()
 
 def run_chatbot(prolific_id: str):
-    if prolific_id:
-        print(f">>>> prolific_id OK: {prolific_id}", file=sys.stderr)
-    else:
-        print(">>>> WARNING: prolific_id is missing!", file=sys.stderr)
+    if not st.session_state.get("generating_summary", False):
+        st.session_state.dialog_generating = False
     # set all the variables
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -179,8 +177,7 @@ def run_chatbot(prolific_id: str):
         st.session_state.question_count = 0
     if "show_summary" not in st.session_state:
         st.session_state.show_summary = False
-    if "generating_summary" not in st.session_state:
-        st.session_state.generating_summary = False
+    st.session_state.setdefault("generating_summary", False)
     # set the font size 
     if "abstract_font_size" not in st.session_state:
         st.session_state.abstract_font_size = 18
@@ -383,6 +380,7 @@ def run_chatbot(prolific_id: str):
                 summary = response.choices[0].message.content.strip()
                 st.session_state.generated_summary = summary
                 st.session_state.generating_summary = False
+                st.session_state.dialog_generating = False
                 st.session_state.last_completed_abstract = {
                     "prolific_id": prolific_id,
                     "abstract_id": abstract_id,
