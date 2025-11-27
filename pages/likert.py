@@ -145,52 +145,113 @@ def run_likert():
                 st.rerun()
 
         st.markdown(
-            f"""
-            <div style="
-                background-color:#e8f4ff;
-                padding: 1.1rem 1.3rem;
-                border-radius: 0.6rem;
-                border: 1px solid #dfe1e5;
-                max-height: 550px;
-                overflow-y: auto;
-                font-size: {st.session_state.summary_font_size}px;
-                line-height: 1.55;
-            ">
-                <div style="line-height: 1.55;">
-                    {pls}
-                </div>
+        f"""
+        <div style="
+            background-color:#e8f4ff;
+            padding: 1.1rem 1.3rem;
+            border-radius: 0.6rem;
+            border: 1px solid #dfe1e5;
+            max-height: 550px;
+            overflow-y: auto;
+            font-size: {st.session_state.summary_font_size}px;
+            line-height: 1.55;
+        ">
+            <div style="line-height: 1.55;">
+                {pls}
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     st.divider()
 
+    # =============================
+    # NEW CSS FOR LIKERT STYLING
+    # =============================
+    st.markdown("""
+    <style>
+    /* Container for the entire Likert block */
+    .likert-container {
+        background-color: #e8f4ff;           /* same as SUMMARY box */
+        border: 1px solid #c6ddf7;
+        border-radius: 10px;
+        padding: 1.3rem 1.5rem;
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Make the question text bigger */
+    .likert-question {
+        font-size: 1.32rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    /* Make radio labels bigger */
+    div[data-testid="stRadio"] label {
+        font-size: 1.2rem !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     spacer_left, main, spacer_right = st.columns([0.25, 1, 0.25])
     with main:
-        st.markdown("### Comparing the SUMMARY to the ABSTRACT")
+
+        # =============================
+        # WRAP LIKERT SECTION IN BLUE BOX
+        # =============================
         st.markdown("""
-        ### Rating Scale  
-        **1 = Very Poor**  
-        **2 = Poor**  
-        **3 = Fair**  
-        **4 = Good**  
-        **5 = Excellent**  
-        """)
+        <div class="likert-container">
+            <h3 style="margin-top:0;">Comparing the SUMMARY to the ABSTRACT</h3>
+            <p style="font-size:1.15rem;">
+                <strong>Rating Scale</strong><br>
+                1 = Very Poor<br>
+                2 = Poor<br>
+                3 = Fair<br>
+                4 = Good<br>
+                5 = Excellent
+            </p>
+        """, unsafe_allow_html=True)
 
         likert_scale = [1, 2, 3, 4, 5]
 
-        q1 = st.radio("How easy was the SUMMARY to understand?",
-                      likert_scale, horizontal=True, key="simplicity")
-        q2 = st.radio("How well-structured and logically organized was the SUMMARY?",
-                      likert_scale, horizontal=True, key="coherence")
-        q3 = st.radio("How well did the SUMMARY capture the abstract’s main ideas?",
-                      likert_scale, horizontal=True, key="informativeness")
-        q4 = st.radio("Was necessary background information included in the SUMMARY?",
-                      likert_scale, horizontal=True, key="background")
-        q5 = st.radio("How much do you trust the SUMMARY?",
-                      likert_scale, horizontal=True, key="faithfulness")
+        q1 = st.radio(
+            '<span class="likert-question">How easy was the SUMMARY to understand?</span>',
+            likert_scale, horizontal=True, key="simplicity",
+            unsafe_allow_html=True
+        )
 
+        q2 = st.radio(
+            '<span class="likert-question">How well-structured and logically organized was the SUMMARY?</span>',
+            likert_scale, horizontal=True, key="coherence",
+            unsafe_allow_html=True
+        )
+
+        q3 = st.radio(
+            '<span class="likert-question">How well did the SUMMARY capture the abstract’s main ideas?</span>',
+            likert_scale, horizontal=True, key="informativeness",
+            unsafe_allow_html=True
+        )
+
+        q4 = st.radio(
+            '<span class="likert-question">Was necessary background information included in the SUMMARY?</span>',
+            likert_scale, horizontal=True, key="background",
+            unsafe_allow_html=True
+        )
+
+        q5 = st.radio(
+            '<span class="likert-question">How much do you trust the SUMMARY?</span>',
+            likert_scale, horizontal=True, key="faithfulness",
+            unsafe_allow_html=True
+        )
+
+        # CLOSE THE BLUE BOX
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        # =============================
+        # SUBMIT LOGIC
+        # =============================
         client = MongoClient(st.secrets["MONGO_URI"])
         db = client["pls"]
         users_collection = db["users"]
@@ -204,6 +265,7 @@ def run_likert():
         ])
 
         submit_button = st.button("Submit", disabled=not all_answered)
+
         if submit_button:
             responses = {
                 "timestamp": datetime.utcnow(),
@@ -237,6 +299,3 @@ def run_likert():
                     "total": st.session_state.progress_info.get("total", 1) if "progress_info" in st.session_state else 1
                 }
                 st.switch_page("pages/chatbot.py")
-    
-
-run_likert()
