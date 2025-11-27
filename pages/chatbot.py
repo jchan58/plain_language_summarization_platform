@@ -399,4 +399,10 @@ def run_chatbot(prolific_id: str):
                 st.session_state.messages = []
                 st.session_state.question_count = 0
                 st.switch_page("pages/short_answers.py")
+if "prolific_id" in st.session_state:
+    run_chatbot(st.session_state.prolific_id)
+else:
+    st.error("No MTurk / Prolific ID found in session. Please log in again.")
+    print(">>>> ERROR: prolific_id missing when trying to run_chatbot", file=sys.stderr)
+
 print(">>>> BOTTOM OF FILE REACHED", file=sys.stderr)
