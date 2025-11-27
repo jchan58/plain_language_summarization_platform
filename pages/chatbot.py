@@ -205,8 +205,6 @@ def run_chatbot(prolific_id: str):
     
     if "next_interactive_abstract" in st.session_state:
         abstract_dict = st.session_state.next_interactive_abstract
-        st.session_state.pop("next_interactive_abstract", None)
-
     else:
         abstract_dict = get_next_incomplete_abstract(prolific_id)
 
