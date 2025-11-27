@@ -157,6 +157,16 @@ def interactive_instructions(prolific_id):
         st.rerun()
 
 def run_chatbot(prolific_id: str):
+    
+    # set all the variables
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    if "question_count" not in st.session_state:
+        st.session_state.question_count = 0
+    if "show_summary" not in st.session_state:
+        st.session_state.show_summary = False
+    if "generating_summary" not in st.session_state:
+        st.session_state.generating_summary = False
     # set the font size 
     if "abstract_font_size" not in st.session_state:
         st.session_state.abstract_font_size = 18
