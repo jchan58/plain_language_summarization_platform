@@ -283,7 +283,7 @@ def run_terms(prolific_id: str):
         for idx in range(len(abs_item["terms"]))
     )
 
-    if st.button("Next", disabled=not all_fam_filled):
+    if st.button("Next", key=f"next_btn_fam_{abstract_id}", disabled=not all_fam_filled):
         st.session_state.stage_static = "extra_info"
         st.session_state.updated_terms_tmp = updated_terms
         st.rerun()
@@ -395,7 +395,7 @@ def run_terms(prolific_id: str):
 
         # Validation check
         all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
-        if st.button("Next", disabled=not all_filled):
+        if st.button("Next", key=f"next_extra_{abstract_id}", disabled=not all_filled):
             final_terms = st.session_state.updated_terms_tmp
 
             # Merge familiarity + extra information
