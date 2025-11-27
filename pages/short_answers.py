@@ -76,31 +76,24 @@ def run_feedback():
                 st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
                 st.rerun()
         st.markdown(
-            f"""
-            <div style="
-                background-color:#e8f4ff;
-                padding: 1.1rem 1.3rem;
-                border-radius: 0.6rem;
-                border: 1px solid #dfe1e5;
-                max-height: 550px;
-                overflow-y: auto;
-                font-size: {st.session_state.summary_font_size}px;
-                line-height: 1.55;
-            ">
-                <div style="
-                    font-size: {st.session_state.summary_font_size + 4}px;
-                    font-weight: 600;
-                    margin-bottom: 0.6rem;
-                ">
-                    {data['title']}
-                </div>
-                <div style="line-height: 1.55;">
-                    {data['pls']}
-                </div>
+        f"""
+        <div style="
+            background-color:#e8f4ff;
+            padding: 1.1rem 1.3rem;
+            border-radius: 0.6rem;
+            border: 1px solid #dfe1e5;
+            max-height: 550px;
+            overflow-y: auto;
+            font-size: {st.session_state.summary_font_size}px;
+            line-height: 1.55;
+        ">
+            <div style="line-height: 1.55;">
+                {data['pls']}
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     with col2:
         st.title("Short Answer Questions")
