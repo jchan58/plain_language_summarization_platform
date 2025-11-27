@@ -386,7 +386,6 @@ def run_chatbot(prolific_id: str):
                     {"prolific_id": prolific_id},
                     {"$set": {
                         f"phases.interactive.abstracts.{abstract_id}.summary": summary,
-                        f"phases.interactive.abstracts.{abstract_id}.completed": True
                     }}
                 )
                 st.session_state.messages = []
