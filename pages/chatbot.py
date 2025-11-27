@@ -5,6 +5,9 @@ import pandas as pd
 from openai import OpenAI
 import streamlit.components.v1 as components
 
+import sys
+print(">>>> ENTERED CHATBOT PAGE <<<<", file=sys.stderr)
+
 st.markdown(
     """
     <style>
@@ -194,6 +197,7 @@ def run_chatbot(prolific_id: str):
             st.switch_page("app.py")
 
     abstract_dict = get_next_incomplete_abstract(prolific_id)
+    print(">>>> abstract_dict:", abstract_dict, file=sys.stderr)
     st.write("DEBUG abstract_dict:", abstract_dict)
     if not abstract_dict:
         st.success("🎉 You've completed all interactive abstracts!")
