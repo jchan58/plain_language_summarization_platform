@@ -216,28 +216,28 @@ def run_likert():
                 }
             }
 
-            result = users_collection.update_one(
+            users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {
                     "$set": {
                         f"phases.interactive.abstracts.{abstract_id}.likert": responses,
-                        f"phases.interactive.abstracts.{abstract_id}.likert_submitted": True,
-                        f"phases.interactive.abstracts.{abstract_id}.completed": True
+                        f"phases.interactive.abstracts.{abstract_id}.likert_submitted": True
                     }
                 }
             )
 
-            if result.modified_count > 0:
-                st.session_state.show_summary = False
-                st.session_state.generated_summary = ""
-                st.session_state.messages = []
-                st.session_state.question_count = 0
-                st.session_state.abstract_index = st.session_state.get("abstract_index", 0) + 1
-                st.session_state.progress_info = {
-                    "current_index": st.session_state.abstract_index,
-                    "total": st.session_state.progress_info.get("total", 1) if "progress_info" in st.session_state else 1
-                }
-                st.switch_page("pages/chatbot.py")
-    
+            # Clean session state so chatbot loads fresh
+            for k in [
+                "survey_context",
+                "last_completed_abstract",
+                "messages",
+                "question_count",
+                "generated_summary",
+                "show_summary",
+            ]:
+                st.session_state.pop(k, None)
+
+            st.switch_page("pages/chatbot.py")
+            
 
 run_likert()

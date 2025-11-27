@@ -371,11 +371,16 @@ def run_chatbot(prolific_id: str):
                     "abstract": abstract,
                     "pls": summary
                 }
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {
+                        f"phases.interactive.abstracts.{abstract_id}.summary": summary,
+                        f"phases.interactive.abstracts.{abstract_id}.completed": True
+                    }}
+                )
 
                 # Reset chat state
                 st.session_state.messages = []
                 st.session_state.question_count = 0
-                st.session_state.abstract_index += 1
-
                 # Go to short answers page
                 st.switch_page("pages/short_answers.py")
