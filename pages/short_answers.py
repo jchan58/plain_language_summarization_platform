@@ -134,20 +134,18 @@ def run_feedback():
 
         st.caption(f"{len(st.session_state.feedback[key])} characters")
         st.markdown(
-            f"<span style='color:#555;'>Each response must be at least {MIN_CHARS} characters long.<br>"
-            f"Click outside the box to update the character count.</span>",
+            f"<span style='color:#555;'>Each response must be at least {MIN_CHARS} characters. "
+            f"Click outside the box to refresh the character count.</span>",
             unsafe_allow_html=True
         )
-        # show how many total responses still need to be completed
         completed = sum(
             len(st.session_state.feedback[k].strip()) >= MIN_CHARS
             for k in ["main_idea", "method", "result"]
         )
-        remaining = 3 - completed
 
         st.markdown(
             f"<div style='margin-top:0.4rem; font-size:0.9rem; color:#444;'>"
-            f"<strong>Questions remaining:</strong> {remaining} / 3"
+            f"<strong>Questions completed:</strong> {completed} / 3"
             f"</div>",
             unsafe_allow_html=True
         )
