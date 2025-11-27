@@ -262,7 +262,7 @@ def run_terms(prolific_id: str):
 
         terms = [t["term"] for t in abs_item["terms"]]
 
-        # Initialize once
+        # Initialize session state dict once
         if "extra_info_state" not in st.session_state:
             st.session_state.extra_info_state = {
                 term: [] for term in terms
@@ -271,75 +271,87 @@ def run_terms(prolific_id: str):
         cleaned_extra = []
 
         for idx, term in enumerate(terms):
-            st.markdown(f"### {idx + 1}. {term}")
-
-            # Checkbox keys must be unique
-            base_key = f"extra_{abstract_id}_{idx}"
-
-            # Current selections
-            current = st.session_state.extra_info_state.get(term, [])
-
-            col1, col2, col3, col4 = st.columns(4)
-
-            with col1:
-                def_checked = "Definition" in current
-                if st.checkbox("Definition", value=def_checked, key=f"{base_key}_def"):
-                    current = [x for x in current if x != "None"]
-                    if "Definition" not in current:
-                        current.append("Definition")
-                else:
-                    current = [x for x in current if x != "Definition"]
-
-            with col2:
-                ex_checked = "Example" in current
-                if st.checkbox("Example", value=ex_checked, key=f"{base_key}_ex"):
-                    current = [x for x in current if x != "None"]
-                    if "Example" not in current:
-                        current.append("Example")
-                else:
-                    current = [x for x in current if x != "Example"]
-
-            with col3:
-                bg_checked = "Background" in current
-                if st.checkbox("Background", value=bg_checked, key=f"{base_key}_bg"):
-                    current = [x for x in current if x != "None"]
-                    if "Background" not in current:
-                        current.append("Background")
-                else:
-                    current = [x for x in current if x != "Background"]
-
-            with col4:
-                none_checked = "None" in current
-                if st.checkbox("None", value=none_checked, key=f"{base_key}_none"):
-                    # If selecting None, wipe all others
-                    current = ["None"]
-                else:
-                    # If unchecking None
-                    if "None" in current:
-                        current = []
-
-            # Update session
-            st.session_state.extra_info_state[term] = current
-
-            cleaned_extra.append({
-                "term": term,
-                "extra_information": current
-            })
-
             st.markdown("---")
+            col_term, col_opts = st.columns([0.35, 0.65])
+
+            with col_term:
+                st.markdown(f"### {idx + 1}. {term}")
+
+            with col_opts:
+                base_key = f"extra_{abstract_id}_{idx}"
+                current = st.session_state.extra_info_state.get(term, [])
+
+                none_selected = "None" in current
+
+                # --- Option checkboxes ---
+                def_key = f"{base_key}_def"
+                ex_key = f"{base_key}_ex"
+                bg_key = f"{base_key}_bg"
+                none_key = f"{base_key}_none"
+
+                # If None is selected → disable others
+                disabled_others = none_selected
+
+                def_checked = "Definition" in current
+                example_checked = "Example" in current
+                bg_checked = "Background" in current
+
+                # Render 2x2 grid
+                r1c1, r1c2 = st.columns(2)
+                r2c1, r2c2 = st.columns(2)
+
+                with r1c1:
+                    if st.checkbox("Definition", value=def_checked, key=def_key, disabled=disabled_others):
+                        if "Definition" not in current:
+                            current = [x for x in current if x != "None"]  # remove None
+                            current.append("Definition")
+                    else:
+                        current = [x for x in current if x != "Definition"]
+
+                with r1c2:
+                    if st.checkbox("Example", value=example_checked, key=ex_key, disabled=disabled_others):
+                        if "Example" not in current:
+                            current = [x for x in current if x != "None"]
+                            current.append("Example")
+                    else:
+                        current = [x for x in current if x != "Example"]
+
+                with r2c1:
+                    if st.checkbox("Background", value=bg_checked, key=bg_key, disabled=disabled_others):
+                        if "Background" not in current:
+                            current = [x for x in current if x != "None"]
+                            current.append("Background")
+                    else:
+                        current = [x for x in current if x != "Background"]
+
+                with r2c2:
+                    if st.checkbox("None", value=none_selected, key=none_key):
+                        current = ["None"]  # wipe everything else
+                    else:
+                        # Unchecking "None" -> restore list without None
+                        current = [x for x in current if x != "None"]
+
+                # Save back to session state
+                st.session_state.extra_info_state[term] = current
+
+                cleaned_extra.append({
+                    "term": term,
+                    "extra_information": current
+                })
+
+        st.markdown("---")
 
         # Validation check
         all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
         if not all_filled:
             st.warning("⚠️ Please choose at least one option for every term.")
 
-        # Next button
         if st.button("Next", disabled=not all_filled):
             final_terms = st.session_state.updated_terms_tmp
 
-            # merge familiarity + extra info
-            for i, extra_row in enumerate(cleaned_extra):
-                final_terms[i]["extra_information"] = extra_row["extra_information"]
+            # Merge familiarity + extra information
+            for i, row in enumerate(cleaned_extra):
+                final_terms[i]["extra_information"] = row["extra_information"]
 
             users_collection.update_one(
                 {"prolific_id": prolific_id},
@@ -348,7 +360,7 @@ def run_terms(prolific_id: str):
                 }}
             )
 
-            # Reset session state for next abstract
+            # Reset for next abstract
             st.session_state.stage_static = "familiarity"
             st.session_state.extra_info_state = {}
 
