@@ -255,7 +255,6 @@ def run_likert():
                 "abstract_id": next_abstract["abstract_id"],
                 "abstract_title": next_abstract["abstract_title"]
             }
-            st.write(next_abstract)
             for k in [
                 "survey_context",
                 "last_completed_abstract",
