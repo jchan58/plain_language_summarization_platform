@@ -271,73 +271,90 @@ def run_terms(prolific_id: str):
         cleaned_extra = []
 
         for idx, term in enumerate(terms):
-            st.markdown("---")
+            color = TERM_COLORS[idx % len(TERM_COLORS)]
+
+            st.markdown(f"""
+            <div style="height: 2px; background-color: #eee; margin: 1rem 0;"></div>
+            """, unsafe_allow_html=True)
+
             col_term, col_opts = st.columns([0.35, 0.65])
 
+            # -------------------------------
+            # LEFT COLUMN: TERM + COLOR BOX
+            # -------------------------------
             with col_term:
-                st.markdown(f"### {idx + 1}. {term}")
+                st.markdown(
+                    f"""
+                    <div style="display: flex; align-items: center;">
+                        <div style="
+                            width: 16px; height: 16px; 
+                            background-color: {color}; 
+                            border-radius: 4px;
+                            margin-right: 10px;
+                            border: 1px solid #ccc;">
+                        </div>
+                        <div style="font-size: 1.1rem; font-weight: 600;">
+                            {idx + 1}. {term}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
+            # -------------------------------
+            # RIGHT COLUMN: ONE-LINE CHECKBOXES
+            # -------------------------------
             with col_opts:
                 base_key = f"extra_{abstract_id}_{idx}"
                 current = st.session_state.extra_info_state.get(term, [])
 
                 none_selected = "None" in current
-
-                # --- Option checkboxes ---
-                def_key = f"{base_key}_def"
-                ex_key = f"{base_key}_ex"
-                bg_key = f"{base_key}_bg"
-                none_key = f"{base_key}_none"
-
-                # If None is selected → disable others
-                disabled_others = none_selected
+                disabled_others = none_selected   
 
                 def_checked = "Definition" in current
                 example_checked = "Example" in current
                 bg_checked = "Background" in current
 
-                # Render 2x2 grid
-                r1c1, r1c2 = st.columns(2)
-                r2c1, r2c2 = st.columns(2)
+                c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
 
-                with r1c1:
-                    if st.checkbox("Definition", value=def_checked, key=def_key, disabled=disabled_others):
+                with c1:
+                    if st.checkbox("Definition", value=def_checked,
+                                key=f"{base_key}_def", disabled=disabled_others):
+                        current = [x for x in current if x != "None"]
                         if "Definition" not in current:
-                            current = [x for x in current if x != "None"]  # remove None
                             current.append("Definition")
                     else:
                         current = [x for x in current if x != "Definition"]
 
-                with r1c2:
-                    if st.checkbox("Example", value=example_checked, key=ex_key, disabled=disabled_others):
+                with c2:
+                    if st.checkbox("Example", value=example_checked,
+                                key=f"{base_key}_ex", disabled=disabled_others):
+                        current = [x for x in current if x != "None"]
                         if "Example" not in current:
-                            current = [x for x in current if x != "None"]
                             current.append("Example")
                     else:
                         current = [x for x in current if x != "Example"]
 
-                with r2c1:
-                    if st.checkbox("Background", value=bg_checked, key=bg_key, disabled=disabled_others):
+                with c3:
+                    if st.checkbox("Background", value=bg_checked,
+                                key=f"{base_key}_bg", disabled=disabled_others):
+                        current = [x for x in current if x != "None"]
                         if "Background" not in current:
-                            current = [x for x in current if x != "None"]
                             current.append("Background")
                     else:
                         current = [x for x in current if x != "Background"]
 
-                with r2c2:
-                    if st.checkbox("None", value=none_selected, key=none_key):
-                        current = ["None"]  # wipe everything else
+                with c4:
+                    if st.checkbox("None", value=none_selected,
+                                key=f"{base_key}_none"):
+                        current = ["None"]  
                     else:
-                        # Unchecking "None" -> restore list without None
                         current = [x for x in current if x != "None"]
 
-                # Save back to session state
+                # Save updated state
                 st.session_state.extra_info_state[term] = current
+                cleaned_extra.append({"term": term, "extra_information": current})
 
-                cleaned_extra.append({
-                    "term": term,
-                    "extra_information": current
-                })
 
         st.markdown("---")
 
