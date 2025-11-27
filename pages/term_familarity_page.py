@@ -257,7 +257,7 @@ def run_terms(prolific_id: str):
         if not all_fam_filled:
             st.warning("⚠️ Please answer all familiarity questions before continuing.")
 
-      if st.session_state.stage_static == "extra_info":
+    if st.session_state.stage_static == "extra_info":
         st.subheader("What additional information would you like for each term?")
 
         # --------------------------------------------------
