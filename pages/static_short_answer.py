@@ -21,6 +21,7 @@ abstract = st.session_state.get("current_abstract", "")
 abstract_title = st.session_state.get("abstract_title", "")
 human_pls = st.session_state.get("human_written_pls", "")
 abstract_id = st.session_state.get("current_abstract_id", 0)
+prolific_id = st.session_state.get("prolific_id", 0)
 
 
 def show_progress():
@@ -64,8 +65,6 @@ def run_feedback():
         st.stop()
 
     data = st.session_state.last_completed_abstract
-    prolific_id = data["prolific_id"]
-    abstract_id = data["abstract_id"]
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.title("SUMMARY")
@@ -99,10 +98,10 @@ def run_feedback():
                     font-weight: 600;
                     margin-bottom: 0.6rem;
                 ">
-                    {data['title']}
+                    {abstract_title}
                 </div>
                 <div style="line-height: 1.55;">
-                    {data['pls']}
+                    {human_pls}
                 </div>
             </div>
             """,
@@ -197,9 +196,9 @@ def run_feedback():
                     )
 
                     st.session_state.survey_context = {
-                        "abstract_title": data["title"],
-                        "abstract": data["abstract"],
-                        "pls": data["pls"],
+                        "abstract_title": abstract_title,
+                        "abstract": abstract,
+                        "pls": human_pls,
                         "prolific_id": prolific_id,
                         "abstract_id": abstract_id
                     }

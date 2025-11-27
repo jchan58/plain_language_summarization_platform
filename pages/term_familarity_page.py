@@ -415,5 +415,7 @@ def run_terms(prolific_id: str):
             st.session_state.current_abstract = abs_item["abstract"]
             st.session_state.current_abstract_id = abstract_id
             st.session_state.human_written_pls = abs_item["human_written_pls"]
+            st.session_state.prolific_id = prolific_id
 
-            st.switch_page("static_summary")
+
+            st.switch_page("pages/static_short_answer.py")
