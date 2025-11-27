@@ -133,8 +133,24 @@ def run_feedback():
         )
 
         st.caption(f"{len(st.session_state.feedback[key])} characters")
+        st.markdown(
+            f"<span style='color:#555;'>Each response must be at least {MIN_CHARS} characters long.<br>"
+            f"Click outside the box to update the character count.</span>",
+            unsafe_allow_html=True
+        )
+        # show how many total responses still need to be completed
+        completed = sum(
+            len(st.session_state.feedback[k].strip()) >= MIN_CHARS
+            for k in ["main_idea", "method", "result"]
+        )
+        remaining = 3 - completed
 
-        # Navigation buttons
+        st.markdown(
+            f"<div style='margin-top:0.4rem; font-size:0.9rem; color:#444;'>"
+            f"<strong>Questions remaining:</strong> {remaining} / 3"
+            f"</div>",
+            unsafe_allow_html=True
+        )
         nav_col1, nav_col2, nav_col3 = st.columns([1, 2, 1])
 
         with nav_col1:
@@ -149,45 +165,40 @@ def run_feedback():
                     st.session_state.qa_index += 1
                     st.rerun()
 
-        # Final submit button shown only on last question
-        all_filled = all(
-            len(st.session_state.feedback[k].strip()) >= MIN_CHARS
-            for k in ["main_idea", "method", "result"]
-        )
-
-        if st.session_state.qa_index == len(questions) - 1:
-            if not all_filled:
-                st.warning(f"❗Each response must be at least {MIN_CHARS} characters long.")
-
-            if st.button("Submit", disabled=not all_filled):
-                feedback_data = {
-                    "main_idea": st.session_state.feedback["main_idea"].strip(),
-                    "methods": st.session_state.feedback["method"].strip(),
-                    "results": st.session_state.feedback["result"].strip(),
-                    "submitted_at": datetime.utcnow()
-                }
-
-                client = MongoClient(st.secrets["MONGO_URI"])
-                db = client["pls"]
-                users_collection = db["users"]
-
-                users_collection.update_one(
-                    {"prolific_id": prolific_id},
-                    {"$set": {
-                        f"phases.interactive.abstracts.{abstract_id}.short_answers": feedback_data,
-                        f"phases.interactive.abstracts.{abstract_id}.feedback_submitted": True
-                    }}
+            else:
+                all_filled = all(
+                    len(st.session_state.feedback[k].strip()) >= MIN_CHARS
+                    for k in ["main_idea", "method", "result"]
                 )
 
-                st.session_state.survey_context = {
-                    "abstract_title": data["title"],
-                    "abstract": data["abstract"],
-                    "pls": data["pls"],
-                    "prolific_id": prolific_id,
-                    "abstract_id": abstract_id
-                }
+                if st.button("Submit", disabled=not all_filled):
+                    feedback_data = {
+                        "main_idea": st.session_state.feedback["main_idea"].strip(),
+                        "methods": st.session_state.feedback["method"].strip(),
+                        "results": st.session_state.feedback["result"].strip(),
+                        "submitted_at": datetime.utcnow()
+                    }
 
-                st.switch_page("pages/likert.py")
+                    client = MongoClient(st.secrets["MONGO_URI"])
+                    db = client["pls"]
+                    users_collection = db["users"]
 
+                    users_collection.update_one(
+                        {"prolific_id": prolific_id},
+                        {"$set": {
+                            f"phases.interactive.abstracts.{abstract_id}.short_answers": feedback_data,
+                            f"phases.interactive.abstracts.{abstract_id}.feedback_submitted": True
+                        }}
+                    )
+
+                    st.session_state.survey_context = {
+                        "abstract_title": data["title"],
+                        "abstract": data["abstract"],
+                        "pls": data["pls"],
+                        "prolific_id": prolific_id,
+                        "abstract_id": abstract_id
+                    }
+
+                    st.switch_page("pages/likert.py")
 
 run_feedback()
