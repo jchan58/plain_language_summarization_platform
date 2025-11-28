@@ -246,19 +246,29 @@ def run_likert():
         client = MongoClient(st.secrets["MONGO_URI"])
         db = client["pls"]
         users_collection = db["users"]
-
         likert_scale = [1, 2, 3, 4, 5]
-        all_answered = all(
-            st.session_state.get(k) is not None for k in
-            ["simplicity", "coherence", "informativeness", "background", "faithfulness"]
-        )
+        required_keys = [
+            "simplicity", "coherence", "informativeness",
+            "background", "faithfulness",
+            "chatbot_useful", "chatbot_understanding"
+        ]
+
+        all_answered = all(st.session_state.get(k) is not None for k in required_keys)
+
         def persistent_radio(label, key):
             return st.radio(label, likert_scale, horizontal=True, key=key)
+
+        # SUMMARY questions
         q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
         q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
         q3 = persistent_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")
         q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
         q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
+
+        # CHATBOT questions
+        st.header("Use of the Chatbot")
+        q6 = persistent_radio("How useful was the chatbot in answering all your questions?", "chatbot_useful")
+        q7 = persistent_radio("How much did the chatbot help you better understand the ABSTRACT?", "chatbot_understanding")
 
         col_back, col_sp1, col_sp2, col_sp3, col_sp4, col_submit = st.columns([1,1,1,1,1,1])
         with col_back:
@@ -269,6 +279,8 @@ def run_likert():
                     "informativeness": st.session_state.get("informativeness"),
                     "background": st.session_state.get("background"),
                     "faithfulness": st.session_state.get("faithfulness"),
+                    "chatbot_useful": st.session_state.get("chatbot_useful"),
+                    "chatbot_understanding": st.session_state.get("chatbot_understanding")
                 }
                 st.switch_page("pages/short_answers.py")
 
@@ -288,7 +300,9 @@ def run_likert():
                     "coherence": q2,
                     "informativeness": q3,
                     "background_information": q4,
-                    "faithfulness": q5
+                    "faithfulness": q5, 
+                    "chatbot_useful":q6, 
+                    "chatbot_understanding":q7
                 }
             }
 
