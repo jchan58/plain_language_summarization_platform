@@ -98,8 +98,6 @@ def run_likert():
         """, unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 1], gap="large")
-    st.progress(current / total)
-    st.markdown(f"**Progress:** {current} / {total} abstracts**")
     with col1:
         st.markdown(f"### ABSTRACT")
         btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
