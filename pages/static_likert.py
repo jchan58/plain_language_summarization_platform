@@ -77,6 +77,9 @@ def logout_confirm_dialog(prolific_id):
             st.switch_page("app.py")
 
 def run_likert():
+    if "survey_context" not in st.session_state:
+        st.warning("Please complete previous task.")
+        st.stop()
     data = st.session_state.survey_context
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
@@ -91,10 +94,11 @@ def run_likert():
         if st.session_state.get("show_logout_dialog", False):
             st.session_state.show_logout_dialog = False 
             logout_confirm_dialog(prolific_id)
-
-    if "survey_context" not in st.session_state:
-        st.warning("Please complete previous task.")
-        st.stop()
+    
+    if "likert_saved" in st.session_state:
+        for k, v in st.session_state.likert_saved.items():
+            if v is not None:
+                st.session_state[k] = v
     
     if "abstract_font_size" not in st.session_state:
         st.session_state.abstract_font_size = 16
@@ -259,6 +263,13 @@ def run_likert():
         col_back, col_sp1, col_sp2, col_sp3, col_sp4, col_submit = st.columns([1,1,1,1,1,1])
         with col_back:
             if st.button("⬅️ Back", key="likert_back_btn"):
+                st.session_state.likert_saved = {
+                    "simplicity": st.session_state.get("simplicity"),
+                    "coherence": st.session_state.get("coherence"),
+                    "informativeness": st.session_state.get("informativeness"),
+                    "background": st.session_state.get("background"),
+                    "faithfulness": st.session_state.get("faithfulness"),
+                }
                 st.switch_page("pages/static_short_answer.py")
         with col_submit:
             if st.button("Next Abstract", disabled=not all_answered):
