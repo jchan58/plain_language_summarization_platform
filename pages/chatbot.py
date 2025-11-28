@@ -172,7 +172,6 @@ def interactive_instructions(prolific_id):
         st.rerun()
 
 def run_chatbot(prolific_id: str):
-    render_nav()
     # set the variables 
     if "chat_start_time" not in st.session_state:
         st.session_state.chat_start_time = time.time()
