@@ -243,7 +243,7 @@ def run_terms(prolific_id: str):
     if st.session_state.stage_static == "familiarity":
 
         ### TIMER ADDITION ###
-        if st.session_state.fam_start_time is None:
+        if st.session_state.get("fam_start_time") is None:
             st.session_state.fam_start_time = datetime.datetime.utcnow()
         # ------------------------------------------------ #
 
@@ -326,7 +326,7 @@ def run_terms(prolific_id: str):
     if st.session_state.stage_static == "extra_info":
 
         ### TIMER ADDITION ###
-        if st.session_state.extra_start_time is None:
+        if st.session_state.get("extra_start_time") is None:
             st.session_state.extra_start_time = datetime.datetime.utcnow()
         # ------------------------------------------------ #
 
