@@ -170,7 +170,7 @@ def run_terms(prolific_id: str):
 
     if not st.session_state.seen_static_instructions:
         static_instructions(prolific_id)
-        return
+        st.stop()
 
     if "abstract_font_size" not in st.session_state:
         st.session_state.abstract_font_size = 16
