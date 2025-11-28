@@ -445,11 +445,11 @@ def run_terms(prolific_id: str):
                 st.session_state.extra_start_time = None
 
                 st.session_state.stage_static = "familiarity"
-                # st.session_state.extra_info_state = {}
-
-                for key in ["qa_index", "feedback", "main_idea_box", "method_box", "result_box"]:
-                    if key in st.session_state:
-                        st.session_state.pop(key)
+                initialized_id = st.session_state.get("short_answer_initialized_for")
+                if initialized_id != abstract_id:
+                    for key in ["qa_index", "feedback", "main_idea_box", "method_box", "result_box"]:
+                        st.session_state.pop(key, None)
+                    st.session_state.short_answer_initialized_for = abstract_id
 
                 st.switch_page("pages/static_short_answer.py")
 
