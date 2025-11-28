@@ -28,6 +28,7 @@ def run_feedback():
         if "last_completed_abstract" in st.session_state:
             user_info = st.session_state.last_completed_abstract
             st.markdown(f"**MTurk ID:** `{user_info['prolific_id']}`")
+            prolific_id = user_info['prolific_id']
 
         if st.button("Logout"):
             for key in [
@@ -39,19 +40,19 @@ def run_feedback():
             st.switch_page("app.py")
 
     data = st.session_state.last_completed_abstract
-    prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
+
     user = users_collection.find_one(
     {"prolific_id": prolific_id},
     {"phases.interactive.abstracts": 1, "_id": 0}
     )
+
     abstracts_dict = user["phases"]["interactive"]["abstracts"]
     total = len(abstracts_dict)
     completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
     current = completed + 1
     progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
-    st.caption(f"Completed {current} of {total} abstracts")
     st.caption(f"Completed {completed} of {total} abstracts")
     st.markdown(
         """
