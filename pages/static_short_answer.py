@@ -37,7 +37,19 @@ def run_feedback():
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
-    show_progress()
+    
+    data = {
+        "title": st.session_state.get("abstract_title", ""),
+        "abstract": st.session_state.get("current_abstract", ""),
+        "pls": st.session_state.get("human_written_pls", ""),
+        "prolific_id": st.session_state.get("prolific_id", ""),
+        "abstract_id": st.session_state.get("current_abstract_id", ""),
+        "current": st.session_state.get("current", ""),
+        "total": st.session_state.get("total", "")
+    }
+
+    st.progress(data['current'] / data['total'])
+    st.markdown(f"**Progress:** {data['current']} / {data['total']} abstracts**")
     st.markdown(
         """
         ### 📝 Instructions
@@ -50,15 +62,7 @@ def run_feedback():
 
     # Font size
     if "summary_font_size" not in st.session_state:
-        st.session_state.summary_font_size = 18
-
-    data = {
-        "title": st.session_state.get("abstract_title", ""),
-        "abstract": st.session_state.get("current_abstract", ""),
-        "pls": st.session_state.get("human_written_pls", ""),
-        "prolific_id": st.session_state.get("prolific_id", ""),
-        "abstract_id": st.session_state.get("current_abstract_id", "")
-    }
+        st.session_state.summary_font_size = 1
 
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
@@ -180,7 +184,9 @@ def run_feedback():
                         "abstract": data["abstract"],
                         "pls": data["pls"],
                         "prolific_id": data["prolific_id"],
-                        "abstract_id": data["abstract_id"]
+                        "abstract_id": data["abstract_id"], 
+                        "current": data["current"], 
+                        "total": data["total"]
                     }
                     st.switch_page("pages/static_likert.py")
 

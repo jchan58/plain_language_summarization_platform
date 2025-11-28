@@ -233,7 +233,6 @@ def run_chatbot(prolific_id: str):
     total = len(abstracts_dict)
     completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
     progress_ratio = completed / total if total > 0 else 0
-
     st.progress(progress_ratio)
     st.caption(f"Completed {completed} of {total} abstracts")
     st.markdown("""
@@ -386,7 +385,9 @@ def run_chatbot(prolific_id: str):
                     "abstract_id": abstract_id,
                     "title": abstract_title,
                     "abstract": abstract,
-                    "pls": summary
+                    "pls": summary,
+                    "completed": completed, 
+                    "total": total
                 }
                 users_collection.update_one(
                     {"prolific_id": prolific_id},

@@ -41,10 +41,11 @@ def run_feedback():
     data = st.session_state.last_completed_abstract
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
-    current = data['completed_abstract']
-    total = data['total_abstract']
-    st.progress(current / total)
-    st.markdown(f"**Progress:** {current} / {total} abstracts**")
+    completed = data['completed']
+    total = data['total']
+    progress_ratio = completed / total if total > 0 else 0
+    st.progress(progress_ratio)
+    st.caption(f"Completed {completed} of {total} abstracts")
     st.markdown(
         """
         ### 📝 Instructions
@@ -189,8 +190,8 @@ def run_feedback():
                         "pls": data["pls"],
                         "prolific_id": prolific_id,
                         "abstract_id": abstract_id,
-                        "completed_abstract": data['completed_abstract'],
-                        "total_abstract": data['total_abstract']
+                        "completed": data['completed'],
+                        "total": data['total']
                     }
 
                     st.switch_page("pages/likert.py")

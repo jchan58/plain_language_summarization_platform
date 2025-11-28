@@ -33,14 +33,14 @@ def run_likert():
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
-    st.markdown(
-        """
-        ### 📝 Instructions
-        1. Read the scientific abstract and the **SUMMARY** shown below.  
-        2. Fill out the survey questions about the **SUMMARY**.  
-        3. When you have finished answering all questions, click the **Submit** button below.  
-        """,
-    )
+    data = st.session_state.survey_context
+    prolific_id = data["prolific_id"]
+    abstract_id = data["abstract_id"]
+    abstract = data["abstract"]
+    pls = data["pls"]
+    current = data['current']
+    total = data['total']
+    abstract_title = data["abstract_title"]
 
     if "survey_context" not in st.session_state:
         st.warning("Please complete previous task.")
@@ -51,16 +51,19 @@ def run_likert():
     
     if "summary_font_size" not in st.session_state:
         st.session_state.summary_font_size = 16
-    
 
-    data = st.session_state.survey_context
-    prolific_id = data["prolific_id"]
-    abstract_id = data["abstract_id"]
-    abstract = data["abstract"]
-    pls = data["pls"]
-    current = data['completed_abstract']
-    total = data['total_abstract']
-    abstract_title = data["abstract_title"]
+    st.progress(data['current'] / data['total'])
+    st.markdown(f"**Progress:** {data['current']} / {data['total']} abstracts**")
+    st.markdown(
+        """
+        ### 📝 Instructions
+        1. Read the scientific abstract and the **SUMMARY** shown below.  
+        2. Fill out the survey questions below that compares the **SUMMARY** to the **ABSTRACT**.  
+        3. When you have finished answering all questions, click the **Submit** button below.  
+        """,
+    )
+
+    
 
     st.markdown("""
         <style>

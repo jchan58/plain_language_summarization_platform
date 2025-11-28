@@ -33,11 +33,21 @@ def run_likert():
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
+    data = st.session_state.survey_context
+    prolific_id = data["prolific_id"]
+    abstract_id = data["abstract_id"]
+    abstract = data["abstract"]
+    pls = data["pls"]
+    completed = data['completed']
+    total = data['total']
+    progress_ratio = completed / total if total > 0 else 0
+    st.progress(progress_ratio)
+    st.caption(f"Completed {completed} of {total} abstracts")
     st.markdown(
         """
         ### 📝 Instructions
         1. Read the scientific abstract and the **SUMMARY** shown below.  
-        2. Fill out the survey questions about the **SUMMARY**.  
+        2. Fill out the survey questions below that compares the **SUMMARY** to the **ABSTRACT**.  
         3. When you have finished answering all questions, click the **Submit** button below.  
         """,
     )
@@ -51,13 +61,6 @@ def run_likert():
     
     if "summary_font_size" not in st.session_state:
         st.session_state.summary_font_size = 16
-    
-
-    data = st.session_state.survey_context
-    prolific_id = data["prolific_id"]
-    abstract_id = data["abstract_id"]
-    abstract = data["abstract"]
-    pls = data["pls"]
 
     st.markdown("""
         <style>
@@ -86,6 +89,7 @@ def run_likert():
         }
         </style>
         """, unsafe_allow_html=True)
+
 
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
