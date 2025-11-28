@@ -137,7 +137,7 @@ def show_done_dialog():
         st.markdown("</div>", unsafe_allow_html=True)
         return 
     st.markdown(
-        """You will be answering questions about this abstract on the next page and will not be able to return to this page."""
+        """You will be answering questions about the SUMMARY (another version of the ABSTRACT) on the next page and will not be able to return to this page."""
     )
 
     col1, col2 = st.columns([1, 1])

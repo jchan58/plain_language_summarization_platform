@@ -259,7 +259,6 @@ def run_likert():
         q3 = persistent_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")
         q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
         q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
-        submit_button = st.button("Submit", disabled=not all_answered)
 
         col_back, col_sp1, col_sp2, col_sp3, col_sp4, col_submit = st.columns([1,1,1,1,1,1])
         with col_back:
