@@ -17,6 +17,10 @@ if "next_static_abstract" in st.session_state:
           file=sys.stderr)
 else:
     print(">>>> next_static_abstract DOES NOT EXIST", file=sys.stderr)
+print("=== SESSION STATE DUMP ===", file=sys.stderr)
+for k, v in st.session_state.items():
+    print(f"{k}: {v}", file=sys.stderr)
+print("===========================", file=sys.stderr)
 
 TERM_COLORS = [
     "#fffa8b",  # yellow
@@ -399,8 +403,10 @@ def run_terms(prolific_id: str):
             st.session_state.human_written_pls = abs_item["human_written_pls"]
             st.session_state.abstract_title = abs_item["abstract_title"]
             st.session_state.prolific_id = prolific_id
-            st.session_state.current = current
-            st.session_state.total = total
+            st.session_state.progress_info = {
+                "current": current,
+                "total": total
+            }
 
             # RESET for next abstract
             st.session_state.stage_static = "familiarity"

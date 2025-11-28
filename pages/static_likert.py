@@ -38,9 +38,6 @@ def run_likert():
     abstract_id = data["abstract_id"]
     abstract = data["abstract"]
     pls = data["pls"]
-    current = data['current']
-    total = data['total']
-    abstract_title = data["abstract_title"]
 
     if "survey_context" not in st.session_state:
         st.warning("Please complete previous task.")
@@ -52,8 +49,12 @@ def run_likert():
     if "summary_font_size" not in st.session_state:
         st.session_state.summary_font_size = 16
 
-    st.progress(data['current'] / data['total'])
-    st.markdown(f"**Progress:** {data['current']} / {data['total']} abstracts**")
+    st.title("Comparing SUMMARY to ABSTRACT")
+    current = st.session_state.progress_info["current"]
+    total = st.session_state.progress_info["total"]
+    progress_ratio = current / total if total > 0 else 0
+    st.progress(progress_ratio)
+    st.caption(f"Completed {current} of {total} abstracts")
     st.markdown(
         """
         ### 📝 Instructions

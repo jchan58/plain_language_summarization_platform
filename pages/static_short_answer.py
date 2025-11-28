@@ -44,12 +44,14 @@ def run_feedback():
         "pls": st.session_state.get("human_written_pls", ""),
         "prolific_id": st.session_state.get("prolific_id", ""),
         "abstract_id": st.session_state.get("current_abstract_id", ""),
-        "current": st.session_state.get("current", ""),
-        "total": st.session_state.get("total", "")
     }
-
-    st.progress(data['current'] / data['total'])
-    st.markdown(f"**Progress:** {data['current']} / {data['total']} abstracts**")
+    
+    st.title("Answer Questions About SUMMARY")
+    current = st.session_state.progress_info["current"]
+    total = st.session_state.progress_info["total"]
+    progress_ratio = current / total if total > 0 else 0
+    st.progress(progress_ratio)
+    st.caption(f"Completed {current} of {total} abstracts")
     st.markdown(
         """
         ### 📝 Instructions
@@ -187,6 +189,10 @@ def run_feedback():
                         "abstract_id": data["abstract_id"], 
                         "current": data["current"], 
                         "total": data["total"]
+                    }
+                    st.session_state.progress_info = {
+                        "current": current,
+                        "total": total
                     }
                     st.switch_page("pages/static_likert.py")
 
