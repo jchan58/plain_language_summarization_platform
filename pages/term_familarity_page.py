@@ -43,9 +43,43 @@ st.set_page_config(layout="wide")
 def get_mongo_client():
     return MongoClient(st.secrets["MONGO_URI"])
 
-db = get_mongo_client()["pls"]
+# connect to MongoDB
+MONGO_URI = st.secrets["MONGO_URI"]
+client = MongoClient(MONGO_URI)
+db = client["pls"]
 users_collection = db["users"]
-abstracts_collection = db["abstracts"]
+
+
+@st.dialog("Are you sure you want to log out?", dismissible=True)
+def logout_confirm_dialog(prolific_id):
+
+    st.markdown("""
+    Please logout **only after you have submitted the results for Comparing SUMMARY to ABSTRACT** to make sure your results are saved correctly.
+    Otherwise you would have to start back over on the same abstract. 
+    """)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Stay on page"):
+            st.session_state.show_logout_dialog = False
+            st.rerun()
+
+    with col2:
+        if st.button("Logout"):
+            st.session_state.show_logout_dialog = False
+            users_collection.update_one(
+                {"prolific_id": prolific_id},
+                {"$set": {
+                    "phases.interactive.last_completed_index":
+                        st.session_state.get("abstract_index", 0)
+                }},
+                upsert=True
+            )
+
+            st.session_state.logged_in = False
+            st.session_state.prolific_id = None
+            st.switch_page("app.py")
 
 def get_static_progress(prolific_id):
     user = users_collection.find_one(
@@ -110,17 +144,11 @@ def get_user_static_abstracts(prolific_id: str):
 
 def run_terms(prolific_id: str):
     with st.sidebar:
-        if "prolific_id" in st.session_state:
-            st.markdown(f"**MTurk ID:** `{st.session_state.prolific_id}`")
+        st.write(f"**MTurk ID:** `{prolific_id}`")
         if st.button("Logout"):
-            for key in [
-                "static_index", "current_abstract_id", "human_written_pls",
-                "prolific_id", "messages", "feedback", "survey_context",
-                "progress_info", "show_summary", "generated_summary",
-                "question_count"
-            ]:
-                st.session_state.pop(key, None)
-            st.switch_page("app.py")
+            st.session_state.show_logout_dialog = True
+        if st.session_state.get("show_logout_dialog", False):
+            logout_confirm_dialog(prolific_id)
 
     # ---------------- TIMER SETUP ---------------- #
     ### TIMER ADDITION ###

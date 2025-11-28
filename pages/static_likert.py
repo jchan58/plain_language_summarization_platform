@@ -18,28 +18,56 @@ st.markdown(
 )
 
 st.set_page_config(layout="wide")
+@st.cache_resource
+def get_mongo_client():
+    return MongoClient(st.secrets["MONGO_URI"])
+
+# connect to MongoDB
+MONGO_URI = st.secrets["MONGO_URI"]
+client = MongoClient(MONGO_URI)
+db = client["pls"]
+users_collection = db["users"]
+
+@st.dialog("Are you sure you want to log out?", dismissible=True)
+def logout_confirm_dialog(prolific_id):
+
+    st.markdown("""
+    Please logout **only after you have submitted the results for Comparing SUMMARY to ABSTRACT** to make sure your results are saved correctly.
+    Otherwise you would have to start back over on the same abstract. 
+    """)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Stay on page"):
+            st.session_state.show_logout_dialog = False
+            st.rerun()
+
+    with col2:
+        if st.button("Logout"):
+            st.session_state.show_logout_dialog = False
+            users_collection.update_one(
+                {"prolific_id": prolific_id},
+                {"$set": {
+                    "phases.interactive.last_completed_index":
+                        st.session_state.get("abstract_index", 0)
+                }},
+                upsert=True
+            )
+
+            st.session_state.logged_in = False
+            st.session_state.prolific_id = None
+            st.switch_page("app.py")
 
 def run_likert():
     if "likert_start_time" not in st.session_state:
         st.session_state.likert_start_time = datetime.utcnow()
     with st.sidebar:
-        if "last_completed_abstract" in st.session_state:
-            user_info = st.session_state.last_completed_abstract
-            st.markdown(f"**MTurk ID:** `{user_info['prolific_id']}`")
-
+        st.write(f"**MTurk ID:** `{prolific_id}`")
         if st.button("Logout"):
-            for key in [
-            "last_completed_abstract",
-            "survey_context",
-            "feedback",
-            "progress_info",
-            "messages",
-            "show_summary",
-            "generated_summary",
-            "question_count"
-            ]:
-                st.session_state.pop(key, None)
-            st.switch_page("app.py")
+            st.session_state.show_logout_dialog = True
+        if st.session_state.get("show_logout_dialog", False):
+            logout_confirm_dialog(prolific_id)
 
     data = st.session_state.survey_context
     prolific_id = data["prolific_id"]
