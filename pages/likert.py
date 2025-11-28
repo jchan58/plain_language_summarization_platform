@@ -43,7 +43,7 @@ def run_likert():
     abstract_id = data["abstract_id"]
     abstract = data["abstract"]
     pls = data["pls"]
-    current = st.session_state.progress_info["current_index"]
+    current = st.session_state.progress_info["current"]
     total = st.session_state.progress_info["total"]
     progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
