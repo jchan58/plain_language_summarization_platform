@@ -69,7 +69,7 @@ def run_feedback():
 
     # Font size
     if "summary_font_size" not in st.session_state:
-        st.session_state.summary_font_size = 1
+        st.session_state.summary_font_size = 16
 
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:

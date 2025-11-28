@@ -69,8 +69,6 @@ def run_likert():
         """,
     )
 
-    
-
     st.markdown("""
         <style>
         div[data-testid="stHorizontalBlock"] {
