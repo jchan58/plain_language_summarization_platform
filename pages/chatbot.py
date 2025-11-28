@@ -219,16 +219,23 @@ def run_chatbot(prolific_id: str):
     st.title("💬 Chat with a chatbot about the scientific abstract")
     with st.sidebar:
         st.write(f"**MTurk ID:** `{prolific_id}`")
+
         if st.button("Logout"):
+            current_abstract_id = st.session_state.get("current_abstract_id")
+            if not current_abstract_id:
+                if "next_interactive_abstract" in st.session_state:
+                    curr = st.session_state["next_interactive_abstract"]
+                    current_abstract_id = curr.get("abstract_id")
             users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {"$set": {
-                    "phases.interactive.last_completed_index": st.session_state.get("abstract_index", 0)
+                    "phases.interactive.last_started_abstract_id": current_abstract_id,
+                    "phases.interactive.last_page": st.session_state.get("current_page", "chatbot")
                 }},
                 upsert=True
             )
-            for key in ["messages", "question_count", "show_summary", "generated_summary", "generating_summary"]:
-                st.session_state.pop(key, None)
+            st.session_state.logged_in = False
+            st.session_state.prolific_id = None
             st.switch_page("app.py")
 
     user = users_collection.find_one(
