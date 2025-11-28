@@ -4,7 +4,6 @@ from datetime import datetime
 import time
 import sys
 from navigation import render_nav
-render_nav()
 print("=== SESSION STATE DUMP ===", file=sys.stderr)
 for k, v in st.session_state.items():
     print(f"{k}: {v}", file=sys.stderr)
@@ -21,6 +20,7 @@ st.markdown(
 st.set_page_config(layout="wide")
 
 def run_likert():
+    render_nav()
     if "likert_start_time" not in st.session_state:
         st.session_state.likert_start_time = datetime.utcnow()
     with st.sidebar:

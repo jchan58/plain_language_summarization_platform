@@ -4,7 +4,6 @@ import re
 import sys
 import datetime
 from navigation import render_nav
-render_nav()
 
 print(">>>> ENTERED Term PAGE <<<<", file=sys.stderr)
 print(">>>> term.py LOADED", file=sys.stderr)
@@ -110,8 +109,7 @@ def get_user_static_abstracts(prolific_id: str):
     return sorted(abstracts, key=lambda x: int(x["abstract_id"]))
 
 def run_terms(prolific_id: str):
-
-    # ---------------- SIDEBAR ---------------- #
+    render_nav()
     with st.sidebar:
         if "prolific_id" in st.session_state:
             st.markdown(f"**MTurk ID:** `{st.session_state.prolific_id}`")

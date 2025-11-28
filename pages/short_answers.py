@@ -3,7 +3,6 @@ from pymongo import MongoClient
 from datetime import datetime
 import sys
 from navigation import render_nav
-render_nav()
 print("=== SESSION STATE DUMP ===", file=sys.stderr)
 for k, v in st.session_state.items():
     print(f"{k}: {v}", file=sys.stderr)
@@ -41,6 +40,7 @@ def accumulate_question_time():
 
 
 def run_feedback():
+    render_nav()
     with st.sidebar:
         if "last_completed_abstract" in st.session_state:
             user_info = st.session_state.last_completed_abstract

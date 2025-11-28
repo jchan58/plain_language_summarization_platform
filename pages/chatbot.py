@@ -7,7 +7,7 @@ from openai import OpenAI
 import streamlit.components.v1 as components
 import sys
 from navigation import render_nav
-render_nav()
+
 print(">>>> ENTERED CHATBOT PAGE <<<<", file=sys.stderr)
 print(">>>> chatbot.py LOADED", file=sys.stderr)
 print("prolific_id IN SESSION? ", "prolific_id" in st.session_state, file=sys.stderr)
@@ -172,6 +172,7 @@ def interactive_instructions(prolific_id):
         st.rerun()
 
 def run_chatbot(prolific_id: str):
+    render_nav()
     # set the variables 
     if "chat_start_time" not in st.session_state:
         st.session_state.chat_start_time = time.time()
