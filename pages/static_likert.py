@@ -243,7 +243,18 @@ def run_likert():
             st.session_state.get("faithfulness")
         ])
 
-        submit_button = st.button("Submit", disabled=not all_answered)
+        # Navigation row under Likert questions
+        col_back, col_sp1, col_sp2, col_sp3, col_sp4, col_submit = st.columns([1, 1, 1, 1, 1, 1])
+
+        with col_back:
+            if st.button("⬅️ Back", key="likert_back_btn"):
+                st.switch_page("pages/static_short_answer.py")
+        with col_sp1: pass
+        with col_sp2: pass
+        with col_sp3: pass
+        with col_sp4: pass
+        with col_submit:
+            submit_button = st.button("Submit", disabled=not all_answered)
         if submit_button:
             likert_time_spent = (datetime.utcnow() - st.session_state.likert_start_time).total_seconds()
             responses = {
