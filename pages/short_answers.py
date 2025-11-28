@@ -1,6 +1,11 @@
 import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
+import sys
+print("=== SESSION STATE DUMP ===", file=sys.stderr)
+for k, v in st.session_state.items():
+    print(f"{k}: {v}", file=sys.stderr)
+print("===========================", file=sys.stderr)
 
 # define minium character count 
 MIN_CHARS = 75
