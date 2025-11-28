@@ -1,7 +1,10 @@
 import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
-
+import sys
+print("prolific_id IN SESSION? ", "prolific_id" in st.session_state, file=sys.stderr)
+if "prolific_id" in st.session_state:
+    print("VALUE = ", st.session_state.prolific_id, file=sys.stderr)
 st.set_page_config(layout="wide")
 
 @st.cache_resource
