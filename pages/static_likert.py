@@ -238,9 +238,6 @@ def run_likert():
         likert_scale = [1, 2, 3, 4, 5]
 
         def persistent_radio(label, key):
-            if key not in st.session_state:
-                st.session_state[key] = None
-
             return st.radio(label, likert_scale, horizontal=True, key=key)
 
 
