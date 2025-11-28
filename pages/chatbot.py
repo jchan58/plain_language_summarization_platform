@@ -49,6 +49,36 @@ client_openai = get_openai_client()
 def load_example_users():
     return pd.read_csv("example_user.csv")
 
+@st.dialog("Are you sure you want to log out?", dismissible=True)
+def logout_confirm_dialog(prolific_id):
+
+    st.markdown("""
+    Please logout **only after you have submitted the results for Comparing SUMMARY to ABSTRACT** to make sure your results are saved correctly.
+    Otherwise you would have to start back over on the same abstract. 
+    """)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Stay on page"):
+            st.session_state.show_logout_dialog = False
+            st.rerun()
+
+    with col2:
+        if st.button("Logout"):
+            users_collection.update_one(
+                {"prolific_id": prolific_id},
+                {"$set": {
+                    "phases.interactive.last_completed_index":
+                        st.session_state.get("abstract_index", 0)
+                }},
+                upsert=True
+            )
+
+            st.session_state.logged_in = False
+            st.session_state.prolific_id = None
+            st.switch_page("app.py")
+
 example_user_df = load_example_users()
 
 st.markdown("""
@@ -219,14 +249,9 @@ def run_chatbot(prolific_id: str):
     with st.sidebar:
         st.write(f"**MTurk ID:** `{prolific_id}`")
         if st.button("Logout"):
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$set": {
-                    "phases.interactive.last_completed_index": st.session_state.get("abstract_index", 0)
-                }},
-                upsert=True
-            )
-            st.switch_page("app.py")
+            st.session_state.show_logout_dialog = True
+        if st.session_state.get("show_logout_dialog", False):
+            logout_confirm_dialog(prolific_id)
 
     user = users_collection.find_one(
     {"prolific_id": prolific_id},
