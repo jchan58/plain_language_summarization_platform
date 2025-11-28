@@ -232,9 +232,10 @@ def run_chatbot(prolific_id: str):
     abstracts_dict = user["phases"]["interactive"]["abstracts"]
     total = len(abstracts_dict)
     completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
-    progress_ratio = completed / total if total > 0 else 0
+    current = completed + 1
+    progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
-    st.caption(f"Completed {completed} of {total} abstracts")
+    st.caption(f"Completed {current} of {total} abstracts")
     st.markdown("""
     ### 📝 Instructions
     1. Read the scientific abstract on the **left side of the screen**.  
@@ -386,7 +387,7 @@ def run_chatbot(prolific_id: str):
                     "title": abstract_title,
                     "abstract": abstract,
                     "pls": summary,
-                    "completed": completed, 
+                    "current": current, 
                     "total": total
                 }
                 users_collection.update_one(
