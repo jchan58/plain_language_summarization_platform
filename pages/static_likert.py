@@ -60,6 +60,11 @@ def logout_confirm_dialog(prolific_id):
             st.switch_page("app.py")
 
 def run_likert():
+    data = st.session_state.survey_context
+    prolific_id = data["prolific_id"]
+    abstract_id = data["abstract_id"]
+    abstract = data["abstract"]
+    pls = data["pls"]
     if "likert_start_time" not in st.session_state:
         st.session_state.likert_start_time = datetime.utcnow()
     with st.sidebar:
@@ -68,12 +73,6 @@ def run_likert():
             st.session_state.show_logout_dialog = True
         if st.session_state.get("show_logout_dialog", False):
             logout_confirm_dialog(prolific_id)
-
-    data = st.session_state.survey_context
-    prolific_id = data["prolific_id"]
-    abstract_id = data["abstract_id"]
-    abstract = data["abstract"]
-    pls = data["pls"]
 
     if "survey_context" not in st.session_state:
         st.warning("Please complete previous task.")
