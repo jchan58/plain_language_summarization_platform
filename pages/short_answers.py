@@ -8,10 +8,6 @@ st.set_page_config(layout="wide")
 def get_mongo_client():
     return MongoClient(st.secrets["MONGO_URI"])
 
-db = get_mongo_client()["pls"]
-users_collection = db["users"]
-abstracts_collection = db["abstracts"]
-
 # define minium character count 
 MIN_CHARS = 75
 st.markdown(
