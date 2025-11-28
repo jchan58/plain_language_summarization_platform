@@ -155,11 +155,11 @@ def run_feedback():
             unsafe_allow_html=True
         )
 
-    # ------------------------
-    # QUESTIONS COLUMN
-    # ------------------------
     with col2:
         st.title("Short Answer Questions")
+        if st.button("⬅️ Back"):
+            st.session_state.stage_static = "extra_info"
+            st.switch_page("pages/term.py")
 
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0

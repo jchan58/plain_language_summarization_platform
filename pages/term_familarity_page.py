@@ -327,7 +327,6 @@ def run_terms(prolific_id: str):
                         unsafe_allow_html=True)
 
             col_term, col_opts = st.columns([0.35, 0.65])
-
             with col_term:
                 st.markdown(
                     f"""
@@ -393,7 +392,6 @@ def run_terms(prolific_id: str):
         st.markdown("---")
         all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
         col_back, col_pass1, col_pass2, col_pass3, col_pass4, col_next = st.columns([1, 1, 1, 1, 1, 1])
-
         with col_back:
             if st.button("⬅️ Back", key=f"back_extra_{abstract_id}"):
                 st.session_state.stage_static = "familiarity"
@@ -444,7 +442,7 @@ def run_terms(prolific_id: str):
                 st.session_state.extra_start_time = None
 
                 st.session_state.stage_static = "familiarity"
-                st.session_state.extra_info_state = {}
+                # st.session_state.extra_info_state = {}
 
                 for key in ["qa_index", "feedback", "main_idea_box", "method_box", "result_box"]:
                     if key in st.session_state:
