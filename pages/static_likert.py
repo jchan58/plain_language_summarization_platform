@@ -245,7 +245,6 @@ def run_likert():
         def persistent_radio(label, key):
             return st.radio(label, likert_scale, horizontal=True, key=key)
 
-
         q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
         q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
         q3 = persistent_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")

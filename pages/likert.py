@@ -28,6 +28,23 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
+@st.dialog("Are you sure you want move onto the next abstract?", dismissible=True)
+def confirm_next_abstract():
+    st.markdown("You will **not** be able to come back to this abstract if you click **Yes**.")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("No"):
+            st.session_state.show_next_dialog = False
+            st.rerun()
+
+    with col2:
+        if st.button("Yes"):
+            st.session_state.user_confirmed_next = True
+            st.session_state.show_next_dialog = False
+            st.rerun()
+
 
 @st.dialog("Are you sure you want to log out?", dismissible=True)
 def logout_confirm_dialog(prolific_id):
@@ -66,6 +83,11 @@ def run_likert():
     abstract_id = data["abstract_id"]
     abstract = data["abstract"]
     pls = data["pls"]
+    if "likert_saved" in st.session_state:
+        for k, v in st.session_state.likert_saved.items():
+            if v is not None:
+                st.session_state[k] = v
+        del st.session_state["likert_saved"]
     if "likert_start_time" not in st.session_state:
         st.session_state.likert_start_time = datetime.utcnow()
     with st.sidebar:
@@ -220,33 +242,44 @@ def run_likert():
         **5 = Excellent**  
         """)
 
-        likert_scale = [1, 2, 3, 4, 5]
-
-        q1 = st.radio("How easy was the SUMMARY to understand?",
-                      likert_scale, horizontal=True, key="simplicity")
-        q2 = st.radio("How well-structured and logically organized was the SUMMARY?",
-                      likert_scale, horizontal=True, key="coherence")
-        q3 = st.radio("How well did the SUMMARY capture the abstract’s main ideas?",
-                      likert_scale, horizontal=True, key="informativeness")
-        q4 = st.radio("Was necessary background information included in the SUMMARY?",
-                      likert_scale, horizontal=True, key="background")
-        q5 = st.radio("How much do you trust the SUMMARY?",
-                      likert_scale, horizontal=True, key="faithfulness")
-
+        
         client = MongoClient(st.secrets["MONGO_URI"])
         db = client["pls"]
         users_collection = db["users"]
 
-        all_answered = all([
-            st.session_state.get("simplicity"),
-            st.session_state.get("coherence"),
-            st.session_state.get("informativeness"),
-            st.session_state.get("background"),
-            st.session_state.get("faithfulness")
-        ])
-
+        likert_scale = [1, 2, 3, 4, 5]
+        all_answered = all(
+            st.session_state.get(k) is not None for k in
+            ["simplicity", "coherence", "informativeness", "background", "faithfulness"]
+        )
+        def persistent_radio(label, key):
+            return st.radio(label, likert_scale, horizontal=True, key=key)
+        q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
+        q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
+        q3 = persistent_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")
+        q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
+        q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
         submit_button = st.button("Submit", disabled=not all_answered)
-        if submit_button:
+
+        col_back, col_sp1, col_sp2, col_sp3, col_sp4, col_submit = st.columns([1,1,1,1,1,1])
+        with col_back:
+            if st.button("⬅️ Back", key="likert_back_btn"):
+                st.session_state.likert_saved = {
+                    "simplicity": st.session_state.get("simplicity"),
+                    "coherence": st.session_state.get("coherence"),
+                    "informativeness": st.session_state.get("informativeness"),
+                    "background": st.session_state.get("background"),
+                    "faithfulness": st.session_state.get("faithfulness"),
+                }
+                st.switch_page("pages/short_answers.py")
+
+        with col_submit:
+            if st.button("Next Abstract", disabled=not all_answered):
+                st.session_state.show_next_dialog = True
+        if st.session_state.get("show_next_dialog", False):
+            confirm_next_abstract()
+        if st.session_state.get("user_confirmed_next", False):
+            st.session_state.user_confirmed_next = False
             likert_time_spent = (datetime.utcnow() - st.session_state.likert_start_time).total_seconds()
             responses = {
                 "timestamp": datetime.utcnow(),
@@ -304,7 +337,6 @@ def run_likert():
             }
             st.write(next_abstract)
             for k in [
-                "survey_context",
                 "last_completed_abstract",
                 "messages",
                 "question_count",
