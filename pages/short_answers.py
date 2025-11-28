@@ -38,13 +38,13 @@ def run_feedback():
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
+    data = st.session_state.last_completed_abstract
+    prolific_id = data["prolific_id"]
+    abstract_id = data["abstract_id"]
     user = users_collection.find_one(
     {"prolific_id": prolific_id},
     {"phases.interactive.abstracts": 1, "_id": 0}
     )
-    data = st.session_state.last_completed_abstract
-    prolific_id = data["prolific_id"]
-    abstract_id = data["abstract_id"]
     abstracts_dict = user["phases"]["interactive"]["abstracts"]
     total = len(abstracts_dict)
     completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
