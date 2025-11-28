@@ -27,11 +27,16 @@ st.markdown(
 )
 
 def run_feedback():
+    if "last_completed_abstract" not in st.session_state:
+        st.error("No abstract found.")
+        st.stop()
+
+    data = st.session_state.last_completed_abstract
+    prolific_id = data["prolific_id"]
+    abstract_id = data["abstract_id"]
+
     with st.sidebar:
-        if "last_completed_abstract" in st.session_state:
-            user_info = st.session_state.last_completed_abstract
-            st.markdown(f"**MTurk ID:** `{user_info['prolific_id']}`")
-            prolific_id = user_info['prolific_id']
+        st.markdown(f"**MTurk ID:** `{prolific_id}`")
 
         if st.button("Logout"):
             for key in [
@@ -44,10 +49,11 @@ def run_feedback():
 
     data = st.session_state.last_completed_abstract
     abstract_id = data["abstract_id"]
+    prolific_id = data["prolific_id"]
 
     user = users_collection.find_one(
-    {"prolific_id": prolific_id},
-    {"phases.interactive.abstracts": 1, "_id": 0}
+        {"prolific_id": prolific_id},
+        {"phases.interactive.abstracts": 1, "_id": 0}
     )
 
     abstracts_dict = user["phases"]["interactive"]["abstracts"]
