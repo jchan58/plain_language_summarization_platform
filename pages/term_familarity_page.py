@@ -259,11 +259,15 @@ def run_terms(prolific_id: str):
                 )
 
             with col_slider:
+                prev_val = None
+                if "updated_terms_tmp" in st.session_state:
+                    prev_val = st.session_state.updated_terms_tmp[idx]["familiarity_score"]
+
                 familiarity = st.slider(
                     label=" ",
                     min_value=1,
                     max_value=5,
-                    value=3,
+                    value=prev_val if prev_val is not None else 3,  # ← Load saved value
                     step=1,
                     key=f"fam_{abstract_id}_{idx}",
                 )
