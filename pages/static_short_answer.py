@@ -67,7 +67,6 @@ def run_feedback():
         """
     )
 
-    # Font size
     if "summary_font_size" not in st.session_state:
         st.session_state.summary_font_size = 16
 
