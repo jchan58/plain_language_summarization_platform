@@ -52,11 +52,11 @@ def run_feedback():
     }
 
     st.title("Answer Questions About SUMMARY")
-    current = st.session_state.progress_info["current"]
+    current_index = st.session_state.progress_info["current_index"]
     total = st.session_state.progress_info["total"]
-    progress_ratio = current / total if total > 0 else 0
+    progress_ratio = current_index / total if total > 0 else 0
     st.progress(progress_ratio)
-    st.caption(f"Completed {current} of {total} abstracts")
+    st.caption(f"Completed {current_index} of {total} abstracts")
     st.markdown(
         """
         ### 📝 Instructions

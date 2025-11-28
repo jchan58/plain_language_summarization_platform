@@ -402,7 +402,7 @@ def run_terms(prolific_id: str):
             st.session_state.abstract_title = abs_item["abstract_title"]
             st.session_state.prolific_id = prolific_id
             st.session_state.progress_info = {
-                "current": current_index,
+                "current_index": current_index,
                 "total": total
             }
 
