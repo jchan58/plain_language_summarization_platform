@@ -148,8 +148,8 @@ def run_terms(prolific_id: str):
         if st.button("Logout"):
             st.session_state.show_logout_dialog = True
         if st.session_state.get("show_logout_dialog", False):
-            st.session_state.show_logout_dialog = False 
             logout_confirm_dialog(prolific_id)
+            st.stop()
             
     if "fam_start_time" not in st.session_state:
         st.session_state.fam_start_time = None
