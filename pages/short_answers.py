@@ -16,14 +16,6 @@ st.markdown(
 
 st.set_page_config(layout="wide")
 
-def show_progress():
-    if "progress_info" in st.session_state:
-        progress = st.session_state.progress_info
-        current = progress.get("current_index", 0)
-        total = progress.get("total", 1)
-        st.progress(current / total)
-        st.caption(f"Progress: {current} of {total} abstracts completed")
-
 def run_feedback():
     with st.sidebar:
         if "last_completed_abstract" in st.session_state:
@@ -38,13 +30,21 @@ def run_feedback():
             ]:
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
+
+    user = users_collection.find_one(
+    {"prolific_id": prolific_id},
+    {"phases.interactive.abstracts": 1, "_id": 0}
+    )
     data = st.session_state.last_completed_abstract
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
-    completed = data['current']
-    total = data['total']
-    progress_ratio = completed / total if total > 0 else 0
+    abstracts_dict = user["phases"]["interactive"]["abstracts"]
+    total = len(abstracts_dict)
+    completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
+    current = completed + 1
+    progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
+    st.caption(f"Completed {current} of {total} abstracts")
     st.caption(f"Completed {completed} of {total} abstracts")
     st.markdown(
         """
@@ -189,9 +189,7 @@ def run_feedback():
                         "abstract": data["abstract"],
                         "pls": data["pls"],
                         "prolific_id": prolific_id,
-                        "abstract_id": abstract_id,
-                        "completed": data['current'],
-                        "total": data['total']
+                        "abstract_id": abstract_id
                     }
 
                     st.switch_page("pages/likert.py")

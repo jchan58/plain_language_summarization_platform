@@ -228,7 +228,6 @@ def run_chatbot(prolific_id: str):
     {"prolific_id": prolific_id},
     {"phases.interactive.abstracts": 1, "_id": 0}
     )
-
     abstracts_dict = user["phases"]["interactive"]["abstracts"]
     total = len(abstracts_dict)
     completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
@@ -387,8 +386,6 @@ def run_chatbot(prolific_id: str):
                     "title": abstract_title,
                     "abstract": abstract,
                     "pls": summary,
-                    "current": current, 
-                    "total": total
                 }
                 users_collection.update_one(
                     {"prolific_id": prolific_id},

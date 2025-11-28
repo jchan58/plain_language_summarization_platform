@@ -38,11 +38,19 @@ def run_likert():
     abstract_id = data["abstract_id"]
     abstract = data["abstract"]
     pls = data["pls"]
-    completed = data['completed']
-    total = data['total']
-    progress_ratio = completed / total if total > 0 else 0
+    
+    user = users_collection.find_one(
+    {"prolific_id": prolific_id},
+    {"phases.interactive.abstracts": 1, "_id": 0}
+    )
+    data = st.session_state.last_completed_abstract
+    abstracts_dict = user["phases"]["interactive"]["abstracts"]
+    total = len(abstracts_dict)
+    completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
+    current = completed + 1
+    progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
-    st.caption(f"Completed {completed} of {total} abstracts")
+    st.caption(f"Completed {current} of {total} abstracts")
     st.markdown(
         """
         ### 📝 Instructions
