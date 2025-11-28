@@ -109,7 +109,6 @@ def get_user_static_abstracts(prolific_id: str):
     return sorted(abstracts, key=lambda x: int(x["abstract_id"]))
 
 def run_terms(prolific_id: str):
-    render_nav()
     with st.sidebar:
         if "prolific_id" in st.session_state:
             st.markdown(f"**MTurk ID:** `{st.session_state.prolific_id}`")

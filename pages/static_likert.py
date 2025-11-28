@@ -20,7 +20,6 @@ st.markdown(
 st.set_page_config(layout="wide")
 
 def run_likert():
-    render_nav()
     if "likert_start_time" not in st.session_state:
         st.session_state.likert_start_time = datetime.utcnow()
     with st.sidebar:

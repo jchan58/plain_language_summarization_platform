@@ -40,7 +40,6 @@ def accumulate_question_time():
 
 
 def run_feedback():
-    render_nav()
     with st.sidebar:
         if "last_completed_abstract" in st.session_state:
             user_info = st.session_state.last_completed_abstract

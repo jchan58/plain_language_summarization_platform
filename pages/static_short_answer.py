@@ -47,7 +47,6 @@ def show_progress():
         st.caption(f"Progress: {current} of {total} abstracts completed")
 
 def run_feedback():
-    render_nav()
     with st.sidebar:
         if "prolific_id" in st.session_state:
             st.markdown(f"**MTurk ID:** `{st.session_state.prolific_id}`")
