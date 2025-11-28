@@ -21,6 +21,22 @@ st.markdown(
 
 st.set_page_config(layout="wide")
 
+def accumulate_question_time():
+    """Add elapsed time to the current question."""
+    if "question_start_time" not in st.session_state:
+        return
+    elapsed = (datetime.utcnow() - st.session_state.question_start_time).total_seconds()
+    key_map = {
+        0: "main_idea_time",
+        1: "method_time",
+        2: "result_time"
+    }
+    q_key = key_map.get(st.session_state.qa_index)
+    if q_key:
+        st.session_state[q_key] = st.session_state.get(q_key, 0) + elapsed
+    st.session_state.question_start_time = datetime.utcnow()
+
+
 def show_progress():
     if "progress_info" in st.session_state:
         progress = st.session_state.progress_info
@@ -109,6 +125,15 @@ def run_feedback():
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0
 
+        # Start timer if first load OR if we switched questions
+        if "question_start_time" not in st.session_state:
+            st.session_state.question_start_time = datetime.utcnow()
+            st.session_state.last_qa_index = st.session_state.qa_index
+        else:
+            if st.session_state.last_qa_index != st.session_state.qa_index:
+                accumulate_question_time()
+                st.session_state.last_qa_index = st.session_state.qa_index
+
         # Feedback dict
         if "feedback" not in st.session_state:
             st.session_state.feedback = {"main_idea": "", "method": "", "result": ""}
@@ -167,12 +192,16 @@ def run_feedback():
                 all_filled = completed == 3
 
                 if st.button("Submit", disabled=not all_filled):
+                    accumulate_question_time()
                     # Save
                     feedback_data = {
                         "main_idea": st.session_state.feedback["main_idea"].strip(),
                         "methods": st.session_state.feedback["method"].strip(),
                         "results": st.session_state.feedback["result"].strip(),
-                        "submitted_at": datetime.utcnow()
+                        "submitted_at": datetime.utcnow(),
+                        "time_main_idea": st.session_state.get("main_idea_time", 0),
+                        "time_method": st.session_state.get("method_time", 0),
+                        "time_result": st.session_state.get("result_time", 0),
                     }
 
                     client = MongoClient(st.secrets["MONGO_URI"])

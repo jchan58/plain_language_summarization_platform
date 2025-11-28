@@ -2,6 +2,7 @@ import streamlit as st
 from pymongo import MongoClient
 import re
 import sys
+import datetime   # <-- needed for timers
 
 print(">>>> ENTERED Term PAGE <<<<", file=sys.stderr)
 print(">>>> term.py LOADED", file=sys.stderr)
@@ -23,16 +24,8 @@ for k, v in st.session_state.items():
 print("===========================", file=sys.stderr)
 
 TERM_COLORS = [
-    "#fffa8b",  # yellow
-    "#b3e5fc",  # light blue
-    "#c8e6c9",  # light green
-    "#ffe0b2",  # light orange
-    "#f8bbd0",  # light pink
-    "#d1c4e9",  # lavender
-    "#f0f4c3",  # pale lime
-    "#ffccbc",  # peach
-    "#dcedc8",  # mint
-    "#e1bee7"   # purple-pink
+    "#fffa8b", "#b3e5fc", "#c8e6c9", "#ffe0b2", "#f8bbd0",
+    "#d1c4e9", "#f0f4c3", "#ffccbc", "#dcedc8", "#e1bee7"
 ]
 
 st.markdown(
@@ -53,13 +46,11 @@ db = get_mongo_client()["pls"]
 users_collection = db["users"]
 abstracts_collection = db["abstracts"]
 
-# get number of abstracts 
 def get_static_progress(prolific_id):
     user = users_collection.find_one(
         {"prolific_id": prolific_id},
         {"phases.static.abstracts": 1, "_id": 0}
     )
-
     if not user:
         return 0, 0
     abstracts = user["phases"]["static"]["abstracts"]
@@ -67,22 +58,19 @@ def get_static_progress(prolific_id):
     completed = sum(1 for a in abstracts.values() if a.get("completed", False))
     return completed, total
 
-# highlight the terms in the abstract
 def highlight_terms_in_abstract(abstract: str, terms: list):
     highlighted = abstract
-
     for idx, term_item in enumerate(terms):
         term = term_item["term"]
         color = TERM_COLORS[idx % len(TERM_COLORS)]
         pattern = re.escape(term)
         highlighted = re.sub(
             fr"\b({pattern})\b",
-            rf'<span style="background-color: {color}; padding: 2px 4px; border-radius: 4px;">\1</span>',
+            rf'<span style="background-color:{color}; padding:2px 4px; border-radius:4px;">\1</span>',
             highlighted,
             flags=re.IGNORECASE
         )
     return highlighted
-
 
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
 def static_instructions(prolific_id):
@@ -90,7 +78,6 @@ def static_instructions(prolific_id):
     ### Before you begin
     ...
     """)
-
     if st.button("Start"):
         st.session_state.seen_static_instructions = True
         users_collection.update_one(
@@ -100,7 +87,6 @@ def static_instructions(prolific_id):
         )
         st.rerun()
 
-
 def get_user_static_abstracts(prolific_id: str):
     user = users_collection.find_one(
         {"prolific_id": prolific_id},
@@ -108,10 +94,8 @@ def get_user_static_abstracts(prolific_id: str):
     )
     if not user:
         return []
-
     abstracts_dict = user["phases"]["static"]["abstracts"]
     abstracts = []
-
     for abstract_id, data in abstracts_dict.items():
         if not data.get("completed", False):
             abstracts.append({
@@ -121,10 +105,7 @@ def get_user_static_abstracts(prolific_id: str):
                 "human_written_pls": data.get("human_written_pls", ""),
                 "terms": data.get("term_familarity", [])
             })
-
-    abstracts = sorted(abstracts, key=lambda x: int(x["abstract_id"]))
-    return abstracts
-
+    return sorted(abstracts, key=lambda x: int(x["abstract_id"]))
 
 def run_terms(prolific_id: str):
 
@@ -132,7 +113,6 @@ def run_terms(prolific_id: str):
     with st.sidebar:
         if "prolific_id" in st.session_state:
             st.markdown(f"**MTurk ID:** `{st.session_state.prolific_id}`")
-
         if st.button("Logout"):
             for key in [
                 "static_index", "current_abstract_id", "human_written_pls",
@@ -143,7 +123,17 @@ def run_terms(prolific_id: str):
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
-    # ----------------------------------------- #
+    # ---------------- TIMER SETUP ---------------- #
+    ### TIMER ADDITION ###
+    if "fam_start_time" not in st.session_state:
+        st.session_state.fam_start_time = None
+    if "extra_start_time" not in st.session_state:
+        st.session_state.extra_start_time = None
+    if "time_familiarity" not in st.session_state:
+        st.session_state.time_familiarity = 0
+    if "time_extra_info" not in st.session_state:
+        st.session_state.time_extra_info = 0
+    # ------------------------------------------------ #
 
     # Instruction check
     user = users_collection.find_one({"prolific_id": prolific_id})
@@ -156,11 +146,8 @@ def run_terms(prolific_id: str):
         static_instructions(prolific_id)
         return
 
-    # ----------------------------------------- #
-
     if "abstract_font_size" not in st.session_state:
         st.session_state.abstract_font_size = 16
-
     if "stage_static" not in st.session_state:
         st.session_state.stage_static = "familiarity"
 
@@ -170,7 +157,6 @@ def run_terms(prolific_id: str):
 
     if "static_index" not in st.session_state:
         st.session_state.static_index = 0
-
     if st.session_state.static_index >= len(abstracts):
         st.session_state.static_index = 0
 
@@ -178,20 +164,17 @@ def run_terms(prolific_id: str):
     abstract_id = abs_item["abstract_id"]
 
     completed, total = get_static_progress(prolific_id)
-    current_index = completed + 1  
+    current_index = completed + 1
     st.progress(current_index / total)
     st.markdown(f"**Progress:** {current_index} / {total} abstracts**")
-    st.markdown("""<style>.sticky-abs {position:sticky;top:0;z-index:50;padding-bottom:8px;background:white;}</style>""",
-                unsafe_allow_html=True)
 
     st.markdown("### ABSTRACT")
 
-    btn_col1, btn_col2, btn_col3 = st.columns([0.25, 0.65, 0.10])
+    btn_col1, _, btn_col3 = st.columns([0.25, 0.65, 0.10])
     with btn_col1:
         if st.button("Decrease text size"):
             st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
             st.rerun()
-
     with btn_col3:
         if st.button("Increase text size"):
             st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
@@ -200,20 +183,13 @@ def run_terms(prolific_id: str):
     st.markdown(
         f"""
         <div class="sticky-abs">
-            <div style="
-                background-color:#f8f9fa;
-                padding: 1.1rem 1.3rem;
-                border-radius: 0.6rem;
-                border: 1px solid #dfe1e5;
-                max-height: 550px;
-                font-size: {st.session_state.abstract_font_size}px;
-                overflow-y: auto;
-            ">
-                <div style="font-size:{st.session_state.abstract_font_size + 4}px; font-weight:600; margin-bottom:0.6rem;">
+            <div style="background-color:#f8f9fa;padding:1.1rem 1.3rem;border-radius:0.6rem;border:1px solid #dfe1e5;
+            max-height:550px;font-size:{st.session_state.abstract_font_size}px;overflow-y:auto;">
+                <div style="font-size:{st.session_state.abstract_font_size + 4}px;font-weight:600;margin-bottom:0.6rem;">
                     {abs_item['abstract_title']}
                 </div>
-                <div style="font-size:{st.session_state.abstract_font_size + 4}px; line-height:1.55;">
-                    {highlight_terms_in_abstract(abs_item["abstract"], abs_item["terms"]).replace("\n", "<br>")}
+                <div style="font-size:{st.session_state.abstract_font_size + 4}px;line-height:1.55;">
+                    {highlight_terms_in_abstract(abs_item["abstract"], abs_item["terms"]).replace("\n","<br>")}
                 </div>
             </div>
         </div>
@@ -221,7 +197,13 @@ def run_terms(prolific_id: str):
         unsafe_allow_html=True
     )
 
+    # ---------------- FAMILIARITY PAGE ---------------- #
     if st.session_state.stage_static == "familiarity":
+
+        ### TIMER ADDITION ###
+        if st.session_state.fam_start_time is None:
+            st.session_state.fam_start_time = datetime.datetime.utcnow()
+        # ------------------------------------------------ #
 
         st.subheader("How familiar are you with each term?")
         st.markdown("""
@@ -234,7 +216,6 @@ def run_terms(prolific_id: str):
         """)
 
         updated_terms = []
-
         for idx, term_item in enumerate(abs_item["terms"]):
             term = term_item["term"]
             color = TERM_COLORS[idx % len(TERM_COLORS)]
@@ -243,16 +224,8 @@ def run_terms(prolific_id: str):
             with col_label:
                 st.markdown(
                     f"""
-                    <div style="
-                        background-color:{color};
-                        padding:8px 12px;
-                        border-radius:6px;
-                        font-size:16px;
-                        font-weight:600;
-                        display:flex;
-                        align-items:center;
-                        height:42px;
-                    ">
+                    <div style="background-color:{color};padding:8px 12px;border-radius:6px;font-size:16px;font-weight:600;
+                    display:flex;align-items:center;height:42px;">
                         {idx+1}. {term}
                     </div>
                     """,
@@ -260,7 +233,6 @@ def run_terms(prolific_id: str):
                 )
 
             with col_slider:
-                st.markdown("<div style='margin-top:-10px;'>", unsafe_allow_html=True)
                 familiarity = st.slider(
                     label=" ",
                     min_value=1,
@@ -269,7 +241,6 @@ def run_terms(prolific_id: str):
                     step=1,
                     key=f"fam_{abstract_id}_{idx}",
                 )
-                st.markdown("</div>", unsafe_allow_html=True)
 
             updated_terms.append({
                 "term": term,
@@ -285,6 +256,14 @@ def run_terms(prolific_id: str):
         )
 
         if st.button("Next", key=f"next_btn_fam_{abstract_id}", disabled=not all_fam_filled):
+
+            ### STOP TIMER ###
+            if st.session_state.fam_start_time:
+                elapsed = (datetime.datetime.utcnow() - st.session_state.fam_start_time).total_seconds()
+                st.session_state.time_familiarity += elapsed
+                st.session_state.fam_start_time = None
+            # ---------------------------- #
+
             st.session_state.stage_static = "extra_info"
             st.session_state.updated_terms_tmp = updated_terms
             st.rerun()
@@ -292,9 +271,15 @@ def run_terms(prolific_id: str):
         if not all_fam_filled:
             st.warning("⚠️ Please answer all familiarity questions before continuing.")
 
-        return  # IMPORTANT — stops rendering here when on the familiarity page
-    
+        return
+
+    # ---------------- EXTRA INFO PAGE ---------------- #
     if st.session_state.stage_static == "extra_info":
+
+        ### TIMER ADDITION ###
+        if st.session_state.extra_start_time is None:
+            st.session_state.extra_start_time = datetime.datetime.utcnow()
+        # ------------------------------------------------ #
 
         st.subheader("What additional information would you like for each term?")
         st.markdown("Choose at least one option per term, unless you select 'None'.")
@@ -308,7 +293,6 @@ def run_terms(prolific_id: str):
 
         for idx, term in enumerate(terms):
             color = TERM_COLORS[idx % len(TERM_COLORS)]
-
             st.markdown("<div style='height:2px;background-color:#eee;margin:1rem 0;'></div>",
                         unsafe_allow_html=True)
 
@@ -318,15 +302,9 @@ def run_terms(prolific_id: str):
                 st.markdown(
                     f"""
                     <div style="display:flex;align-items:center;">
-                        <div style="
-                            width:16px;height:16px;
-                            background-color:{color};
-                            border-radius:4px;
-                            margin-right:10px;
-                            border:1px solid #ccc;"></div>
-                        <div style="font-size:1.1rem;font-weight:600;">
-                            {idx+1}. {term}
-                        </div>
+                        <div style="width:16px;height:16px;background-color:{color};
+                        border-radius:4px;margin-right:10px;border:1px solid #ccc;"></div>
+                        <div style="font-size:1.1rem;font-weight:600;">{idx+1}. {term}</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -336,12 +314,12 @@ def run_terms(prolific_id: str):
                 base_key = f"extra_{abstract_id}_{idx}"
                 current = st.session_state.extra_info_state.get(term, [])
 
-                none_selected = "None" in current
+                none_selected = ("None" in current)
                 disabled_others = none_selected
 
-                def_checked = "Definition" in current
-                example_checked = "Example" in current
-                bg_checked = "Background" in current
+                def_checked = ("Definition" in current)
+                example_checked = ("Example" in current)
+                bg_checked = ("Background" in current)
 
                 c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
 
@@ -388,14 +366,27 @@ def run_terms(prolific_id: str):
 
         if st.button("Next", key=f"next_extra_{abstract_id}", disabled=not all_filled):
 
+            ### STOP EXTRA INFO TIMER ###
+            if st.session_state.extra_start_time:
+                elapsed = (datetime.datetime.utcnow() - st.session_state.extra_start_time).total_seconds()
+                st.session_state.time_extra_info += elapsed
+                st.session_state.extra_start_time = None
+            # ---------------------------------------------------- #
+
             final_terms = st.session_state.updated_terms_tmp
             for i, row in enumerate(cleaned_extra):
                 final_terms[i]["extra_information"] = row["extra_information"]
 
             users_collection.update_one(
                 {"prolific_id": prolific_id},
-                {"$set": {f"phases.static.abstracts.{abstract_id}.term_familarity": final_terms}}
+                {"$set": {
+                    f"phases.static.abstracts.{abstract_id}.term_familarity": final_terms,
+                    f"phases.static.abstracts.{abstract_id}.time_familiarity": st.session_state.time_familiarity,
+                    f"phases.static.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info
+                }}
             )
+
+            # Set for next pages
             st.session_state.current_abstract_id = abstract_id
             st.session_state.current_abstract = abs_item["abstract"]
             st.session_state.human_written_pls = abs_item["human_written_pls"]
@@ -406,18 +397,19 @@ def run_terms(prolific_id: str):
                 "total": total
             }
 
-            # RESET for next abstract
+            # RESET TIMERS FOR NEXT ABSTRACT
+            st.session_state.time_familiarity = 0
+            st.session_state.time_extra_info = 0
+            st.session_state.fam_start_time = None
+            st.session_state.extra_start_time = None
+
             st.session_state.stage_static = "familiarity"
             st.session_state.extra_info_state = {}
-            for key in [
-                    "qa_index",
-                    "feedback",
-                    "main_idea_box",
-                    "method_box",
-                    "result_box",
-                ]:
-                    if key in st.session_state:
-                        st.session_state.pop(key)
+
+            for key in ["qa_index", "feedback", "main_idea_box", "method_box", "result_box"]:
+                if key in st.session_state:
+                    st.session_state.pop(key)
+
             st.switch_page("pages/static_short_answer.py")
 
 if "prolific_id" in st.session_state:

@@ -1,6 +1,7 @@
 import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
+import time
 import sys
 print("=== SESSION STATE DUMP ===", file=sys.stderr)
 for k, v in st.session_state.items():
@@ -18,6 +19,8 @@ st.markdown(
 st.set_page_config(layout="wide")
 
 def run_likert():
+    if "likert_start_time" not in st.session_state:
+        st.session_state.likert_start_time = datetime.utcnow()
     with st.sidebar:
         if "last_completed_abstract" in st.session_state:
             user_info = st.session_state.last_completed_abstract
@@ -213,8 +216,10 @@ def run_likert():
 
         submit_button = st.button("Submit", disabled=not all_answered)
         if submit_button:
+            likert_time_spent = (datetime.utcnow() - st.session_state.likert_start_time).total_seconds()
             responses = {
                 "timestamp": datetime.utcnow(),
+                "time_spent_seconds": likert_time_spent,
                 "responses": {
                     "simplicity": q1,
                     "coherence": q2,
@@ -234,7 +239,7 @@ def run_likert():
                     }
                 }
             )
-
+            st.session_state.pop("likert_start_time", None)
             user = users_collection.find_one(
                 {"prolific_id": prolific_id},
                 {"phases.interactive.abstracts": 1, "_id": 0}

@@ -1,5 +1,6 @@
 import streamlit as st
 from pymongo import MongoClient
+import time
 from datetime import datetime
 import pandas as pd
 from openai import OpenAI
@@ -120,6 +121,7 @@ def show_done_dialog():
     if yes_clicked:
         st.session_state.generating_summary = True
         st.session_state.dialog_generating = True
+        st.session_state.chat_duration_seconds = (time.time() - st.session_state.chat_start_time)
         st.rerun()
 
 def get_user_interactive_abstracts(prolific_id: str):
@@ -168,9 +170,11 @@ def interactive_instructions(prolific_id):
         st.rerun()
 
 def run_chatbot(prolific_id: str):
+    # set the variables 
+    if "chat_start_time" not in st.session_state:
+        st.session_state.chat_start_time = time.time()
     if not st.session_state.get("generating_summary", False):
         st.session_state.dialog_generating = False
-    # set all the variables
     if "messages" not in st.session_state:
         st.session_state.messages = []
     if "question_count" not in st.session_state:
@@ -395,8 +399,12 @@ def run_chatbot(prolific_id: str):
                     {"prolific_id": prolific_id},
                     {"$set": {
                         f"phases.interactive.abstracts.{abstract_id}.summary": summary,
+                        f"phases.interactive.abstracts.{abstract_id}.chat_duration_seconds": st.session_state.chat_duration_seconds
+
                     }}
                 )
+                if "chat_start_time" in st.session_state:
+                    st.session_state.pop("chat_start_time")
                 st.session_state.messages = []
                 st.session_state.question_count = 0
                 for key in [
