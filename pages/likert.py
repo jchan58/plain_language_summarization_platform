@@ -1,7 +1,11 @@
 import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
-
+import sys
+print("=== SESSION STATE DUMP ===", file=sys.stderr)
+for k, v in st.session_state.items():
+    print(f"{k}: {v}", file=sys.stderr)
+print("===========================", file=sys.stderr)
 st.markdown(
     """
     <style>
@@ -33,6 +37,7 @@ def run_likert():
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
+    st.title("Comparing SUMMARY to ABSTRACT")
     data = st.session_state.survey_context
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
