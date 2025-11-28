@@ -3,6 +3,8 @@ from pymongo import MongoClient
 from datetime import datetime
 import time
 import sys
+from navigation import render_nav
+render_nav()
 print("=== SESSION STATE DUMP ===", file=sys.stderr)
 for k, v in st.session_state.items():
     print(f"{k}: {v}", file=sys.stderr)

@@ -2,7 +2,9 @@ import streamlit as st
 from pymongo import MongoClient
 import re
 import sys
-import datetime   # <-- needed for timers
+import datetime
+from navigation import render_nav
+render_nav()
 
 print(">>>> ENTERED Term PAGE <<<<", file=sys.stderr)
 print(">>>> term.py LOADED", file=sys.stderr)
