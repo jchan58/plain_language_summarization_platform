@@ -66,6 +66,7 @@ def logout_confirm_dialog(prolific_id):
 
     with col2:
         if st.button("Logout"):
+            st.session_state.show_logout_dialog = False
             users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {"$set": {
