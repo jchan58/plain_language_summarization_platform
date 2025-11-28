@@ -196,7 +196,7 @@ def run_feedback():
                         "total": data["total"]
                     }
                     st.session_state.progress_info = {
-                        "current": current,
+                        "current_index": current_index,
                         "total": total
                     }
                     st.switch_page("pages/static_likert.py")
