@@ -58,6 +58,8 @@ def run_likert():
     abstract_id = data["abstract_id"]
     abstract = data["abstract"]
     pls = data["pls"]
+    current = data['completed_abstract']
+    total = data['total_abstract']
     abstract_title = data["abstract_title"]
 
     st.markdown("""
@@ -89,6 +91,8 @@ def run_likert():
         """, unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 1], gap="large")
+    st.progress(current / total)
+    st.markdown(f"**Progress:** {current} / {total} abstracts**")
     with col1:
         st.markdown(f"### ABSTRACT")
         btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])

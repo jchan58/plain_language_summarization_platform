@@ -399,6 +399,8 @@ def run_terms(prolific_id: str):
             st.session_state.human_written_pls = abs_item["human_written_pls"]
             st.session_state.abstract_title = abs_item["abstract_title"]
             st.session_state.prolific_id = prolific_id
+            st.session_state.completed_abstract = completed
+            st.session_state.total_abstract = total
 
             # RESET for next abstract
             st.session_state.stage_static = "familiarity"

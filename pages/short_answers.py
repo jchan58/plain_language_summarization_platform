@@ -38,7 +38,13 @@ def run_feedback():
             ]:
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
-    show_progress()
+    data = st.session_state.last_completed_abstract
+    prolific_id = data["prolific_id"]
+    abstract_id = data["abstract_id"]
+    current = data['completed_abstract']
+    total = data['total_abstract']
+    st.progress(current / total)
+    st.markdown(f"**Progress:** {current} / {total} abstracts**")
     st.markdown(
         """
         ### 📝 Instructions
@@ -56,9 +62,6 @@ def run_feedback():
         st.warning("Please complete the interactive session first.")
         st.stop()
 
-    data = st.session_state.last_completed_abstract
-    prolific_id = data["prolific_id"]
-    abstract_id = data["abstract_id"]
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.title("SUMMARY")
@@ -115,8 +118,6 @@ def run_feedback():
 
         q = questions[st.session_state.qa_index]
         key = q["key"]
-
-        # UI
         st.subheader(q["label"])
         st.text_area(
             "",
@@ -187,7 +188,9 @@ def run_feedback():
                         "abstract": data["abstract"],
                         "pls": data["pls"],
                         "prolific_id": prolific_id,
-                        "abstract_id": abstract_id
+                        "abstract_id": abstract_id,
+                        "completed_abstract": data['completed_abstract'],
+                        "total_abstract": data['total_abstract']
                     }
 
                     st.switch_page("pages/likert.py")
