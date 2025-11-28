@@ -150,9 +150,7 @@ def run_terms(prolific_id: str):
         if st.session_state.get("show_logout_dialog", False):
             st.session_state.show_logout_dialog = False 
             logout_confirm_dialog(prolific_id)
-
-    # ---------------- TIMER SETUP ---------------- #
-    ### TIMER ADDITION ###
+            
     if "fam_start_time" not in st.session_state:
         st.session_state.fam_start_time = None
     if "extra_start_time" not in st.session_state:
@@ -389,56 +387,59 @@ def run_terms(prolific_id: str):
                 cleaned_extra.append({"term": term, "extra_information": current})
 
         st.markdown("---")
-
         all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
+        col_back, col_next = st.columns([1, 1])
 
-        if st.button("Next", key=f"next_extra_{abstract_id}", disabled=not all_filled):
+        with col_back:
+            if st.button("⬅️ Back", key=f"back_extra_{abstract_id}"):
+                st.session_state.stage_static = "familiarity"
+                st.rerun()
 
-            ### STOP EXTRA INFO TIMER ###
-            if st.session_state.extra_start_time:
-                elapsed = (datetime.datetime.utcnow() - st.session_state.extra_start_time).total_seconds()
-                st.session_state.time_extra_info += elapsed
+        with col_next:
+            if st.button("Next ➡️", key=f"next_extra_{abstract_id}", disabled=not all_filled):
+
+                # STOP EXTRA INFO TIMER
+                if st.session_state.extra_start_time:
+                    elapsed = (datetime.datetime.utcnow() - st.session_state.extra_start_time).total_seconds()
+                    st.session_state.time_extra_info += elapsed
+                    st.session_state.extra_start_time = None
+
+                final_terms = st.session_state.updated_terms_tmp
+                for i, row in enumerate(cleaned_extra):
+                    final_terms[i]["extra_information"] = row["extra_information"]
+
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {
+                        f"phases.static.abstracts.{abstract_id}.term_familarity": final_terms,
+                        f"phases.static.abstracts.{abstract_id}.time_familiarity": st.session_state.time_familiarity,
+                        f"phases.static.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info
+                    }}
+                )
+
+                st.session_state.current_abstract_id = abstract_id
+                st.session_state.current_abstract = abs_item["abstract"]
+                st.session_state.human_written_pls = abs_item["human_written_pls"]
+                st.session_state.abstract_title = abs_item["abstract_title"]
+                st.session_state.prolific_id = prolific_id
+                st.session_state.progress_info = {
+                    "current_index": current_index,
+                    "total": total
+                }
+
+                st.session_state.time_familiarity = 0
+                st.session_state.time_extra_info = 0
+                st.session_state.fam_start_time = None
                 st.session_state.extra_start_time = None
-            # ---------------------------------------------------- #
 
-            final_terms = st.session_state.updated_terms_tmp
-            for i, row in enumerate(cleaned_extra):
-                final_terms[i]["extra_information"] = row["extra_information"]
+                st.session_state.stage_static = "familiarity"
+                st.session_state.extra_info_state = {}
 
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$set": {
-                    f"phases.static.abstracts.{abstract_id}.term_familarity": final_terms,
-                    f"phases.static.abstracts.{abstract_id}.time_familiarity": st.session_state.time_familiarity,
-                    f"phases.static.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info
-                }}
-            )
+                for key in ["qa_index", "feedback", "main_idea_box", "method_box", "result_box"]:
+                    if key in st.session_state:
+                        st.session_state.pop(key)
 
-            # Set for next pages
-            st.session_state.current_abstract_id = abstract_id
-            st.session_state.current_abstract = abs_item["abstract"]
-            st.session_state.human_written_pls = abs_item["human_written_pls"]
-            st.session_state.abstract_title = abs_item["abstract_title"]
-            st.session_state.prolific_id = prolific_id
-            st.session_state.progress_info = {
-                "current_index": current_index,
-                "total": total
-            }
-
-            # RESET TIMERS FOR NEXT ABSTRACT
-            st.session_state.time_familiarity = 0
-            st.session_state.time_extra_info = 0
-            st.session_state.fam_start_time = None
-            st.session_state.extra_start_time = None
-
-            st.session_state.stage_static = "familiarity"
-            st.session_state.extra_info_state = {}
-
-            for key in ["qa_index", "feedback", "main_idea_box", "method_box", "result_box"]:
-                if key in st.session_state:
-                    st.session_state.pop(key)
-
-            st.switch_page("pages/static_short_answer.py")
+                st.switch_page("pages/static_short_answer.py")
 
 if "prolific_id" in st.session_state:
     run_terms(st.session_state.prolific_id)
