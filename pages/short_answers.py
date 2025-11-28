@@ -56,12 +56,10 @@ def logout_confirm_dialog(prolific_id):
     """)
 
     col1, col2 = st.columns(2)
-
     with col1:
         if st.button("Stay on page"):
             st.session_state.show_logout_dialog = False
             st.rerun()
-
     with col2:
         if st.button("Logout"):
             st.session_state.show_logout_dialog = False
@@ -157,9 +155,6 @@ def run_feedback():
 
     with col2:
         st.title("Short Answer Questions")
-        if st.button("⬅️ Back"):
-            st.session_state.stage_static = "extra_info"
-            st.switch_page("pages/term.py")
 
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0
