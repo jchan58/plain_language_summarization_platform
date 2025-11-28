@@ -154,6 +154,7 @@ def run_feedback():
             """,
             unsafe_allow_html=True
         )
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         if st.button("⬅️ Back"):
             st.session_state.stage_static = "extra_info"
             st.switch_page("pages/term_familarity_page.py")
