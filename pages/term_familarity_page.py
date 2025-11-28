@@ -392,12 +392,17 @@ def run_terms(prolific_id: str):
 
         st.markdown("---")
         all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
-        col_back, col_next = st.columns([1, 1])
+        col_back, col_pass1, col_pass2, col_next = st.columns([1, 1, 1, 1])
 
         with col_back:
             if st.button("⬅️ Back", key=f"back_extra_{abstract_id}"):
                 st.session_state.stage_static = "familiarity"
                 st.rerun()
+        with col_pass1: 
+            pass
+
+        with col_pass2: 
+            pass
 
         with col_next:
             if st.button("Next ➡️", key=f"next_extra_{abstract_id}", disabled=not all_filled):
