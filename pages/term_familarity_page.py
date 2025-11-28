@@ -285,14 +285,18 @@ def run_terms(prolific_id: str):
             for idx in range(len(abs_item["terms"]))
         )
 
-        if st.button("Next", key=f"next_btn_fam_{abstract_id}", disabled=not all_fam_filled):
-
-            ### STOP TIMER ###
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
+        with col6:
+            next_clicked = st.button(
+                "Next ➡️",
+                key=f"next_btn_fam_{abstract_id}",
+                disabled=not all_fam_filled
+        )
+        if next_clicked:
             if st.session_state.fam_start_time:
                 elapsed = (datetime.datetime.utcnow() - st.session_state.fam_start_time).total_seconds()
                 st.session_state.time_familiarity += elapsed
                 st.session_state.fam_start_time = None
-            # ---------------------------- #
 
             st.session_state.stage_static = "extra_info"
             st.session_state.updated_terms_tmp = updated_terms
@@ -300,7 +304,6 @@ def run_terms(prolific_id: str):
 
         if not all_fam_filled:
             st.warning("⚠️ Please answer all familiarity questions before continuing.")
-
         return
 
     # ---------------- EXTRA INFO PAGE ---------------- #
