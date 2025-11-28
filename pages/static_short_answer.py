@@ -191,8 +191,6 @@ def run_feedback():
                         "pls": data["pls"],
                         "prolific_id": data["prolific_id"],
                         "abstract_id": data["abstract_id"], 
-                        "current": data["current"], 
-                        "total": data["total"]
                     }
                     st.session_state.progress_info = {
                         "current_index": current_index,
