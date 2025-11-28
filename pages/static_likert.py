@@ -28,6 +28,24 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
+@st.dialog("Are you sure you want move onto the next abstract?", dismissible=True)
+def confirm_next_abstract():
+    st.markdown("You will **not** be able to come back to this abstract if you click **Yes**.")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("No"):
+            st.session_state.show_next_dialog = False
+            st.rerun()
+
+    with col2:
+        if st.button("Yes"):
+            st.session_state.user_confirmed_next = True
+            st.session_state.show_next_dialog = False
+            st.rerun()
+
+
 @st.dialog("Are you sure you want to log out?", dismissible=True)
 def logout_confirm_dialog(prolific_id):
 
@@ -37,7 +55,6 @@ def logout_confirm_dialog(prolific_id):
     """)
 
     col1, col2 = st.columns(2)
-
     with col1:
         if st.button("Stay on page"):
             st.session_state.show_logout_dialog = False
@@ -234,28 +251,23 @@ def run_likert():
         client = MongoClient(st.secrets["MONGO_URI"])
         db = client["pls"]
         users_collection = db["users"]
-
-        all_answered = all([
-            st.session_state.get("simplicity"),
-            st.session_state.get("coherence"),
-            st.session_state.get("informativeness"),
-            st.session_state.get("background"),
-            st.session_state.get("faithfulness")
-        ])
+        all_answered = all(
+            st.session_state.get(k) is not None for k in
+            ["simplicity", "coherence", "informativeness", "background", "faithfulness"]
+        )
 
         # Navigation row under Likert questions
-        col_back, col_sp1, col_sp2, col_sp3, col_sp4, col_submit = st.columns([1, 1, 1, 1, 1, 1])
-
+        col_back, col_sp1, col_sp2, col_sp3, col_sp4, col_submit = st.columns([1,1,1,1,1,1])
         with col_back:
             if st.button("⬅️ Back", key="likert_back_btn"):
                 st.switch_page("pages/static_short_answer.py")
-        with col_sp1: pass
-        with col_sp2: pass
-        with col_sp3: pass
-        with col_sp4: pass
         with col_submit:
-            submit_button = st.button("Submit", disabled=not all_answered)
-        if submit_button:
+            if st.button("Next Abstract", disabled=not all_answered):
+                st.session_state.show_next_dialog = True
+        if st.session_state.get("show_next_dialog", False):
+            confirm_next_abstract()
+        if st.session_state.get("user_confirmed_next", False):
+            st.session_state.user_confirmed_next = False
             likert_time_spent = (datetime.utcnow() - st.session_state.likert_start_time).total_seconds()
             responses = {
                 "timestamp": datetime.utcnow(),
