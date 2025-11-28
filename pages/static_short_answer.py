@@ -1,6 +1,11 @@
 import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
+import sys
+print("=== SESSION STATE DUMP ===", file=sys.stderr)
+for k, v in st.session_state.items():
+    print(f"{k}: {v}", file=sys.stderr)
+print("===========================", file=sys.stderr)
 
 # define minium character count 
 MIN_CHARS = 75
@@ -45,7 +50,7 @@ def run_feedback():
         "prolific_id": st.session_state.get("prolific_id", ""),
         "abstract_id": st.session_state.get("current_abstract_id", ""),
     }
-    
+
     st.title("Answer Questions About SUMMARY")
     current = st.session_state.progress_info["current"]
     total = st.session_state.progress_info["total"]
