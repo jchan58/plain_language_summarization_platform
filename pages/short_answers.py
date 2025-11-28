@@ -39,7 +39,7 @@ def run_feedback():
     data = st.session_state.last_completed_abstract
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
-    current = st.session_state.progress_info["current_index"]
+    current = st.session_state.progress_info["current"]
     total = st.session_state.progress_info["total"]
     progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
