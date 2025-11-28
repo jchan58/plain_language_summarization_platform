@@ -13,15 +13,6 @@ st.markdown(
 
 st.set_page_config(layout="wide")
 
-@st.cache_resource
-def get_mongo_client():
-    return MongoClient(st.secrets["MONGO_URI"])
-
-db = get_mongo_client()["pls"]
-users_collection = db["users"]
-abstracts_collection = db["abstracts"]
-
-
 def run_likert():
     with st.sidebar:
         if "last_completed_abstract" in st.session_state:
@@ -47,16 +38,8 @@ def run_likert():
     abstract_id = data["abstract_id"]
     abstract = data["abstract"]
     pls = data["pls"]
-    
-    user = users_collection.find_one(
-    {"prolific_id": prolific_id},
-    {"phases.interactive.abstracts": 1, "_id": 0}
-    )
-    data = st.session_state.last_completed_abstract
-    abstracts_dict = user["phases"]["interactive"]["abstracts"]
-    total = len(abstracts_dict)
-    completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
-    current = completed + 1
+    current = st.session_state.progress_info["current_index"]
+    total = st.session_state.progress_info["total"]
     progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
     st.caption(f"Completed {current} of {total} abstracts")
@@ -64,7 +47,7 @@ def run_likert():
         """
         ### 📝 Instructions
         1. Read the scientific abstract and the **SUMMARY** shown below.  
-        2. Fill out the survey questions below that compares the **SUMMARY** to the **ABSTRACT**.  
+        2. Fill out the survey questions below that compares the **SUMMARY** to the ABSTRACT.  
         3. When you have finished answering all questions, click the **Submit** button below.  
         """,
     )

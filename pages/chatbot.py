@@ -387,6 +387,10 @@ def run_chatbot(prolific_id: str):
                     "abstract": abstract,
                     "pls": summary,
                 }
+                st.session_state.progress_info = {
+                    "current": current,
+                    "total": total
+                }
                 users_collection.update_one(
                     {"prolific_id": prolific_id},
                     {"$set": {

@@ -1,22 +1,10 @@
 import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
-import sys
-print("prolific_id IN SESSION? ", "prolific_id" in st.session_state, file=sys.stderr)
-if "prolific_id" in st.session_state:
-    print("VALUE = ", st.session_state.prolific_id, file=sys.stderr)
-st.set_page_config(layout="wide")
-
-@st.cache_resource
-def get_mongo_client():
-    return MongoClient(st.secrets["MONGO_URI"])
-
-db = get_mongo_client()["pls"]
-users_collection = db["users"]
-abstracts_collection = db["abstracts"]
 
 # define minium character count 
 MIN_CHARS = 75
+
 st.markdown(
     """
     <style>
@@ -26,17 +14,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.set_page_config(layout="wide")
+
 def run_feedback():
-    if "last_completed_abstract" not in st.session_state:
-        st.error("No abstract found.")
-        st.stop()
-
-    data = st.session_state.last_completed_abstract
-    prolific_id = data["prolific_id"]
-    abstract_id = data["abstract_id"]
-
     with st.sidebar:
-        st.markdown(f"**MTurk ID:** `{prolific_id}`")
+        if "last_completed_abstract" in st.session_state:
+            user_info = st.session_state.last_completed_abstract
+            st.markdown(f"**MTurk ID:** `{user_info['prolific_id']}`")
 
         if st.button("Logout"):
             for key in [
@@ -48,21 +32,13 @@ def run_feedback():
             st.switch_page("app.py")
 
     data = st.session_state.last_completed_abstract
-    abstract_id = data["abstract_id"]
     prolific_id = data["prolific_id"]
-
-    user = users_collection.find_one(
-        {"prolific_id": prolific_id},
-        {"phases.interactive.abstracts": 1, "_id": 0}
-    )
-
-    abstracts_dict = user["phases"]["interactive"]["abstracts"]
-    total = len(abstracts_dict)
-    completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
-    current = completed + 1
+    abstract_id = data["abstract_id"]
+    current = st.session_state.progress_info["current_index"]
+    total = st.session_state.progress_info["total"]
     progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
-    st.caption(f"Completed {completed} of {total} abstracts")
+    st.caption(f"Completed {current} of {total} abstracts")
     st.markdown(
         """
         ### 📝 Instructions
@@ -206,7 +182,11 @@ def run_feedback():
                         "abstract": data["abstract"],
                         "pls": data["pls"],
                         "prolific_id": prolific_id,
-                        "abstract_id": abstract_id
+                        "abstract_id": abstract_id,
+                    }
+                    st.session_state.progress_info = {
+                        "current": current,
+                        "total": total
                     }
 
                     st.switch_page("pages/likert.py")
