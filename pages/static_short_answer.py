@@ -189,15 +189,16 @@ def run_feedback():
 
         # Question text area
         st.subheader(q["label"])
+        box_key = f"{key}_box"
+        if box_key not in st.session_state:
+            st.session_state[box_key] = st.session_state.feedback[key]
         st.text_area(
             "",
-            key=f"{key}_box",
-            value=st.session_state.feedback[key],
-            on_change=lambda k=key: st.session_state.feedback.__setitem__(
-                k, st.session_state[f"{k}_box"]
+            key=box_key,
+            on_change=lambda k=key, b=box_key: st.session_state.feedback.__setitem__(
+                k, st.session_state[b]
             )
         )
-
         st.caption(f"{len(st.session_state.feedback[key])} characters")
         st.markdown(
             f"<span style='color:#555;'>Each response must be at least {MIN_CHARS} characters.</span>",

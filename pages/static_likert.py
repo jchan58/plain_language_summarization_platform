@@ -237,16 +237,18 @@ def run_likert():
 
         likert_scale = [1, 2, 3, 4, 5]
 
-        q1 = st.radio("How easy was the SUMMARY to understand?",
-                      likert_scale, horizontal=True, key="simplicity")
-        q2 = st.radio("How well-structured and logically organized was the SUMMARY?",
-                      likert_scale, horizontal=True, key="coherence")
-        q3 = st.radio("How well did the SUMMARY capture the abstract’s main ideas?",
-                      likert_scale, horizontal=True, key="informativeness")
-        q4 = st.radio("Was necessary background information included in the SUMMARY?",
-                      likert_scale, horizontal=True, key="background")
-        q5 = st.radio("How much do you trust the SUMMARY?",
-                      likert_scale, horizontal=True, key="faithfulness")
+        def persistent_radio(label, key):
+            if key not in st.session_state:
+                st.session_state[key] = None
+
+            return st.radio(label, likert_scale, horizontal=True, key=key)
+
+
+        q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
+        q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
+        q3 = persistent_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")
+        q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
+        q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
 
         client = MongoClient(st.secrets["MONGO_URI"])
         db = client["pls"]
@@ -327,7 +329,6 @@ def run_likert():
 
             # Clear old data from last abstract
             for k in [
-                "survey_context",
                 "last_completed_abstract",
                 "messages",
                 "question_count",
