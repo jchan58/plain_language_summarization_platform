@@ -178,11 +178,9 @@ def run_terms(prolific_id: str):
     abstract_id = abs_item["abstract_id"]
 
     completed, total = get_static_progress(prolific_id)
-    current = completed + 1  
-    st.progress(current / total)
-    st.markdown(f"**Progress:** {current} / {total} abstracts**")
-
-    # ABSTRACT HEADER
+    current_index = completed + 1  
+    st.progress(current_index / total)
+    st.markdown(f"**Progress:** {current_index} / {total} abstracts**")
     st.markdown("""<style>.sticky-abs {position:sticky;top:0;z-index:50;padding-bottom:8px;background:white;}</style>""",
                 unsafe_allow_html=True)
 
@@ -404,7 +402,7 @@ def run_terms(prolific_id: str):
             st.session_state.abstract_title = abs_item["abstract_title"]
             st.session_state.prolific_id = prolific_id
             st.session_state.progress_info = {
-                "current": current,
+                "current": current_index,
                 "total": total
             }
 
