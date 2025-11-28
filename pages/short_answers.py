@@ -2,9 +2,18 @@ import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
 
+st.set_page_config(layout="wide")
+
+@st.cache_resource
+def get_mongo_client():
+    return MongoClient(st.secrets["MONGO_URI"])
+
+db = get_mongo_client()["pls"]
+users_collection = db["users"]
+abstracts_collection = db["abstracts"]
+
 # define minium character count 
 MIN_CHARS = 75
-
 st.markdown(
     """
     <style>
@@ -13,8 +22,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-st.set_page_config(layout="wide")
 
 def run_feedback():
     with st.sidebar:
