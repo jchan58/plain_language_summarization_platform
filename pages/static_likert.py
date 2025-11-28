@@ -99,6 +99,7 @@ def run_likert():
         for k, v in st.session_state.likert_saved.items():
             if v is not None:
                 st.session_state[k] = v
+        del st.session_state["likert_saved"]
     
     if "abstract_font_size" not in st.session_state:
         st.session_state.abstract_font_size = 16
