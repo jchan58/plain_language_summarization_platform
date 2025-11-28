@@ -154,12 +154,11 @@ def run_feedback():
             """,
             unsafe_allow_html=True
         )
-    with col2:
-        st.title("Short Answer Questions")
-        # added in the back button
         if st.button("⬅️ Back"):
             st.session_state.stage_static = "extra_info"
-            st.switch_page("pages/term.py")
+            st.switch_page("pages/term_familarity_page.py")
+    with col2:
+        st.title("Short Answer Questions")
         # Question index
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0
