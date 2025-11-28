@@ -13,6 +13,15 @@ st.markdown(
 
 st.set_page_config(layout="wide")
 
+@st.cache_resource
+def get_mongo_client():
+    return MongoClient(st.secrets["MONGO_URI"])
+
+db = get_mongo_client()["pls"]
+users_collection = db["users"]
+abstracts_collection = db["abstracts"]
+
+
 def run_likert():
     with st.sidebar:
         if "last_completed_abstract" in st.session_state:
