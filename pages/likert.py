@@ -73,6 +73,7 @@ def run_likert():
         if st.button("Logout"):
             st.session_state.show_logout_dialog = True
         if st.session_state.get("show_logout_dialog", False):
+            st.session_state.show_logout_dialog = False 
             logout_confirm_dialog(prolific_id)
 
     st.title("Comparing SUMMARY to ABSTRACT")

@@ -87,6 +87,7 @@ def run_feedback():
         if st.button("Logout"):
             st.session_state.show_logout_dialog = True
         if st.session_state.get("show_logout_dialog", False):
+            st.session_state.show_logout_dialog = False 
             logout_confirm_dialog(prolific_id)
     st.title("Answer Questions About SUMMARY")
     current = st.session_state.progress_info["current"]
