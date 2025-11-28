@@ -188,6 +188,22 @@ def run_terms(prolific_id: str):
 
     abs_item = abstracts[st.session_state.static_index]
     abstract_id = abs_item["abstract_id"]
+    current_abs_id = abs_item["abstract_id"]
+    current_abs_id = abs_item["abstract_id"]
+    if st.session_state.get("current_term_abs_id") != current_abs_id:
+        for key in [
+            "updated_terms_tmp",
+            "extra_info_state",
+            "fam_start_time",
+            "extra_start_time",
+            "time_familiarity",
+            "time_extra_info",
+            "stage_static",
+        ]:
+            st.session_state.pop(key, None)
+        st.session_state.stage_static = "familiarity"
+        st.session_state.current_term_abs_id = current_abs_id
+
 
     completed, total = get_static_progress(prolific_id)
     current_index = completed + 1
