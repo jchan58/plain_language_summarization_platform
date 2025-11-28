@@ -36,6 +36,7 @@ def run_feedback():
                 st.session_state.pop(key, None)
             st.switch_page("app.py")
 
+    st.title("Answer Questions About SUMMARY")
     data = st.session_state.last_completed_abstract
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
@@ -43,7 +44,6 @@ def run_feedback():
     total = st.session_state.progress_info["total"]
     progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
-    st.title("Answer Questions About SUMMARY")
     st.caption(f"Completed {current} of {total} abstracts")
     st.markdown(
         """
