@@ -129,9 +129,29 @@ def run_feedback():
                 st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
                 st.rerun()
 
+        st.markdown("""
+        <style>
+        .no-select {
+            -webkit-user-select: none;  
+            -moz-user-select: none;  
+            -ms-user-select: none;     
+            user-select: none;          
+        }
+
+        .no-select * {
+            -webkit-user-select: none !important;
+            user-select: none !important;
+        }
+
+        /* Optional: disable right-click */
+        .no-select {
+            -webkit-touch-callout: none;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         st.markdown(
             f"""
-            <div style="
+            <div class="no-select" style="
                 background-color:#e8f4ff;
                 padding: 1.1rem 1.3rem;
                 border-radius: 0.6rem;
