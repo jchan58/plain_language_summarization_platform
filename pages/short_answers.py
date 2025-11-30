@@ -77,21 +77,6 @@ def logout_confirm_dialog(prolific_id):
             st.switch_page("app.py")
 
 def run_feedback():
-    st.markdown("""
-    <style>
-    .no-select {
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        cursor: default;
-    }
-    </style>
-
-    <script>
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    </script>
-    """, unsafe_allow_html=True)
     data = st.session_state.last_completed_abstract
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
@@ -145,23 +130,23 @@ def run_feedback():
                 st.rerun()
 
         st.markdown(
-        f"""
-        <div class="no-select" style="
-            background-color:#e8f4ff;
-            padding: 1.1rem 1.3rem;
-            border-radius: 0.6rem;
-            border: 1px solid #dfe1e5;
-            max-height: 550px;
-            overflow-y: auto;
-            font-size: {st.session_state.summary_font_size}px;
-            line-height: 1.55;
-        ">
-            <div style="line-height: 1.55;">
-                {data['pls']}
+            f"""
+            <div style="
+                background-color:#e8f4ff;
+                padding: 1.1rem 1.3rem;
+                border-radius: 0.6rem;
+                border: 1px solid #dfe1e5;
+                max-height: 550px;
+                overflow-y: auto;
+                font-size: {st.session_state.summary_font_size}px;
+                line-height: 1.55;
+            ">
+                <div style="line-height: 1.55;">
+                    {data['pls']}
+                </div>
             </div>
-        </div>
-        """,
-        unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True
         )
 
     with col2:
