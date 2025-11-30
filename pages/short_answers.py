@@ -77,6 +77,21 @@ def logout_confirm_dialog(prolific_id):
             st.switch_page("app.py")
 
 def run_feedback():
+    st.markdown("""
+    <style>
+    .no-select {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: default;
+    }
+    </style>
+
+    <script>
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
+    """, unsafe_allow_html=True)
     data = st.session_state.last_completed_abstract
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
@@ -112,10 +127,6 @@ def run_feedback():
         st.stop()
 
     col1, col2 = st.columns([1, 1], gap="large")
-
-    # ------------------------
-    # SUMMARY COLUMN
-    # ------------------------
     with col1:
         st.title("SUMMARY")
         btn_col1, btn_col2, btn_col3 = st.columns([0.25, 0.55, 0.20])
@@ -134,23 +145,23 @@ def run_feedback():
                 st.rerun()
 
         st.markdown(
-            f"""
-            <div style="
-                background-color:#e8f4ff;
-                padding: 1.1rem 1.3rem;
-                border-radius: 0.6rem;
-                border: 1px solid #dfe1e5;
-                max-height: 550px;
-                overflow-y: auto;
-                font-size: {st.session_state.summary_font_size}px;
-                line-height: 1.55;
-            ">
-                <div style="line-height: 1.55;">
-                    {data['pls']}
-                </div>
+        f"""
+        <div class="no-select" style="
+            background-color:#e8f4ff;
+            padding: 1.1rem 1.3rem;
+            border-radius: 0.6rem;
+            border: 1px solid #dfe1e5;
+            max-height: 550px;
+            overflow-y: auto;
+            font-size: {st.session_state.summary_font_size}px;
+            line-height: 1.55;
+        ">
+            <div style="line-height: 1.55;">
+                {data['pls']}
             </div>
-            """,
-            unsafe_allow_html=True
+        </div>
+        """,
+        unsafe_allow_html=True
         )
 
     with col2:
