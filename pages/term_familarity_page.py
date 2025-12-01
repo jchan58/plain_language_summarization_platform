@@ -110,7 +110,7 @@ def static_instructions(prolific_id, batch_id):
     For this batch, you will complete **4 abstracts**. For each abstract, you will:
     1. **Term Familiarity:** For each term in the ABSTRACT, indicate whether you are familiar with it.  
     Then, specify what additional information (if any) would help you better understand the term.
-    2. **Short Answer Questions:** Answer three questions using the **SUMMARY**, which is a simplified version of the ABSTRACT. **Do NOT copy and paste from the SUMMARY** — doing so may risk not being compensated.  
+    2. **Short Answer Questions:** Answer four questions using the **SUMMARY**, which is another version of the ABSTRACT. **Do NOT copy and paste from the SUMMARY** — doing so may risk not being compensated.  
     3. **Comparison Task:** Compare the SUMMARY to the original ABSTRACT by answering the comparison questions.
     ---
    **Additional Notes:**
@@ -252,8 +252,18 @@ def run_terms(prolific_id, batch_id, full_type):
     current_index = completed + 1
     st.progress(current_index / total)
     st.markdown(f"**Progress:** {current_index} / {total} abstracts")
-    st.markdown("### ABSTRACT")
+    with st.expander("📝 Instructions", expander=True):
+        st.markdown("""
+        1. Read the ABSTRACT — the 10 terms you will evaluate are **highlighted**.  
+        2. Use the slider to rate how familiar you are with each term *in the context of the ABSTRACT*.  
+        3. Click **Next** when you have finished rating all terms.  
+        4. On the following page, select the additional information you would need for each term:  
+        - You may select **all options that apply**.  
+        - If **no additional information** is needed, choose **None** (do **not** select both None and other options).  
 
+        **Note:** If you need to correct anything, please use the **Back** button to return to the previous page.
+        """)
+    st.markdown("### ABSTRACT")
     btn_col1, _, btn_col3 = st.columns([0.25, 0.65, 0.10])
     with btn_col1:
         if st.button("Decrease text size"):

@@ -111,7 +111,7 @@ def interactive_instructions(prolific_id, batch_id):
     Ask the chatbot questions about the ABSTRACT to help you better understand the information.
 
     2. **Short Answer Questions:**  
-    Answer three questions using the **SUMMARY**, which is a simplified version of the ABSTRACT. **Do NOT copy and paste from the SUMMARY** — doing so may risk not being compensated.
+    Answer 4 questions using the **SUMMARY**, which is another version of the ABSTRACT. **Do NOT copy and paste from the SUMMARY** — doing so may risk not being compensated.
 
     3. **Comparison Task:**  
     Compare the SUMMARY to the original ABSTRACT by answering comparison questions and completing a few questions about the chatbot experience.
@@ -290,16 +290,15 @@ def run_chatbot(prolific_id, batch_id, full_type):
     progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
     st.caption(f"Completed {current} of {total} abstracts")
-    st.markdown("""
-    ### 📝 Instructions
-    1. Read the scientific abstract on the **left side of the screen**.  
-    2. Use the **chatbot** on the right to ask questions.  
-    3. You must ask at least 3 questions.  
-    4. When finished asking questions, click **“I'm done asking questions.”**  
-    5. A SUMMARY will appear where the chatbot was — read it carefully.  
-    6. Click **Next** to move on.  
-    """)
-
+    with st.expander("📝 Instructions", expander=True):
+        st.markdown("""
+        1. Read the ABSTRACT on the **left side of the screen**.  
+        2. Use the **chatbot** on the right to ask questions about anything in the ABSTRACT you would like to understand better.  
+        3. You must ask the chatbot **at least 3 questions** before moving on.  
+        4. When you are finished asking questions, click **“I'm done asking questions.”**  
+        5. A confirmation popup will appear — please confirm that you would like to move on to the next task.
+        **Note:** Once you move on, you will **not** be able to return to this page.
+        """)
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.markdown(f"### ABSTRACT")

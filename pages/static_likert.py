@@ -98,14 +98,18 @@ def run_likert():
     progress_ratio = current_index / total if total > 0 else 0
     st.progress(progress_ratio)
     st.caption(f"Completed {current_index} of {total} abstracts")
-    st.markdown(
+    with st.expander("📝 Instructions", expanded=True):
+        st.markdown(
         """
         ### 📝 Instructions
-        1. Read the scientific abstract and the **SUMMARY** shown below.  
-        2. Fill out the survey questions below that compares the **SUMMARY** to the **ABSTRACT**.  
-        3. When you have finished answering all questions, click the **Submit** button below.  
-        """,
-    )
+        1. Read the ABSTRACT on the left and the **SUMMARY** on the right.  
+        2. Answer the comparison questions below, which assess how the **SUMMARY** compares to the ABSTRACT.  
+        3. When you have finished answering all questions, click the **Next Abstract** button.  
+        4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
+
+        **Note:** You may use the **Back** button if you need to revisit your short-answer responses for this abstract.
+        """
+        )
 
     st.markdown("""
         <style>

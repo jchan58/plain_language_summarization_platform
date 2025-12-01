@@ -96,15 +96,17 @@ def run_feedback():
     progress_ratio = current_index / total if total > 0 else 0
     st.progress(progress_ratio)
     st.caption(f"Completed {current_index} of {total} abstracts")
-    st.markdown(
-        """
-        ### 📝 Instructions
-        1. Please read the summary shown below, which was generated from the previous page.
-        2. Answer the short answer questions to check your understanding.
-        3. **DO NOT copy** from the summary, say “I don’t know,” or provide unrelated answers.
-        4. After answering all questions, click **Submit** to continue.
-        """
-    )
+    with st.expander("📝 Instructions", expanded=True):
+        st.markdown("""
+        1. Read the SUMMARY shown below.  
+        2. You must answer **4 short-answer questions**, each with **more than 75 characters**.  
+        - After completing a question, click **Next Question** to proceed.  
+        3. **Do NOT copy text from the SUMMARY** or provide irrelevant answers that has nothing to do with the question — doing so may risk your compensation.  
+        4. After finishing all questions, click outside the text box to activate the **Submit** button, then click **Submit** to continue.
+
+        **Note:**  
+        You may use the **Back** button to return to the term-familiarity page or to revisit a previous short-answer question *within this same abstract*.  
+        """)
 
     if "summary_font_size" not in st.session_state:
         st.session_state.summary_font_size = 16
@@ -184,12 +186,20 @@ def run_feedback():
 
         # Feedback dict
         if "feedback" not in st.session_state:
-            st.session_state.feedback = {"main_idea": "", "method": "", "result": ""}
+            st.session_state.feedback = {"main_idea": "", "method": "", "attention": "", "result": ""}
 
-        # Questions list
         questions = [
             {"key": "main_idea", "label": f"🧠 {abstract_info['main_idea_question']}"},
             {"key": "method", "label": f"🧪 {abstract_info['method_question']}"},
+            {
+            "key": "attention",
+                "label": (
+                    "⚠️ Attention Check\n\n"
+                    "To confirm you are paying attention, please type the following "
+                    "sentence exactly as written:\n\n"
+                    "**\"I have read all instructions and fully understood what I must do for this task.\"**"
+                )
+            },
             {"key": "result", "label": f"📊 {abstract_info['result_question']}"}
         ]
 
@@ -216,11 +226,11 @@ def run_feedback():
 
         completed = sum(
             len(st.session_state.feedback[k].strip()) >= MIN_CHARS
-            for k in ["main_idea", "method", "result"]
+            for k in ["main_idea", "method", "attention", "result"]
         )
 
         st.markdown(
-            f"<div style='font-size:0.9rem; color:#444;'><strong>Questions completed:</strong> {completed} / 3</div>",
+            f"<div style='font-size:0.9rem; color:#444;'><strong>Questions completed:</strong> {completed} / 4</div>",
             unsafe_allow_html=True
         )
 
@@ -246,6 +256,7 @@ def run_feedback():
                     feedback_data = {
                         "main_idea": st.session_state.feedback["main_idea"].strip(),
                         "methods": st.session_state.feedback["method"].strip(),
+                        "attention": st.session_state.feedback["attention"].strip(),
                         "results": st.session_state.feedback["result"].strip(),
                         "submitted_at": datetime.utcnow(),
                         "time_main_idea": st.session_state.get("main_idea_time", 0),
