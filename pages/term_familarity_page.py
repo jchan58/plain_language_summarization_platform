@@ -137,8 +137,11 @@ def get_user_static_abstracts(prolific_id, batch_id):
     abstracts_dict = (
         user["phases"]["static"]["batches"][batch_id]["abstracts"]
     )
+
     abstracts = []
-    for abstract_id, data in abstracts_dict.items():
+
+    for abstract_id in sorted(abstracts_dict.keys(), key=lambda x: int(x)):
+        data = abstracts_dict[abstract_id]
         if not data.get("completed", False):
             abstracts.append({
                 "abstract_id": abstract_id,
@@ -147,7 +150,9 @@ def get_user_static_abstracts(prolific_id, batch_id):
                 "human_written_pls": data.get("human_written_pls", ""),
                 "terms": data.get("term_familarity", [])
             })
+
     return abstracts
+
 
 def run_terms(prolific_id, batch_id, full_type):
     if st.session_state.get("current_batch_id") != batch_id:
