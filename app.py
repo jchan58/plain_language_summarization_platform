@@ -92,7 +92,7 @@ if not st.session_state.get("logged_in", False):
                         "results": "",
                     },
                     "term_familarity": structured_terms,
-                    "human_written_pls": row["human_written"],
+                    "human_written_pls": row["human_written_pls"],
                     "completed": False,
                 }
 
