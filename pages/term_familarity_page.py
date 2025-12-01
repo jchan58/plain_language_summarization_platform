@@ -60,10 +60,6 @@ def load_user(prolific_id, projection=None):
 def load_user_info(prolific_id):
     return users_collection.find_one({"prolific_id": prolific_id})
 
-@st.cache_data
-def cached_highlighted_abs(abstract, terms):
-    return highlight_terms_in_abstract(abstract, terms)
-
 @st.dialog("Are you sure you want to log out?", dismissible=True)
 def logout_confirm_dialog(prolific_id):
 
@@ -250,7 +246,7 @@ def run_terms(prolific_id, batch_id, full_type):
                     {abs_item['abstract_title']}
                 </div>
                 <div style="font-size:{st.session_state.abstract_font_size + 4}px;line-height:1.55;">
-                    {cached_highlighted_abs(abs_item["abstract"], abs_item["terms"], st.session_state.abstract_font_size).replace("\n","<br>")}
+                    {highlight_terms_in_abstract(abs_item["abstract"], abs_item["terms"]).replace("\n","<br>")}
                 </div>
             </div>
         </div>
