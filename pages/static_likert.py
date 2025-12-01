@@ -326,6 +326,10 @@ def run_likert():
                 "batch_id": batch_id,
                 "full_type": full_type
             }
+            st.session_state.progress_info = {
+                "current_index": current_index,
+                "total": total
+            }
             for k in [
                 "last_completed_abstract",
                 "messages",
