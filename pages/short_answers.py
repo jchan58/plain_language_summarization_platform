@@ -197,7 +197,7 @@ def run_feedback():
 
         st.caption(f"{len(st.session_state.feedback[key])} characters")
         st.markdown(
-            f"<span style='color:#555;'>Each response must be at least {MIN_CHARS} characters.</span>",
+            f"<span style='color:#555;'>Each response must be at least {MIN_CHARS} characters. Click outside textbox to see character count</span>",
             unsafe_allow_html=True
         )
 
