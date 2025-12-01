@@ -286,7 +286,9 @@ def run_likert():
                 {
                     "$set": {
                         f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.likert": responses,
-                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.likert_submitted": True}
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.likert_submitted": True,
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.completed": True
+                    }
                 }
             )
             st.session_state.pop("likert_start_time", None)

@@ -49,14 +49,12 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
-@st.cache_data
 def load_user(prolific_id, projection=None):
     return users_collection.find_one(
         {"prolific_id": prolific_id},
         projection
     )
 
-@st.cache_data
 def load_user_info(prolific_id):
     return users_collection.find_one({"prolific_id": prolific_id})
 
@@ -487,8 +485,7 @@ def run_terms(prolific_id, batch_id, full_type):
                     {"$set": {
                         f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.term_familarity": final_terms,
                         f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_familiarity": st.session_state.time_familiarity,
-                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info,
-                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.completed": True
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info
                     }}
                 )
 
