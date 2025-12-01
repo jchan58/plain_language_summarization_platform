@@ -334,7 +334,7 @@ def run_likert():
                 "show_summary",
             ]:
                 st.session_state.pop(k, None)
-            st.switch_page("pages/chatbot.py")
+            st.switch_page("pages/term_familarity_page.py")
             
 
 run_likert()
