@@ -87,7 +87,7 @@ def run_feedback():
     }
 
     user = users_collection.find_one({"prolific_id": data["prolific_id"]})
-    phase = "interactive"
+    phase = "static"
     abstract_info = user["phases"][phase]["batches"][data["batch_id"]]["abstracts"][data["abstract_id"]]
     with st.sidebar:
         st.write(f"**MTurk ID:** `{data['prolific_id']}`")
