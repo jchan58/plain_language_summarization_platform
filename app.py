@@ -102,7 +102,10 @@ if not st.session_state.get("logged_in", False):
                 "finetuned": {"batches": {}, "completed": False},
             }
             for _, row in user_rows.iterrows():
-                full_type = row["type"]           
+                full_type = row["type"]
+                # if the full_type is not in order
+                if full_type not in BATCH_ORDER:
+                    continue       
                 phase_type, batch_id = full_type.split("_") 
                 if batch_id not in phases[phase_type]["batches"]:
                     # unlock the very first abstract
