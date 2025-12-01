@@ -246,10 +246,6 @@ def run_feedback():
                         "time_method": st.session_state.get("method_time", 0),
                         "time_result": st.session_state.get("result_time", 0),
                     }
-
-                    client = MongoClient(st.secrets["MONGO_URI"])
-                    db = client["pls"]
-                    users_collection = db["users"]
                     users_collection.update_one(
                         {"prolific_id": prolific_id},
                         {"$set": {
