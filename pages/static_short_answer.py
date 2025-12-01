@@ -52,7 +52,8 @@ def accumulate_question_time():
     key_map = {
         0: "main_idea_time",
         1: "method_time",
-        2: "result_time"
+        2: "attention_time",
+        3: "result_time"
     }
     q_key = key_map.get(st.session_state.qa_index)
     if q_key:
@@ -243,12 +244,12 @@ def run_feedback():
                 st.rerun()
 
         with nav3:
-            if st.session_state.qa_index < 2:
+            if st.session_state.qa_index < 3:
                 if st.button("Next Question ➡"):
                     st.session_state.qa_index += 1
                     st.rerun()
             else:
-                all_filled = completed == 3
+                all_filled = completed == 4
 
                 if st.button("Submit", disabled=not all_filled):
                     accumulate_question_time()
@@ -261,6 +262,7 @@ def run_feedback():
                         "submitted_at": datetime.utcnow(),
                         "time_main_idea": st.session_state.get("main_idea_time", 0),
                         "time_method": st.session_state.get("method_time", 0),
+                        "time_attention": st.session_state.get("attention_time", 0),
                         "time_result": st.session_state.get("result_time", 0),
                     }
                     users_collection.update_one(
