@@ -195,14 +195,35 @@ def run_terms(prolific_id, batch_id, full_type):
         st.session_state.stage_static = "familiarity"
 
     st.title("Term Familiarity")
+    abs_item = None    
+    abstracts = None     
 
-    abstracts = get_user_static_abstracts(prolific_id, batch_id)
-    if not abstracts:
-        st.success("🎉 All abstracts completed for this batch!")
-        st.stop()
+    if "next_static_abstract" in st.session_state:
+        n = st.session_state.next_static_abstract
+        abs_item = {
+            "abstract_id": n["abstract_id"],
+            "abstract_title": n["abstract_title"],
+            "abstract": n["abstract"],
+            "human_written_pls": n.get("human_written_pls", ""),
+            "terms": []
+        }
+        user = load_user(
+            prolific_id,
+            {f"phases.static.batches.{batch_id}.abstracts.{n['abstract_id']}": 1}
+        )
+        db_abs = user["phases"]["static"]["batches"][batch_id]["abstracts"][n["abstract_id"]]
+        abs_item["terms"] = db_abs.get("term_familarity", [])
+        abs_item["human_written_pls"] = db_abs.get("human_written_pls", "")
+        st.session_state.pop("next_static_abstract", None)
 
-    # Always use the first incomplete abstract
-    abs_item = abstracts[0]
+    else:
+        abstracts = get_user_static_abstracts(prolific_id, batch_id)
+        if not abstracts:
+            st.success("🎉 All abstracts completed for this batch!")
+            st.stop()
+
+        abs_item = abstracts[0]
+
     abstract_id = abs_item["abstract_id"]
     current_abs_id = abs_item["abstract_id"]
     if st.session_state.get("current_term_abs_id") != current_abs_id:
@@ -218,7 +239,6 @@ def run_terms(prolific_id, batch_id, full_type):
             st.session_state.pop(key, None)
         st.session_state.stage_static = "familiarity"
         st.session_state.current_term_abs_id = current_abs_id
-
 
     completed, total = get_static_progress(prolific_id, batch_id)
     current_index = completed + 1
