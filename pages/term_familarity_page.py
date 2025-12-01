@@ -109,10 +109,10 @@ def static_instructions(prolific_id, batch_id):
 
     For this batch, you will complete **4 abstracts**. For each abstract, you will:
     1. **Term Familiarity:** For each term in the ABSTRACT, indicate whether you are familiar with it.  
-   Then, specify what additional information (if any) would help you better understand the term.
+    Then, specify what additional information (if any) would help you better understand the term.
     2. **Short Answer Questions:** Answer three questions using the **SUMMARY**, which is a simplified version of the ABSTRACT. **Do NOT copy and paste from the SUMMARY** — doing so may risk not being compensated.  
     3. **Comparison Task:** Compare the SUMMARY to the original ABSTRACT by answering the comparison questions.
-
+    ---
    **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  
     - You may open the sidebar at any time to log out.  

@@ -51,14 +51,11 @@ def load_example_users():
 
 @st.dialog("Are you sure you are done asking questions?", dismissible=False)
 def show_done_dialog():
-
-    # If generating_summary was triggered
     if st.session_state.get("dialog_generating", False):
         st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
         st.markdown("### ✍️ Generating SUMMARY...")
         st.markdown("Please wait.")
         st.spinner("")
-
         st.markdown("</div>", unsafe_allow_html=True)
         return 
     st.markdown(
@@ -103,16 +100,29 @@ def get_conversation():
 
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
 def interactive_instructions(prolific_id, batch_id):
+    st.title(f"Welcome to Batch #{batch_id}")
     st.markdown("""
-    ### Before you begin
+    ### Before you begin, please read these instructions carefully  
     Please follow these steps:
-    - Read the scientific abstract on the **left side of the screen**.
-    - Use the **chatbot** on the right to ask questions.
-    - You must ask **at least 3 questions** before continuing.
-    - When you’re done, click **“I'm done asking questions.”**
-    - A **summary** will appear where the chatbot was — read it carefully.
-    - Click **Next** to move to the comprehension page.
+
+    For this batch, you will complete **3 abstracts**. For each abstract, you will:
+
+    1. **Chat with the chatbot about the ABSTRACT:**  
+    Ask the chatbot questions about the ABSTRACT to help you better understand the information.
+
+    2. **Short Answer Questions:**  
+    Answer three questions using the **SUMMARY**, which is a simplified version of the ABSTRACT. **Do NOT copy and paste from the SUMMARY** — doing so may risk not being compensated.
+
+    3. **Comparison Task:**  
+    Compare the SUMMARY to the original ABSTRACT by answering comparison questions and completing a few questions about the chatbot experience.
     ---
+    **Additional Notes:**
+    - Refer to the instructions at the top of each page for detailed guidance.  
+    - You may open the sidebar at any time to log out **but note that your progress for the current abstract will not be saved unless you have fully completed it**.  
+    - You may use the **Back** button to revisit earlier steps *within the same abstract*.  
+    - Once you move on to the next abstract, you will **not** be able to return to previous abstracts.
+    ---
+    Once you finish this batch, we will contact you with further instructions.       
     """)
 
     if st.button("Start"):
