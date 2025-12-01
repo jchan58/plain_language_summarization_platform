@@ -28,6 +28,7 @@ MONGO_URI = st.secrets["MONGO_URI"]
 client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
+abstract_collection = db['abstracts']
 
 # load approved IDs and dataframe for all the abstracts etc., 
 approved_ids = pd.read_csv("approved_ids.csv")["prolific_id"].tolist()
@@ -92,7 +93,7 @@ if not st.session_state.get("logged_in", False):
                         "results": "",
                     },
                     "term_familarity": structured_terms,
-                    "human_written_pls": row["human_written_pls"],
+                    "human_written_pls": row["human_written"],
                     "completed": False,
                 }
 
