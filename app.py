@@ -85,7 +85,7 @@ if not st.session_state.get("logged_in", False):
                     structured_terms = []
                 abstract_key = str(row["abstract_id"])
 
-                phases[phase_type]["batches"][batch_id][abstract_key] = {
+                phases[phase_type]["batches"][batch_id]["abstracts"][abstract_key]= {
                     "abstract_title": row["abstract_title"],
                     "abstract": row["abstract"],
                     "main_idea_question": row["main_idea_question"],
