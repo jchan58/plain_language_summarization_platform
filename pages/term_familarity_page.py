@@ -252,8 +252,10 @@ def run_terms(prolific_id, batch_id, full_type):
             "current_index": info["current_index"],
             "total": info["total"]
         }
-    current_index = pg['current_index']
-    total = pg['total']
+        current_index = pg['current_index']
+        total = pg['total']
+    else: 
+        current_index = 1
     st.progress(current_index / total)
     st.markdown(f"**Progress:** {current_index} / {total} abstracts")
     st.markdown("### ABSTRACT")
