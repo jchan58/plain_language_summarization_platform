@@ -59,22 +59,11 @@ def logout_confirm_dialog(prolific_id):
         if st.button("Stay on page"):
             st.session_state.show_logout_dialog = False
             st.rerun()
-
     with col2:
-        if st.button("Logout"):
-            st.session_state.show_logout_dialog = False
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$set": {
-                    "phases.interactive.last_completed_index":
-                        st.session_state.get("abstract_index", 0)
-                }},
-                upsert=True
-            )
-
-            st.session_state.logged_in = False
-            st.session_state.prolific_id = None
-            st.switch_page("app.py")
+        if st.button("Yes"):
+            st.session_state.user_confirmed_next = True
+            st.session_state.show_next_dialog = False
+            st.rerun()
 
 def run_likert():
     if "survey_context" not in st.session_state:
@@ -85,6 +74,8 @@ def run_likert():
     abstract_id = data["abstract_id"]
     abstract = data["abstract"]
     pls = data["pls"]
+    batch_id = data['batch_id']
+    full_type = data['full_type']
     if "likert_start_time" not in st.session_state:
         st.session_state.likert_start_time = datetime.utcnow()
     with st.sidebar:
@@ -290,23 +281,24 @@ def run_likert():
                     "faithfulness": q5
                 }
             }
-
             users_collection.update_one(
                 {"prolific_id": prolific_id},
                 {
                     "$set": {
-                        f"phases.static.abstracts.{abstract_id}.likert": responses,
-                        f"phases.static.abstracts.{abstract_id}.likert_submitted": True,
-                        f"phases.static.abstracts.{abstract_id}.completed": True
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.likert": responses,
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.likert_submitted": True,
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.completed": True
                     }
                 }
             )
             st.session_state.pop("likert_start_time", None)
+
+            # Get user's abstracts for the *current batch*
             user = users_collection.find_one(
                 {"prolific_id": prolific_id},
-                {"phases.static.abstracts": 1, "_id": 0}
+                {f"phases.static.batches.{batch_id}.abstracts": 1, "_id": 0}
             )
-            abstracts = user["phases"]["static"]["abstracts"]
+            abstracts = user["phases"]["static"]["batches"][batch_id]["abstracts"]
             next_abstract = None
             for aid in sorted(abstracts.keys(), key=lambda x: int(x)):
                 if not abstracts[aid].get("completed", False):
@@ -317,25 +309,23 @@ def run_likert():
                     }
                     break
 
-            # If NO more abstracts → mark static phase complete
             if next_abstract is None:
                 users_collection.update_one(
                     {"prolific_id": prolific_id},
-                    {"$set": {"phases.static.completed": True}}
+                    {"$set": {f"phases.static.batches.{batch_id}.completed": True}}
                 )
-
                 st.session_state.next_static_abstract = None
-                st.switch_page("pages/completed.py")
+                st.switch_page("app.py")
                 return
 
-            # Otherwise → save next abstract and move forward
+            # Otherwise, move on to next abstract
             st.session_state.next_static_abstract = {
                 "abstract": next_abstract["abstract"],
                 "abstract_id": next_abstract["abstract_id"],
-                "abstract_title": next_abstract["abstract_title"]
+                "abstract_title": next_abstract["abstract_title"],
+                "batch_id": batch_id,
+                "full_type": full_type
             }
-
-            # Clear old data from last abstract
             for k in [
                 "last_completed_abstract",
                 "messages",
@@ -344,9 +334,7 @@ def run_likert():
                 "show_summary",
             ]:
                 st.session_state.pop(k, None)
-
-            st.switch_page("pages/term_familarity_page.py")
-
+            st.switch_page("pages/chatbot.py")
             
 
 run_likert()

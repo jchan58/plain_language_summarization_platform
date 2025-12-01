@@ -46,16 +46,7 @@ def logout_confirm_dialog(prolific_id):
 
     with col2:
         if st.button("Logout"):
-            st.session_state.show_logout_dialog = False
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$set": {
-                    "phases.interactive.last_completed_index":
-                        st.session_state.get("abstract_index", 0)
-                }},
-                upsert=True
-            )
-
+            st.session_state.show_logout_dialog = False            
             st.session_state.logged_in = False
             st.session_state.prolific_id = None
             st.switch_page("app.py")
@@ -91,7 +82,13 @@ def run_feedback():
         "pls": st.session_state.get("human_written_pls", ""),
         "prolific_id": st.session_state.get("prolific_id", ""),
         "abstract_id": st.session_state.get("current_abstract_id", ""),
+        "batch_id": st.session_state.get("batch_id", 0), 
+        "full_type": st.session_state.get("full_type", None)
     }
+
+    user = users_collection.find_one({"prolific_id": data["prolific_id"]})
+    phase = "interactive"
+    abstract_info = user["phases"][phase]["batches"][data["batch_id"]]["abstracts"][data["abstract_id"]]
     with st.sidebar:
         st.write(f"**MTurk ID:** `{data['prolific_id']}`")
         if st.button("Logout"):
@@ -198,9 +195,9 @@ def run_feedback():
 
         # Questions list
         questions = [
-            {"key": "main_idea", "label": "🧠 What did the researchers want to find out?"},
-            {"key": "method", "label": "🧪 What method did the study use?"},
-            {"key": "result", "label": "📊 What was the result of the study?"}
+            {"key": "main_idea", "label": f"🧠 {abstract_info['main_idea_question']}"},
+            {"key": "method", "label": f"🧪 {abstract_info['method_question']}"},
+            {"key": "result", "label": f"📊 {abstract_info['result_question']}"}
         ]
 
         q = questions[st.session_state.qa_index]
@@ -262,14 +259,11 @@ def run_feedback():
                         "time_method": st.session_state.get("method_time", 0),
                         "time_result": st.session_state.get("result_time", 0),
                     }
-
-                    client = MongoClient(st.secrets["MONGO_URI"])
-                    users_collection = client["pls"]["users"]
                     users_collection.update_one(
-                        {"prolific_id": data["prolific_id"]},
+                        {"prolific_id": data['prolific_id']},
                         {"$set": {
-                            f"phases.static.abstracts.{data['abstract_id']}.short_answers": feedback_data,
-                            f"phases.static.abstracts.{data['abstract_id']}.feedback_submitted": True
+                            f"phases.interactive.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.short_answers": feedback_data,
+                            f"phases.interactive.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.feedback_submitted": True
                         }}
                     )
 
@@ -279,6 +273,8 @@ def run_feedback():
                         "pls": data["pls"],
                         "prolific_id": data["prolific_id"],
                         "abstract_id": data["abstract_id"], 
+                        "batch_id": data["batch_id"], 
+                        "full_type": data["full_type"]
                     }
                     st.session_state.progress_info = {
                         "current_index": current_index,

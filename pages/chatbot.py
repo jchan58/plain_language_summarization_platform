@@ -49,81 +49,6 @@ client_openai = get_openai_client()
 def load_example_users():
     return pd.read_csv("example_user.csv")
 
-@st.dialog("Are you sure you want to log out?", dismissible=True)
-def logout_confirm_dialog(prolific_id):
-
-    st.markdown("""
-    Please logout **only after you have submitted the results for Comparing SUMMARY to ABSTRACT** to make sure your results are saved correctly.
-    Otherwise you would have to start back over on the same abstract. 
-    """)
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Stay on page"):
-            st.session_state.show_logout_dialog = False
-            st.rerun()
-
-    with col2:
-        if st.button("Logout"):
-            st.session_state.show_logout_dialog = False
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$set": {
-                    "phases.interactive.last_completed_index":
-                        st.session_state.get("abstract_index", 0)
-                }},
-                upsert=True
-            )
-
-            st.session_state.logged_in = False
-            st.session_state.prolific_id = None
-            st.switch_page("app.py")
-
-example_user_df = load_example_users()
-
-st.markdown("""
-    <style>
-        /* Center the dialog title text */
-        .stDialog > div > div > div:nth-child(1) {
-            text-align: center !important;
-            width: 100%;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-
-# Center the dialog title using CSS
-st.markdown("""
-    <style>
-        .stDialog > div > div > div:nth-child(1) {
-            text-align: center !important;
-            width: 100%;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-def get_next_incomplete_abstract(prolific_id: str):
-    user = users_collection.find_one(
-        {"prolific_id": prolific_id},
-        {"phases.interactive.abstracts": 1, "_id": 0}
-    )
-
-    if not user:
-        return None
-
-    abstracts = user["phases"]["interactive"]["abstracts"]
-    for abstract_id in sorted(abstracts.keys(), key=lambda x: int(x)):
-        a = abstracts[abstract_id]
-        if not a.get("completed", False):
-            return {
-                "abstract_id": abstract_id,
-                "abstract": a.get("abstract", ""),
-                "abstract_title": a.get("abstract_title", "")
-            }
-
-    return None
-
 @st.dialog("Are you sure you are done asking questions?", dismissible=False)
 def show_done_dialog():
 
@@ -154,22 +79,27 @@ def show_done_dialog():
         st.session_state.chat_duration_seconds = (time.time() - st.session_state.chat_start_time)
         st.rerun()
 
-def get_user_interactive_abstracts(prolific_id: str):
-    user = users_collection.find_one(
-        {"prolific_id": prolific_id},
-        {"_id": 0, "phases.interactive.abstracts": 1}
-    )
-    if not user:
-        return []
-    abstracts_dict = user.get("phases", {}).get("interactive", {}).get("abstracts", {})
-    abstracts = []
-    for abstract_id, data in abstracts_dict.items():
-        abstracts.append({
-            "abstract_id": abstract_id,
-            "abstract_title": data.get("abstract_title", ""),
-            "abstract": data.get("abstract", "")
-        })
-    return abstracts
+@st.dialog("Are you sure you want to log out?", dismissible=True)
+def logout_confirm_dialog(prolific_id):
+
+    st.markdown("""
+    Please logout **only after you have submitted the results for Comparing SUMMARY to ABSTRACT** to make sure your results are saved correctly.
+    Otherwise you would have to start back over on the same abstract. 
+    """)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Stay on page"):
+            st.session_state.show_logout_dialog = False
+            st.rerun()
+
+    with col2:
+        if st.button("Logout"):
+            st.session_state.show_logout_dialog = False            
+            st.session_state.logged_in = False
+            st.session_state.prolific_id = None
+            st.switch_page("app.py")
 
 def get_conversation():
     return "\n".join(
@@ -177,7 +107,7 @@ def get_conversation():
     )
 
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
-def interactive_instructions(prolific_id):
+def interactive_instructions(prolific_id, batch_id):
     st.markdown("""
     ### Before you begin
     Please follow these steps:
@@ -194,12 +124,92 @@ def interactive_instructions(prolific_id):
         st.session_state.seen_interactive_instructions = True
         users_collection.update_one(
             {"prolific_id": prolific_id},
-            {"$set": {"phases.interactive.seen_instructions": True}},
+            {"$set": {f"phases.interactive.batches.{batch_id}.seen_instructions": True}},
             upsert=True
         )
         st.rerun()
 
-def run_chatbot(prolific_id: str):
+example_user_df = load_example_users()
+
+st.markdown("""
+    <style>
+        /* Center the dialog title text */
+        .stDialog > div > div > div:nth-child(1) {
+            text-align: center !important;
+            width: 100%;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+
+# Center the dialog title using CSS
+st.markdown("""
+    <style>
+        .stDialog > div > div > div:nth-child(1) {
+            text-align: center !important;
+            width: 100%;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+def get_next_incomplete_abstract(prolific_id: str, batch_id: str):
+    user = users_collection.find_one(
+        {"prolific_id": prolific_id},
+        {f"phases.interactive.batches.{batch_id}.abstracts": 1, "_id": 0}
+    )
+
+    if not user:
+        return None
+
+    abstracts = (
+        user.get("phases", {})
+            .get("interactive", {})
+            .get("batches", {})
+            .get(batch_id, {})
+            .get("abstracts", {})
+    )
+
+    for abstract_id in sorted(abstracts.keys(), key=lambda x: int(x)):
+        a = abstracts[abstract_id]
+        if not a.get("completed", False):
+            return {
+                "abstract_id": abstract_id,
+                "abstract": a.get("abstract", ""),
+                "abstract_title": a.get("abstract_title", "")
+            }
+    return None
+
+# get all the interactive abstracts in the batch
+def get_user_interactive_abstracts(prolific_id: str, batch_id: str):
+    user = users_collection.find_one(
+        {"prolific_id": prolific_id},
+        {f"phases.interactive.batches.{batch_id}.abstracts": 1, "_id": 0}
+    )
+    if not user:
+        return []
+
+    abstracts_dict = (
+        user.get("phases", {})
+            .get("interactive", {})
+            .get("batches", {})
+            .get(batch_id, {})
+            .get("abstracts", {})
+    )
+    abstracts = []
+    for abstract_id, data in abstracts_dict.items():
+        abstracts.append({
+            "abstract_id": abstract_id,
+            "abstract_title": data.get("abstract_title", ""),
+            "abstract": data.get("abstract", "")
+        })
+    return abstracts
+
+
+def run_chatbot(prolific_id, batch_id, full_type):
+    # detect batch change 
+    if st.session_state.get("current_batch_id") != batch_id:
+        st.session_state.pop("seen_interactive_instructions", None)
+        st.session_state.current_batch_id = batch_id
     # set the variables 
     if "chat_start_time" not in st.session_state:
         st.session_state.chat_start_time = time.time()
@@ -215,10 +225,15 @@ def run_chatbot(prolific_id: str):
     # set the font size 
     if "abstract_font_size" not in st.session_state:
         st.session_state.abstract_font_size = 18
+
+
+    # get the next abstract
     if "next_interactive_abstract" in st.session_state:
         abstract_dict = st.session_state.next_interactive_abstract
+        batch_id = abstract_dict["batch_id"]
+        full_type = abstract_dict["full_type"]
     else:
-        abstract_dict = get_next_incomplete_abstract(prolific_id)
+        abstract_dict = get_next_incomplete_abstract(prolific_id, batch_id)
 
     print(">>>> final abstract_dict:", abstract_dict, file=sys.stderr)
 
@@ -230,18 +245,18 @@ def run_chatbot(prolific_id: str):
     abstract_id = abstract_dict["abstract_id"]
     abstract_title = abstract_dict["abstract_title"]
     abstract = abstract_dict["abstract"]
-
     user = users_collection.find_one({"prolific_id": prolific_id})
     db_seen = (
         user.get("phases", {})
             .get("interactive", {})
+            .get("batches", {})
+            .get(batch_id, {})
             .get("seen_instructions", False)
     )
-
     if "seen_interactive_instructions" not in st.session_state:
         st.session_state.seen_interactive_instructions = db_seen
     if not st.session_state.seen_interactive_instructions:
-        interactive_instructions(prolific_id)
+        interactive_instructions(prolific_id, batch_id)
         return
     st.title("💬 Chat with a chatbot about the scientific abstract")
     with st.sidebar:
@@ -254,9 +269,16 @@ def run_chatbot(prolific_id: str):
 
     user = users_collection.find_one(
     {"prolific_id": prolific_id},
-    {"phases.interactive.abstracts": 1, "_id": 0}
+    {f"phases.interactive.batches.{batch_id}.abstracts": 1, "_id": 0}
     )
-    abstracts_dict = user["phases"]["interactive"]["abstracts"]
+
+    abstracts_dict = (
+        user.get("phases", {})
+            .get("interactive", {})
+            .get("batches", {})
+            .get(batch_id, {})
+            .get("abstracts", {})
+    )
     total = len(abstracts_dict)
     completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
     current = completed + 1
@@ -364,7 +386,7 @@ def run_chatbot(prolific_id: str):
                 users_collection.update_one(
                     {"prolific_id": prolific_id},
                     {"$set": {
-                        f"phases.interactive.abstracts.{abstract_id}.conversation_log": conversation_log
+                        f"phases.interactive.batches.{batch_id}.abstracts.{abstract_id}.conversation_log": conversation_log
                     }},
                 )
                 show_done_dialog()
@@ -373,14 +395,21 @@ def run_chatbot(prolific_id: str):
             with st.spinner(""):
                 doc = users_collection.find_one(
                     {"prolific_id": prolific_id},
-                    {"phases.interactive.abstracts": 1}
+                    {f"phases.interactive.batches.{batch_id}.abstracts": 1, "_id": 0}
                 )
 
                 abstract_key = str(abstract_id)
+                abstracts_dict = (
+                    doc.get("phases", {})
+                    .get("interactive", {})
+                    .get("batches", {})
+                    .get(batch_id, {})
+                    .get("abstracts", {})
+                )
                 conversation_log = (
-                    doc["phases"]["interactive"]["abstracts"]
-                    .get(abstract_key, {})
-                    .get("conversation_log", [])
+                    abstracts_dict
+                        .get(abstract_key, {})
+                        .get("conversation_log", [])
                 )
 
                 conversation_text = "\n".join(
@@ -410,6 +439,9 @@ def run_chatbot(prolific_id: str):
                 st.session_state.dialog_generating = False
                 st.session_state.last_completed_abstract = {
                     "prolific_id": prolific_id,
+                    "phase_type": "interactive",
+                    "batch_id": batch_id,
+                    "full_type": full_type,
                     "abstract_id": abstract_id,
                     "title": abstract_title,
                     "abstract": abstract,
@@ -422,9 +454,8 @@ def run_chatbot(prolific_id: str):
                 users_collection.update_one(
                     {"prolific_id": prolific_id},
                     {"$set": {
-                        f"phases.interactive.abstracts.{abstract_id}.summary": summary,
-                        f"phases.interactive.abstracts.{abstract_id}.chat_duration_seconds": st.session_state.chat_duration_seconds
-
+                        f"phases.interactive.batches.{batch_id}.abstracts.{abstract_id}.summary": summary,
+                        f"phases.interactive.batches.{batch_id}.abstracts.{abstract_id}.chat_duration_seconds": st.session_state.chat_duration_seconds
                     }}
                 )
                 if "chat_start_time" in st.session_state:
@@ -441,9 +472,3 @@ def run_chatbot(prolific_id: str):
                     if key in st.session_state:
                         st.session_state.pop(key)
                 st.switch_page("pages/short_answers.py")
-if "prolific_id" in st.session_state:
-    run_chatbot(st.session_state.prolific_id)
-else:
-    print(">>>> ERROR: prolific_id missing when trying to run_chatbot", file=sys.stderr)
-
-print(">>>> BOTTOM OF FILE REACHED", file=sys.stderr)

@@ -67,28 +67,22 @@ def logout_confirm_dialog(prolific_id):
 
     with col2:
         if st.button("Logout"):
-            st.session_state.show_logout_dialog = False
-            users_collection.update_one(
-                {"prolific_id": prolific_id},
-                {"$set": {
-                    "phases.interactive.last_completed_index":
-                        st.session_state.get("abstract_index", 0)
-                }},
-                upsert=True
-            )
-
+            st.session_state.show_logout_dialog = False            
             st.session_state.logged_in = False
             st.session_state.prolific_id = None
             st.switch_page("app.py")
 
-def get_static_progress(prolific_id):
+def get_static_progress(prolific_id, batch_id):
     user = users_collection.find_one(
         {"prolific_id": prolific_id},
-        {"phases.static.abstracts": 1, "_id": 0}
+        {f"phases.static.batches.{batch_id}.abstracts": 1, "_id": 0}
     )
     if not user:
         return 0, 0
-    abstracts = user["phases"]["static"]["abstracts"]
+
+    abstracts = (
+        user["phases"]["static"]["batches"][batch_id]["abstracts"]
+    )
     total = len(abstracts)
     completed = sum(1 for a in abstracts.values() if a.get("completed", False))
     return completed, total
@@ -108,7 +102,7 @@ def highlight_terms_in_abstract(abstract: str, terms: list):
     return highlighted
 
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
-def static_instructions(prolific_id):
+def static_instructions(prolific_id, batch_id):
     st.markdown("""
     ### Before you begin
     ...
@@ -117,19 +111,22 @@ def static_instructions(prolific_id):
         st.session_state.seen_static_instructions = True
         users_collection.update_one(
             {"prolific_id": prolific_id},
-            {"$set": {"phases.static.seen_instructions": True}},
+            {"$set": {f"phases.static.batches.{batch_id}.seen_instructions": True}},
             upsert=True
         )
         st.rerun()
 
-def get_user_static_abstracts(prolific_id: str):
+def get_user_static_abstracts(prolific_id, batch_id):
     user = users_collection.find_one(
         {"prolific_id": prolific_id},
-        {"_id": 0, "phases.static.abstracts": 1}
+        {f"phases.static.batches.{batch_id}.abstracts": 1, "_id": 0}
     )
     if not user:
         return []
-    abstracts_dict = user["phases"]["static"]["abstracts"]
+
+    abstracts_dict = (
+        user["phases"]["static"]["batches"][batch_id]["abstracts"]
+    )
     abstracts = []
     for abstract_id, data in abstracts_dict.items():
         if not data.get("completed", False):
@@ -140,9 +137,12 @@ def get_user_static_abstracts(prolific_id: str):
                 "human_written_pls": data.get("human_written_pls", ""),
                 "terms": data.get("term_familarity", [])
             })
-    return sorted(abstracts, key=lambda x: int(x["abstract_id"]))
+    return abstracts
 
-def run_terms(prolific_id: str):
+def run_terms(prolific_id, batch_id, full_type):
+    if st.session_state.get("current_batch_id") != batch_id:
+        st.session_state.pop("seen_static_instructions", None)
+        st.session_state.current_batch_id = batch_id
     with st.sidebar:
         st.write(f"**MTurk ID:** `{prolific_id}`")
         if st.button("Logout"):
@@ -163,14 +163,21 @@ def run_terms(prolific_id: str):
 
     # Instruction check
     user = users_collection.find_one({"prolific_id": prolific_id})
-    db_seen = user.get("phases", {}).get("static", {}).get("seen_instructions", False)
+    db_seen = (
+        user.get("phases", {})
+            .get("static", {})
+            .get("batches", {})
+            .get(batch_id, {})
+            .get("seen_instructions", False)
+    )
 
     if "seen_static_instructions" not in st.session_state:
         st.session_state.seen_static_instructions = db_seen
 
+    # If not seen → show instructions dialog
     if not st.session_state.seen_static_instructions:
-        static_instructions(prolific_id)
-        st.stop()
+        static_instructions(prolific_id, batch_id)
+        return
 
     if "abstract_font_size" not in st.session_state:
         st.session_state.abstract_font_size = 16
@@ -179,16 +186,14 @@ def run_terms(prolific_id: str):
 
     st.title("Term Familiarity")
 
-    abstracts = get_user_static_abstracts(prolific_id)
+    abstracts = get_user_static_abstracts(prolific_id, batch_id)
+    if not abstracts:
+        st.success("🎉 All abstracts completed for this batch!")
+        st.stop()
 
-    if "static_index" not in st.session_state:
-        st.session_state.static_index = 0
-    if st.session_state.static_index >= len(abstracts):
-        st.session_state.static_index = 0
-
-    abs_item = abstracts[st.session_state.static_index]
+    # Always use the first incomplete abstract
+    abs_item = abstracts[0]
     abstract_id = abs_item["abstract_id"]
-    current_abs_id = abs_item["abstract_id"]
     current_abs_id = abs_item["abstract_id"]
     if st.session_state.get("current_term_abs_id") != current_abs_id:
         for key in [
@@ -205,10 +210,10 @@ def run_terms(prolific_id: str):
         st.session_state.current_term_abs_id = current_abs_id
 
 
-    completed, total = get_static_progress(prolific_id)
+    completed, total = get_static_progress(prolific_id, batch_id)
     current_index = completed + 1
     st.progress(current_index / total)
-    st.markdown(f"**Progress:** {current_index} / {total} abstracts**")
+    st.markdown(f"**Progress:** {current_index} / {total} abstracts")
 
     st.markdown("### ABSTRACT")
 
@@ -439,9 +444,9 @@ def run_terms(prolific_id: str):
                 users_collection.update_one(
                     {"prolific_id": prolific_id},
                     {"$set": {
-                        f"phases.static.abstracts.{abstract_id}.term_familarity": final_terms,
-                        f"phases.static.abstracts.{abstract_id}.time_familiarity": st.session_state.time_familiarity,
-                        f"phases.static.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.term_familarity": final_terms,
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_familiarity": st.session_state.time_familiarity,
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info
                     }}
                 )
 
@@ -454,12 +459,12 @@ def run_terms(prolific_id: str):
                     "current_index": current_index,
                     "total": total
                 }
-
+                st.session_state.batch_id = batch_id
+                st.session_state.full_type = full_type
                 st.session_state.time_familiarity = 0
                 st.session_state.time_extra_info = 0
                 st.session_state.fam_start_time = None
                 st.session_state.extra_start_time = None
-
                 st.session_state.stage_static = "familiarity"
                 initialized_id = st.session_state.get("short_answer_initialized_for")
                 if initialized_id != abstract_id:
@@ -470,7 +475,11 @@ def run_terms(prolific_id: str):
                 st.switch_page("pages/static_short_answer.py")
 
 if "prolific_id" in st.session_state:
-    run_terms(st.session_state.prolific_id)
+    run_terms(
+        prolific_id=st.session_state.prolific_id,
+        batch_id=st.session_state.batch_id,
+        full_type=st.session_state.full_type
+    )
 else:
     st.error("No MTurk / Prolific ID found in session. Please log in again.")
     print(">>>> ERROR: prolific_id missing when trying to run_chatbot", file=sys.stderr)

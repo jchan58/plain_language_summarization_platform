@@ -7,6 +7,26 @@ from pages.chatbot import run_chatbot
 from pages.term_familarity_page import run_terms
 import ast
 
+# order of the batches
+BATCH_ORDER = [
+    "static_1",
+    "static_2",
+    "interactive_3",
+    "interactive_4",
+    "finetuned_5",
+    "finetuned_6",
+]
+
+# passcodes for each batch, first batch has none
+PASSCODES = {
+    "static_1": None,          
+    "static_2": "ABC123",
+    "interactive_3": "DOG721",
+    "interactive_4": "CAT999",
+    "finetuned_5": "BLUE425",
+    "finetuned_6": "RED591", 
+}
+
 # hide the sidebar
 st.markdown(
     """
@@ -33,6 +53,27 @@ abstract_collection = db['abstracts']
 # load approved IDs and dataframe for all the abstracts etc., 
 approved_ids = pd.read_csv("approved_ids.csv")["prolific_id"].tolist()
 user_df = pd.read_csv("final_user_batches.csv")
+
+# determine what batch user will start off with 
+def get_current_batch(user_doc):
+    phases = user_doc.get("phases", {})
+
+    for full_type in BATCH_ORDER:
+        phase_type, batch_id = full_type.split("_")
+        phase = phases.get(phase_type, {})
+        batches = phase.get("batches", {})
+        batch = batches.get(batch_id)
+        
+        # get the first incomplete batch 
+        if not batch.get("completed", False):
+            return {
+                "full_type": full_type,
+                "phase_type": phase_type,
+                "batch_id": batch_id,
+                "unlocked": batch.get("unlocked", False),
+            }
+
+    return None
 
 # check if the user exists in db if they don't 
 if not st.session_state.get("logged_in", False):
@@ -61,19 +102,19 @@ if not st.session_state.get("logged_in", False):
                 "finetuned": {"batches": {}, "completed": False},
             }
             for _, row in user_rows.iterrows():
-                # Example: "static_1", "interactive_3"
-                full_type = row["type"]
-                phase_type, batch_id = full_type.split("_")  # phase_type="static", batch_id="1"
-
-                # Create batch container if not exists
+                full_type = row["type"]           
+                phase_type, batch_id = full_type.split("_") 
                 if batch_id not in phases[phase_type]["batches"]:
+                    # unlock the very first abstract
+                    is_first_batch = (full_type == BATCH_ORDER[0])
                     phases[phase_type]["batches"][batch_id] = {
                         "completed": False,
                         "approved": False,
-                        "abstracts": {}
+                        "unlocked": is_first_batch,
+                        "abstracts": {},
+                        "full_type": full_type,  
                     }
 
-                # Only static rows have precomputed terms
                 if phase_type == "static":
                     raw_terms = str(row["terms"]).strip().strip("[]")
                     term_list = [t.strip() for t in raw_terms.split(",") if t.strip()]
@@ -133,18 +174,44 @@ else:
     if "current_page" not in st.session_state:
         st.session_state.current_page = "chatbot"
 
-    with st.sidebar:
-        st.markdown("### Navigation")
-        choice = st.radio(
-            "Pages:",
-            ["Chatbot", "Term Familiarity"],
-            index=0 if st.session_state.current_page == "chatbot" else 1
-        )
-        st.session_state.current_page = (
-            "chatbot" if choice == "Chatbot" else "terms"
-        )
+    user = users_collection.find_one({"prolific_id": st.session_state.prolific_id})
+    current = get_current_batch(user)
 
-    if st.session_state.current_page == "terms":
-        run_terms(st.session_state.prolific_id)
+    if current is None:
+        st.success("🎉 You have completed all batches! Thank you!")
+        st.stop()
+
+    # passcode check 
+    if not current["unlocked"]:
+        st.title("🔐 Enter Passcode to Unlock Next Batch")
+        entered = st.text_input("Enter passcode for this batch:")
+        if st.button("Unlock"):
+            correct = PASSCODES.get(current["full_type"])
+
+            if entered.strip() == correct:
+                phase = current["phase_type"]
+                batch_id = current["batch_id"]
+
+                users_collection.update_one(
+                    {"prolific_id": st.session_state.prolific_id},
+                    {"$set": {f"phases.{phase}.batches.{batch_id}.unlocked": True}}
+                )
+                st.success("Unlocked! Loading batch…")
+                st.rerun()
+            else:
+                st.error("Incorrect passcode. Please try again.")
+        st.stop()
+
+    # route to specific session based on type
+    if current["phase_type"] == "static":
+        run_terms(
+            prolific_id=st.session_state.prolific_id,
+            batch_id=current["batch_id"],
+            full_type=current["full_type"]
+        )
     else:
-        run_chatbot(st.session_state.prolific_id)
+        run_chatbot(
+            prolific_id=st.session_state.prolific_id,
+            batch_id=current["batch_id"],
+            full_type=current["full_type"]
+        )
