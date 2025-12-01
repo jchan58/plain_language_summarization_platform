@@ -67,7 +67,11 @@ if not st.session_state.get("logged_in", False):
 
                 # Create batch container if not exists
                 if batch_id not in phases[phase_type]["batches"]:
-                    phases[phase_type]["batches"][batch_id] = {}
+                    phases[phase_type]["batches"][batch_id] = {
+                        "completed": False,
+                        "approved": False,
+                        "abstracts": {}
+                    }
 
                 # Only static rows have precomputed terms
                 if phase_type == "static":
