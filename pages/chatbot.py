@@ -81,6 +81,7 @@ def show_done_dialog():
 
 @st.dialog("Are you sure you want to log out?", dismissible=True)
 def logout_confirm_dialog(prolific_id):
+    st.markdown("Your progress will not be saved until you finish this abstract. If you logout now, you will have to start this abstract over.")
     col1, col2 = st.columns(2)
 
     with col1:
