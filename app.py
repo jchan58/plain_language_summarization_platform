@@ -6,6 +6,7 @@ from openai import OpenAI
 from pages.chatbot import run_chatbot
 from pages.term_familarity_page import run_terms
 import ast
+import ftfy
 
 # order of the batches
 BATCH_ORDER = [
@@ -128,7 +129,7 @@ if not st.session_state.get("logged_in", False):
 
                 phases[phase_type]["batches"][batch_id]["abstracts"][abstract_key]= {
                     "abstract_title": row["abstract_title"],
-                    "abstract": row["abstract"],
+                    "abstract": ftfy.fix_text(row["abstract"]),
                     "main_idea_question": row["main_idea_question"],
                     "method_question": row["method_question"],
                     "result_question": row["result_question"],
@@ -138,7 +139,7 @@ if not st.session_state.get("logged_in", False):
                         "results": "",
                     },
                     "term_familarity": structured_terms,
-                    "human_written_pls": row["human_written"],
+                    "human_written_pls": ftfy.fix_text(row["human_written"]),
                     "completed": False,
                 }
 
