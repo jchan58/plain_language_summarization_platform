@@ -242,16 +242,7 @@ def run_terms(prolific_id, batch_id, full_type):
         st.session_state.current_term_abs_id = current_abs_id
 
     completed, total = get_static_progress(prolific_id, batch_id)
-    if "progress_info" in st.session_state:
-        info = st.session_state.progress_info
-        pg = {
-            "current_index": info["current_index"],
-            "total": info["total"]
-        }
-        current_index = pg['current_index']
-        total = pg['total']
-    else: 
-        current_index = 1
+    current_index = completed + 1
     st.progress(current_index / total)
     st.markdown(f"**Progress:** {current_index} / {total} abstracts")
     st.markdown("### ABSTRACT")
