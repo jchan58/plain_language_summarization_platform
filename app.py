@@ -186,7 +186,8 @@ else:
 
     # passcode check 
     if not current["unlocked"]:
-        st.title("🔐 Enter Passcode to Unlock Next Batch")
+        batch_num = current["batch_id"]
+        st.title(f"🔐 Enter Passcode to Unlock Batch {batch_num}")
         entered = st.text_input("Enter passcode for this batch:")
         if st.button("Unlock"):
             correct = PASSCODES.get(current["full_type"])
