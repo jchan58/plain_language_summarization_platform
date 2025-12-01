@@ -505,7 +505,6 @@ if "prolific_id" in st.session_state:
         full_type=st.session_state.full_type
     )
 else:
-    st.error("No MTurk / Prolific ID found in session. Please log in again.")
     print(">>>> ERROR: prolific_id missing when trying to run_chatbot", file=sys.stderr)
 
 print(">>>> BOTTOM OF FILE REACHED", file=sys.stderr)
