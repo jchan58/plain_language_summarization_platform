@@ -252,7 +252,7 @@ def run_terms(prolific_id, batch_id, full_type):
     current_index = completed + 1
     st.progress(current_index / total)
     st.markdown(f"**Progress:** {current_index} / {total} abstracts")
-    with st.expander("📝 Instructions", expander=True):
+    with st.expander("📝 Instructions", expanded=True):
         st.markdown("""
         1. Read the ABSTRACT — the 10 terms you will evaluate are **highlighted**.  
         2. Use the slider to rate how familiar you are with each term *in the context of the ABSTRACT*.  

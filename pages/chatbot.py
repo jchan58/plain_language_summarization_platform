@@ -290,7 +290,7 @@ def run_chatbot(prolific_id, batch_id, full_type):
     progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
     st.caption(f"Completed {current} of {total} abstracts")
-    with st.expander("📝 Instructions", expander=True):
+    with st.expander("📝 Instructions", expanded=True):
         st.markdown("""
         1. Read the ABSTRACT on the **left side of the screen**.  
         2. Use the **chatbot** on the right to ask questions about anything in the ABSTRACT you would like to understand better.  
