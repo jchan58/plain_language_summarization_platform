@@ -183,7 +183,14 @@ else:
 
     # passcode check 
     if not current["unlocked"]:
-        batch_num = current["batch_id"]
+        # add in the sidebar
+        with st.sidebar:
+            st.write(f"**MTurk ID:** `{st.session_state.prolific_id}`")
+            if st.button("Logout"):
+                st.session_state.logged_in = False
+                st.session_state.prolific_id = None
+                st.switch_page("app.py")
+            batch_num = current["batch_id"]
         st.title(f"🔐 Enter Passcode to Unlock Batch {batch_num}")
         entered = st.text_input("Enter passcode for this batch:")
         if st.button("Unlock"):
