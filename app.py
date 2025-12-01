@@ -158,23 +158,12 @@ if not st.session_state.get("logged_in", False):
                 .get("last_completed_index", 0)
         )
         st.session_state.abstract_index = start_index
-        # get the last page the user was at
-        last_page = user.get("last_page")
-        if last_page:
-            page_map = {
-                "term_familiarity": "pages/term_familarity_page.py",
-                "static_short_answer": "pages/static_short_answer.py",
-                "static_likert": "pages/static_likert.py",
-                "interactive_short_answer": "pages/short_answers.py",
-                "interactive_likert": "pages/likert.py",
-                "chatbot": "pages/chatbot.py"
-            }
-            st.switch_page(page_map[last_page])
-            st.stop()
+
         # save login state
         st.session_state.logged_in = True
         st.session_state.prolific_id = prolific_id
         st.rerun()
+
 else:
     if "seen_static_instructions" not in st.session_state:
         st.session_state.seen_static_instructions = False
