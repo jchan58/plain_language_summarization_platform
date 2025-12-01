@@ -155,6 +155,7 @@ def get_user_static_abstracts(prolific_id, batch_id):
 def run_terms(prolific_id, batch_id, full_type):
     if st.session_state.get("current_batch_id") != batch_id:
         st.session_state.pop("seen_static_instructions", None)
+        st.session_state.pop("next_static_abstract", None)
         st.session_state.current_batch_id = batch_id
     with st.sidebar:
         st.write(f"**MTurk ID:** `{prolific_id}`")
