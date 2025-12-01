@@ -219,8 +219,6 @@ def run_terms(prolific_id, batch_id, full_type):
         db_abs = user["phases"]["static"]["batches"][batch_id]["abstracts"][n["abstract_id"]]
         abs_item["terms"] = db_abs.get("term_familarity", [])
         abs_item["human_written_pls"] = db_abs.get("human_written_pls", "")
-        st.session_state.pop("next_static_abstract", None)
-
     else:
         abstracts = get_user_static_abstracts(prolific_id, batch_id)
         if not abstracts:
@@ -489,7 +487,8 @@ def run_terms(prolific_id, batch_id, full_type):
                     {"$set": {
                         f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.term_familarity": final_terms,
                         f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_familiarity": st.session_state.time_familiarity,
-                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info,
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.completed": True
                     }}
                 )
 
