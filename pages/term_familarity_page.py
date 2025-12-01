@@ -49,6 +49,20 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
+@st.cache_data
+def load_user(prolific_id, projection=None):
+    return users_collection.find_one(
+        {"prolific_id": prolific_id},
+        projection
+    )
+
+@st.cache_data
+def load_user_info(prolific_id):
+    return users_collection.find_one({"prolific_id": prolific_id})
+
+@st.cache_data
+def cached_highlighted_abs(abstract, terms):
+    return highlight_terms_in_abstract(abstract, terms)
 
 @st.dialog("Are you sure you want to log out?", dismissible=True)
 def logout_confirm_dialog(prolific_id):
@@ -73,8 +87,8 @@ def logout_confirm_dialog(prolific_id):
             st.switch_page("app.py")
 
 def get_static_progress(prolific_id, batch_id):
-    user = users_collection.find_one(
-        {"prolific_id": prolific_id},
+    user = load_user(
+        prolific_id,
         {f"phases.static.batches.{batch_id}.abstracts": 1, "_id": 0}
     )
     if not user:
@@ -117,8 +131,8 @@ def static_instructions(prolific_id, batch_id):
         st.rerun()
 
 def get_user_static_abstracts(prolific_id, batch_id):
-    user = users_collection.find_one(
-        {"prolific_id": prolific_id},
+    user = load_user(
+        prolific_id,
         {f"phases.static.batches.{batch_id}.abstracts": 1, "_id": 0}
     )
     if not user:
@@ -162,7 +176,7 @@ def run_terms(prolific_id, batch_id, full_type):
     # ------------------------------------------------ #
 
     # Instruction check
-    user = users_collection.find_one({"prolific_id": prolific_id})
+    user = load_user_info(prolific_id)
     db_seen = (
         user.get("phases", {})
             .get("static", {})
@@ -236,7 +250,7 @@ def run_terms(prolific_id, batch_id, full_type):
                     {abs_item['abstract_title']}
                 </div>
                 <div style="font-size:{st.session_state.abstract_font_size + 4}px;line-height:1.55;">
-                    {highlight_terms_in_abstract(abs_item["abstract"], abs_item["terms"]).replace("\n","<br>")}
+                    {cached_highlighted_abs(abs_item["abstract"], abs_item["terms"], st.session_state.abstract_font_size).replace("\n","<br>")}
                 </div>
             </div>
         </div>
