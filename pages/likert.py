@@ -355,5 +355,6 @@ def run_likert():
                 }}
             )
             st.switch_page("pages/chatbot.py")
+            st.rerun()
 
 run_likert()
