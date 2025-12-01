@@ -46,7 +46,7 @@ def confirm_next_abstract():
             st.rerun()
 
 
-@st.dialog("Are you sure you want to log out?", dismissible=True)
+@st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     col1, col2 = st.columns(2)
     with col1:

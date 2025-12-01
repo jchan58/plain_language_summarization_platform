@@ -13,7 +13,7 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
-@st.dialog("Are you sure you want to log out?", dismissible=True)
+@st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
 
     col1, col2 = st.columns(2)

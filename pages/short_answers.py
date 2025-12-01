@@ -47,7 +47,7 @@ def accumulate_question_time():
         st.session_state[q_key] = st.session_state.get(q_key, 0) + elapsed
     st.session_state.question_start_time = datetime.utcnow()
 
-@st.dialog("Are you sure you want to log out?", dismissible=True)
+@st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     col1, col2 = st.columns(2)
     with col1:

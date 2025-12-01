@@ -58,7 +58,7 @@ def load_user(prolific_id, projection=None):
 def load_user_info(prolific_id):
     return users_collection.find_one({"prolific_id": prolific_id})
 
-@st.dialog("Are you sure you want to log out?", dismissible=True)
+@st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     col1, col2 = st.columns(2)
     with col1:

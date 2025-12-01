@@ -29,7 +29,7 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
-@st.dialog("Are you sure you want to log out?", dismissible=True)
+@st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     col1, col2 = st.columns(2)
     with col1:
@@ -255,8 +255,8 @@ def run_feedback():
                     users_collection.update_one(
                         {"prolific_id": data['prolific_id']},
                         {"$set": {
-                            f"phases.interactive.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.short_answers": feedback_data,
-                            f"phases.interactive.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.feedback_submitted": True
+                            f"phases.static.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.short_answers": feedback_data,
+                            f"phases.static.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.feedback_submitted": True
                         }}
                     )
 
