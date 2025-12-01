@@ -49,12 +49,6 @@ def accumulate_question_time():
 
 @st.dialog("Are you sure you want to log out?", dismissible=True)
 def logout_confirm_dialog(prolific_id):
-
-    st.markdown("""
-    Please logout **only after you have submitted the results for Comparing SUMMARY to ABSTRACT** to make sure your results are saved correctly.
-    Otherwise you would have to start back over on the same abstract. 
-    """)
-
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Stay on page"):
@@ -279,6 +273,15 @@ def run_feedback():
                         "total": total
                     }
 
+                    users_collection.update_one(
+                        {"prolific_id": prolific_id},
+                        {"$set": {
+                            "last_page": "short_answers",
+                            "last_batch": batch_id,
+                            "last_abs_id": abstract_id,
+                            "last_full_type": full_type
+                        }}
+                    )
                     st.switch_page("pages/likert.py")
 
 

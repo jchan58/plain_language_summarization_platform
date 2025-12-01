@@ -31,14 +31,7 @@ users_collection = db["users"]
 
 @st.dialog("Are you sure you want to log out?", dismissible=True)
 def logout_confirm_dialog(prolific_id):
-
-    st.markdown("""
-    Please logout **only after you have submitted the results for Comparing SUMMARY to ABSTRACT** to make sure your results are saved correctly.
-    Otherwise you would have to start back over on the same abstract. 
-    """)
-
     col1, col2 = st.columns(2)
-
     with col1:
         if st.button("Stay on page"):
             st.session_state.show_logout_dialog = False
@@ -267,6 +260,15 @@ def run_feedback():
                         }}
                     )
 
+                    users_collection.update_one(
+                        {"prolific_id": data['prolific_id']},
+                        {"$set": {
+                            "last_page": "static_short_answer",
+                            "last_batch": data["batch_id"],
+                            "last_abs_id": data["abstract_id"],
+                            "last_full_type": data["full_type"]
+                        }}
+                    )
                     st.session_state.survey_context = {
                         "abstract_title": data["title"],
                         "abstract": data["abstract"],
