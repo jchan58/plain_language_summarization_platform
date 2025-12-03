@@ -139,7 +139,7 @@ if not st.session_state.get("logged_in", False):
                         "results": "",
                     },
                     "term_familarity": structured_terms,
-                    "human_written_pls": ftfy.fix_text(row["human_written"]),
+                    "human_written_pls": re.sub(r"\s+", " ", ftfy.fix_text(row["human_written"])).strip(),
                     "completed": False,
                 }
 
