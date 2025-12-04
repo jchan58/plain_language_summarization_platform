@@ -502,7 +502,10 @@ def run_terms(prolific_id, batch_id, full_type):
                 "extra_information": final_state
             })
         st.markdown("---")
-        all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
+        all_filled = all(
+            len(st.session_state.extra_info_state.get(term, [])) > 0
+            for term in terms
+        )
         col_back, col_pass1, col_pass2, col_pass3, col_pass4, col_next = st.columns([1, 1, 1, 1, 1, 1])
         with col_back:
             if st.button("⬅️ Back", key=f"back_extra_{abstract_id}"):
