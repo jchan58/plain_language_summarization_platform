@@ -113,7 +113,6 @@ def abstract_fragment(abs_item, font_size):
     )
 @st.fragment
 def familiarity_page(abs_item, abstract_id):
-    # familiarity header + instructions
     st.subheader("How familiar are you with each term?")
     st.markdown("""
     **Familiarity Scale**  
@@ -142,7 +141,7 @@ def familiarity_page(abs_item, abstract_id):
             disabled=not all_fam_filled
         )
 
-    return updated_terms, next_clicked
+    return updated_terms, next_clicked, all_fam_filled
 
 @st.cache_data
 def cached_highlight(abstract, terms):
@@ -380,7 +379,7 @@ def run_terms(prolific_id, batch_id, full_type):
         if st.session_state.get("fam_start_time") is None:
             st.session_state.fam_start_time = datetime.datetime.utcnow()
 
-        updated_terms, next_clicked = familiarity_page(abs_item, abstract_id)
+        updated_terms, next_clicked, all_fam_filled = familiarity_page(abs_item, abstract_id)
         if next_clicked:
             if st.session_state.fam_start_time:
                 elapsed = (datetime.datetime.utcnow() - st.session_state.fam_start_time).total_seconds()
