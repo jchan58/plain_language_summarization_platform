@@ -49,6 +49,50 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
+@st.fragment
+def familiarity_fragment(abs_item, abstract_id):
+    updated_terms = []
+
+    for idx, term_item in enumerate(abs_item["terms"]):
+        term = term_item["term"]
+        color = TERM_COLORS[idx % len(TERM_COLORS)]
+
+        # Load previous value if exists
+        prev_val = None
+        if "updated_terms_tmp" in st.session_state:
+            prev_val = st.session_state.updated_terms_tmp[idx]["familiarity_score"]
+
+        col_label, col_slider = st.columns([0.45, 0.55])
+
+        with col_label:
+            st.markdown(
+                f"""
+                <div style="background-color:{color};padding:8px 12px;border-radius:6px;font-size:16px;font-weight:600;
+                display:flex;align-items:center;height:42px;">
+                    {idx+1}. {term}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        with col_slider:
+            familiarity = st.slider(
+                label=" ",
+                min_value=1,
+                max_value=5,
+                value=prev_val if prev_val is not None else 3,
+                step=1,
+                key=f"fam_{abstract_id}_{idx}",
+            )
+
+        updated_terms.append({
+            "term": term,
+            "familiarity_score": familiarity,
+            "extra_information": []
+        })
+
+    return updated_terms
+
 def load_user(prolific_id, projection=None):
     return users_collection.find_one(
         {"prolific_id": prolific_id},
@@ -291,13 +335,9 @@ def run_terms(prolific_id, batch_id, full_type):
         unsafe_allow_html=True
     )
 
-    # ---------------- FAMILIARITY PAGE ---------------- #
     if st.session_state.stage_static == "familiarity":
-
-        ### TIMER ADDITION ###
         if st.session_state.get("fam_start_time") is None:
             st.session_state.fam_start_time = datetime.datetime.utcnow()
-        # ------------------------------------------------ #
 
         st.subheader("How familiar are you with each term?")
         st.markdown("""
@@ -309,51 +349,9 @@ def run_terms(prolific_id, batch_id, full_type):
         5 = Extremely familiar  
         """)
 
-        if "updated_terms_tmp" not in st.session_state:
-            st.session_state.updated_terms_tmp = [
-                {
-                    "term": t["term"],
-                    "familiarity_score": t.get("familiarity_score", 3),
-                    "extra_information": t.get("extra_information", [])
-                }
-                for t in abs_item["terms"]
-            ]
-
-        updated_terms = [] 
-        for idx, term_item in enumerate(abs_item["terms"]):
-            term = term_item["term"]
-            color = TERM_COLORS[idx % len(TERM_COLORS)]
-            col_label, col_slider = st.columns([0.45, 0.55])
-
-            with col_label:
-                st.markdown(
-                    f"""
-                    <div style="background-color:{color};padding:8px 12px;border-radius:6px;font-size:16px;font-weight:600;
-                    display:flex;align-items:center;height:42px;">
-                        {idx+1}. {term}
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-            with col_slider:
-                familiarity = st.slider(
-                    label=" ",
-                    min_value=1,
-                    max_value=5,
-                    value=st.session_state.updated_terms_tmp[idx]["familiarity_score"],
-                    step=1,
-                    key=f"fam_{abstract_id}_{idx}",
-                )
-
-            st.session_state.updated_terms_tmp[idx]["familiarity_score"] = familiarity
-            updated_terms.append({
-                "term": term,
-                "familiarity_score": familiarity,
-                "extra_information": []
-            })
+        
+        updated_terms = familiarity_fragment(abs_item, abstract_id)
         st.markdown("---")
-
         all_fam_filled = all(
             st.session_state.get(f"fam_{abstract_id}_{idx}") is not None
             for idx in range(len(abs_item["terms"]))
