@@ -133,15 +133,7 @@ def familiarity_page(abs_item, abstract_id):
         for idx in range(len(abs_item["terms"]))
     )
 
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
-    with col6:
-        next_clicked = st.button(
-            "Next ➡️",
-            key=f"next_btn_fam_{abstract_id}",
-            disabled=not all_fam_filled
-        )
-
-    return updated_terms, next_clicked, all_fam_filled
+    return updated_terms, all_fam_filled
 
 @st.cache_data
 def cached_highlight(abstract, terms):
@@ -449,7 +441,15 @@ def run_terms(prolific_id, batch_id, full_type):
         if st.session_state.get("fam_start_time") is None:
             st.session_state.fam_start_time = datetime.datetime.utcnow()
 
-        updated_terms, next_clicked, all_fam_filled = familiarity_page(abs_item, abstract_id)
+        updated_terms, all_fam_filled = familiarity_page(abs_item, abstract_id)
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
+        with col6:
+            next_clicked = st.button(
+                "Next ➡️",
+                key=f"next_btn_fam_{abstract_id}",
+                disabled=not all_fam_filled
+            )
+
         if next_clicked:
             if st.session_state.fam_start_time:
                 elapsed = (datetime.datetime.utcnow() - st.session_state.fam_start_time).total_seconds()
