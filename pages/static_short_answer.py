@@ -29,6 +29,28 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
+@st.fragment
+def summary_fragment(pls_text, font_size):
+    st.markdown(
+        f"""
+        <div class="no-select" style="
+            background-color:#e8f4ff;
+            padding: 1.1rem 1.3rem;
+            border-radius: 0.6rem;
+            border: 1px solid #dfe1e5;
+            max-height: 550px;
+            overflow-y: auto;
+            font-size: {font_size}px;
+            line-height: 1.55;
+        ">
+            <div style="line-height: 1.55;">
+                {pls_text}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     col1, col2 = st.columns(2)
@@ -147,32 +169,13 @@ def run_feedback():
         }
         </style>
         """, unsafe_allow_html=True)
-        st.markdown(
-            f"""
-            <div class="no-select" style="
-                background-color:#e8f4ff;
-                padding: 1.1rem 1.3rem;
-                border-radius: 0.6rem;
-                border: 1px solid #dfe1e5;
-                max-height: 550px;
-                overflow-y: auto;
-                font-size: {st.session_state.summary_font_size}px;
-                line-height: 1.55;
-            ">
-                <div style="line-height: 1.55;">
-                    {data['pls']}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        summary_fragment(data["pls"], st.session_state.summary_font_size)
         st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         if st.button("⬅️ Back"):
             st.session_state.stage_static = "extra_info"
             st.switch_page("pages/term_familarity_page.py")
     with col2:
         st.title("Short Answer Questions")
-        # Question index
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0
 
