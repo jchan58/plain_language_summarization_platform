@@ -486,18 +486,23 @@ def run_terms(prolific_id, batch_id, full_type):
             current_state = st.session_state.extra_info_state.get(term, [])
 
             new_state = extra_info_term_block(
-                idx=idx,
-                term=term,
-                color=color,
-                abstract_id=abstract_id,
-                current_state=current_state
-            )
-            st.session_state.extra_info_state[term] = new_state
-            cleaned_extra.append({
-                "term": term,
-                "extra_information": new_state
-            })
+            idx=idx,
+            term=term,
+            color=color,
+            abstract_id=abstract_id,
+            current_state=current_state
+        )
 
+        if new_state != current_state and new_state is not None:
+            st.session_state.extra_info_state[term] = new_state
+            final_state = new_state
+        else:
+            final_state = current_state 
+
+        cleaned_extra.append({
+            "term": term,
+            "extra_information": final_state
+        })
         st.markdown("---")
         all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
         col_back, col_pass1, col_pass2, col_pass3, col_pass4, col_next = st.columns([1, 1, 1, 1, 1, 1])
