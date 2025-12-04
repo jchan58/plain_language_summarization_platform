@@ -309,44 +309,49 @@ def run_terms(prolific_id, batch_id, full_type):
         5 = Extremely familiar  
         """)
 
-        updated_terms = []
-        with st.fragment(key=f"fam_fragment_{abstract_id}"):
-            for idx, term_item in enumerate(abs_item["terms"]):
-                term = term_item["term"]
-                color = TERM_COLORS[idx % len(TERM_COLORS)]
-                col_label, col_slider = st.columns([0.45, 0.55])
+        if "updated_terms_tmp" not in st.session_state:
+            st.session_state.updated_terms_tmp = [
+                {
+                    "term": t["term"],
+                    "familiarity_score": t.get("familiarity_score", 3),
+                    "extra_information": t.get("extra_information", [])
+                }
+                for t in abs_item["terms"]
+            ]
 
-                with col_label:
-                    st.markdown(
-                        f"""
-                        <div style="background-color:{color};padding:8px 12px;border-radius:6px;font-size:16px;font-weight:600;
-                        display:flex;align-items:center;height:42px;">
-                            {idx+1}. {term}
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+        updated_terms = [] 
+        for idx, term_item in enumerate(abs_item["terms"]):
+            term = term_item["term"]
+            color = TERM_COLORS[idx % len(TERM_COLORS)]
+            col_label, col_slider = st.columns([0.45, 0.55])
 
-                with col_slider:
-                    prev_val = None
-                    if "updated_terms_tmp" in st.session_state:
-                        prev_val = st.session_state.updated_terms_tmp[idx]["familiarity_score"]
+            with col_label:
+                st.markdown(
+                    f"""
+                    <div style="background-color:{color};padding:8px 12px;border-radius:6px;font-size:16px;font-weight:600;
+                    display:flex;align-items:center;height:42px;">
+                        {idx+1}. {term}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-                    familiarity = st.slider(
-                        label=" ",
-                        min_value=1,
-                        max_value=5,
-                        value=prev_val if prev_val is not None else 3,  # ← Load saved value
-                        step=1,
-                        key=f"fam_{abstract_id}_{idx}",
-                    )
+            with col_slider:
+                familiarity = st.slider(
+                    label=" ",
+                    min_value=1,
+                    max_value=5,
+                    value=st.session_state.updated_terms_tmp[idx]["familiarity_score"],
+                    step=1,
+                    key=f"fam_{abstract_id}_{idx}",
+                )
 
-                updated_terms.append({
-                    "term": term,
-                    "familiarity_score": familiarity,
-                    "extra_information": []
-                })
-
+            st.session_state.updated_terms_tmp[idx]["familiarity_score"] = familiarity
+            updated_terms.append({
+                "term": term,
+                "familiarity_score": familiarity,
+                "extra_information": []
+            })
         st.markdown("---")
 
         all_fam_filled = all(
