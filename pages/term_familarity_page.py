@@ -111,7 +111,7 @@ def abstract_fragment(abs_item, font_size):
         """,
         unsafe_allow_html=True
     )
-@st.fragment
+@st.fragment(run_on='every rerun')
 def familiarity_page(abs_item, abstract_id):
     st.subheader("How familiar are you with each term?")
     st.markdown("""
