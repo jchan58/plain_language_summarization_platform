@@ -494,7 +494,6 @@ def run_terms(prolific_id, batch_id, full_type):
             )
             if new_state != current_state:
                 st.session_state.extra_info_state[term] = new_state
-                st.rerun() 
             final_state = new_state if new_state is not None else current_state
 
             cleaned_extra.append({
