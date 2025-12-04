@@ -93,6 +93,29 @@ def familiarity_fragment(abs_item, abstract_id):
 
     return updated_terms
 
+@st.fragment
+def abstract_fragment(abs_item, font_size):
+    st.markdown(
+        f"""
+        <div class="sticky-abs">
+            <div style="background-color:#f8f9fa;padding:1.1rem 1.3rem;border-radius:0.6rem;border:1px solid #dfe1e5;
+            max-height:550px;font-size:{font_size}px;overflow-y:auto;">
+                <div style="font-size:{font_size + 4}px;font-weight:600;margin-bottom:0.6rem;">
+                    {abs_item['abstract_title']}
+                </div>
+                <div style="font-size:{font_size + 4}px;line-height:1.55;">
+                    {abs_item['highlighted_html'].replace("\n","<br>")}
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+@st.cache_data
+def cached_highlight(abstract, terms):
+    return highlight_terms_in_abstract(abstract, terms)
+
 def load_user(prolific_id, projection=None):
     return users_collection.find_one(
         {"prolific_id": prolific_id},
@@ -318,22 +341,8 @@ def run_terms(prolific_id, batch_id, full_type):
             st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
             st.rerun()
 
-    st.markdown(
-        f"""
-        <div class="sticky-abs">
-            <div style="background-color:#f8f9fa;padding:1.1rem 1.3rem;border-radius:0.6rem;border:1px solid #dfe1e5;
-            max-height:550px;font-size:{st.session_state.abstract_font_size}px;overflow-y:auto;">
-                <div style="font-size:{st.session_state.abstract_font_size + 4}px;font-weight:600;margin-bottom:0.6rem;">
-                    {abs_item['abstract_title']}
-                </div>
-                <div style="font-size:{st.session_state.abstract_font_size + 4}px;line-height:1.55;">
-                    {highlight_terms_in_abstract(abs_item["abstract"], abs_item["terms"]).replace("\n","<br>")}
-                </div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    abs_item["highlighted_html"] = cached_highlight(abs_item["abstract"], abs_item["terms"])
+    abstract_fragment(abs_item, st.session_state.abstract_font_size)
 
     if st.session_state.stage_static == "familiarity":
         if st.session_state.get("fam_start_time") is None:
@@ -348,7 +357,6 @@ def run_terms(prolific_id, batch_id, full_type):
         4 = Familiar  
         5 = Extremely familiar  
         """)
-
         
         updated_terms = familiarity_fragment(abs_item, abstract_id)
         st.markdown("---")
