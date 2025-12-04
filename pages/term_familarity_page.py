@@ -254,106 +254,76 @@ def get_user_static_abstracts(prolific_id, batch_id):
 
     return abstracts
 
-
 @st.fragment
-def extra_info_fragment(abs_item, abstract_id):
-    terms = [t["term"] for t in abs_item["terms"]]
+def extra_info_term_block(
+    idx, term, color, abstract_id, current_state
+):
+    st.markdown("<div style='height:2px;background-color:#eee;margin:1rem 0;'></div>",
+                unsafe_allow_html=True)
 
-    # Initialize state on first load
-    if "extra_info_state" not in st.session_state:
-        st.session_state.extra_info_state = {term: [] for term in terms}
+    col_term, col_opts = st.columns([0.35, 0.65])
 
-    cleaned_extra = []
+    with col_term:
+        st.markdown(
+            f"""
+            <div style="display:flex;align-items:center;">
+                <div style="width:16px;height:16px;background-color:{color};
+                border-radius:4px;margin-right:10px;border:1px solid #ccc;"></div>
+                <div style="font-size:1.1rem;font-weight:600;">{idx+1}. {term}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    for idx, term in enumerate(terms):
-        color = TERM_COLORS[idx % len(TERM_COLORS)]
-        st.markdown("<div style='height:2px;background-color:#eee;margin:1rem 0;'></div>",
-                    unsafe_allow_html=True)
+    with col_opts:
+        base_key = f"extra_{abstract_id}_{idx}"
 
-        col_term, col_opts = st.columns([0.35, 0.65])
-        with col_term:
-            st.markdown(
-                f"""
-                <div style="display:flex;align-items:center;">
-                    <div style="width:16px;height:16px;background-color:{color};
-                    border-radius:4px;margin-right:10px;border:1px solid #ccc;"></div>
-                    <div style="font-size:1.1rem;font-weight:600;">{idx+1}. {term}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
+        none_selected = ("None" in current_state)
+        disabled_others = none_selected
+
+        # Render checkboxes in 4 columns
+        c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
+        with c1:
+            def_val = st.checkbox(
+                "Definition", 
+                key=f"{base_key}_def",
+                disabled=none_selected,
+                value=("Definition" in current_state)
+            )
+        with c2:
+            ex_val = st.checkbox(
+                "Example",
+                key=f"{base_key}_ex",
+                disabled=none_selected,
+                value=("Example" in current_state)
+            )
+        with c3:
+            bg_val = st.checkbox(
+                "Background",
+                key=f"{base_key}_bg",
+                disabled=none_selected,
+                value=("Background" in current_state)
+            )
+        with c4:
+            none_val = st.checkbox(
+                "None",
+                key=f"{base_key}_none",
+                value=("None" in current_state)
             )
 
-        with col_opts:
-            base_key = f"extra_{abstract_id}_{idx}"
-            # Read widget states
-            def_key = f"{base_key}_def"
-            ex_key = f"{base_key}_ex"
-            bg_key = f"{base_key}_bg"
-            none_key = f"{base_key}_none"
+        # Rebuild new state list
+        if none_val:
+            new_list = ["None"]
+        else:
+            new_list = []
+            if def_val:
+                new_list.append("Definition")
+            if ex_val:
+                new_list.append("Example")
+            if bg_val:
+                new_list.append("Background")
+        return new_list
 
-            # Current selection array
-            current = st.session_state.extra_info_state.get(term, [])
-            none_selected = ("None" in current)
-
-            # Render checkboxes
-            c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
-
-            with c1:
-                def_val = st.checkbox(
-                    "Definition",
-                    key=def_key,
-                    disabled=none_selected
-                )
-            with c2:
-                ex_val = st.checkbox(
-                    "Example",
-                    key=ex_key,
-                    disabled=none_selected
-                )
-            with c3:
-                bg_val = st.checkbox(
-                    "Background",
-                    key=bg_key,
-                    disabled=none_selected
-                )
-            with c4:
-                none_val = st.checkbox(
-                    "None",
-                    key=none_key
-                )
-
-            # Build updated list
-            if none_val:
-                new_list = ["None"]
-            else:
-                new_list = []
-                if def_val:
-                    new_list.append("Definition")
-                if ex_val:
-                    new_list.append("Example")
-                if bg_val:
-                    new_list.append("Background")
-
-            # Save back
-            st.session_state.extra_info_state[term] = new_list
-
-            cleaned_extra.append({
-                "term": term,
-                "extra_information": new_list
-            })
-
-    # Validate if all filled
-    all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
-
-    # Navigation buttons
-    col_back, _, _, _, _, col_next = st.columns(6)
-    with col_back:
-        back_clicked = st.button("⬅️ Back", key=f"back_extra_{abstract_id}")
-
-    with col_next:
-        next_clicked = st.button("Next ➡️", key=f"next_extra_{abstract_id}", disabled=not all_filled)
-
-    return cleaned_extra, all_filled, back_clicked, next_clicked
 
 def run_terms(prolific_id, batch_id, full_type):
     if st.session_state.get("current_batch_id") != batch_id:
@@ -493,42 +463,101 @@ def run_terms(prolific_id, batch_id, full_type):
             st.warning("⚠️ Please answer all familiarity questions before continuing.")
         return
 
+    # ---------------- EXTRA INFO PAGE ---------------- #
     if st.session_state.stage_static == "extra_info":
 
-       if st.session_state.get("extra_start_time") is None:
-        st.session_state.extra_start_time = datetime.datetime.utcnow()
+        ### TIMER ADDITION ###
+        if st.session_state.get("extra_start_time") is None:
+            st.session_state.extra_start_time = datetime.datetime.utcnow()
+        # ------------------------------------------------ #
 
-    cleaned_extra, all_filled, back_clicked, next_clicked = extra_info_fragment(abs_item, abstract_id)
+        st.subheader("What additional information would you like for each term?")
+        st.markdown("Choose at least one option per term, unless you select 'None'.")
 
-    # Back
-    if back_clicked:
-        st.session_state.stage_static = "familiarity"
-        st.rerun()
+        terms = [t["term"] for t in abs_item["terms"]]
 
-    # Next
-    if next_clicked:
-        if st.session_state.extra_start_time:
-            elapsed = (datetime.datetime.utcnow() - st.session_state.extra_start_time).total_seconds()
-            st.session_state.time_extra_info += elapsed
-            st.session_state.extra_start_time = None
+        if "extra_info_state" not in st.session_state:
+            st.session_state.extra_info_state = {term: [] for term in terms}
 
-        final_terms = st.session_state.updated_terms_tmp
-        for i, row in enumerate(cleaned_extra):
-            final_terms[i]["extra_information"] = row["extra_information"]
+        cleaned_extra = []
 
-        users_collection.update_one(
-            {"prolific_id": prolific_id},
-            {"$set": {
-                f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.term_familarity": final_terms,
-                f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_familiarity": st.session_state.time_familiarity,
-                f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info
-            }}
-        )
+        for idx, term in enumerate(terms):
+            color = TERM_COLORS[idx % len(TERM_COLORS)]
+            current_state = st.session_state.extra_info_state.get(term, [])
 
-        st.session_state.stage_static = "familiarity"
-        st.switch_page("pages/static_short_answer.py")
+            new_state = extra_info_term_block(
+                idx=idx,
+                term=term,
+                color=color,
+                abstract_id=abstract_id,
+                current_state=current_state
+            )
+            st.session_state.extra_info_state[term] = new_state
+            cleaned_extra.append({
+                "term": term,
+                "extra_information": new_state
+            })
 
-    return
+        st.markdown("---")
+        all_filled = all(len(row["extra_information"]) > 0 for row in cleaned_extra)
+        col_back, col_pass1, col_pass2, col_pass3, col_pass4, col_next = st.columns([1, 1, 1, 1, 1, 1])
+        with col_back:
+            if st.button("⬅️ Back", key=f"back_extra_{abstract_id}"):
+                st.session_state.stage_static = "familiarity"
+                st.rerun()
+        with col_pass1: 
+            pass
+        with col_pass2: 
+            pass
+        with col_pass3: 
+            pass
+        with col_pass4: 
+            pass
+        with col_next:
+            if st.button("Next ➡️", key=f"next_extra_{abstract_id}", disabled=not all_filled):
+
+                # STOP EXTRA INFO TIMER
+                if st.session_state.extra_start_time:
+                    elapsed = (datetime.datetime.utcnow() - st.session_state.extra_start_time).total_seconds()
+                    st.session_state.time_extra_info += elapsed
+                    st.session_state.extra_start_time = None
+
+                final_terms = st.session_state.updated_terms_tmp
+                for i, row in enumerate(cleaned_extra):
+                    final_terms[i]["extra_information"] = row["extra_information"]
+
+                users_collection.update_one(
+                    {"prolific_id": prolific_id},
+                    {"$set": {
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.term_familarity": final_terms,
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_familiarity": st.session_state.time_familiarity,
+                        f"phases.static.batches.{batch_id}.abstracts.{abstract_id}.time_extra_info": st.session_state.time_extra_info
+                    }}
+                )
+
+                st.session_state.current_abstract_id = abstract_id
+                st.session_state.current_abstract = abs_item["abstract"]
+                st.session_state.human_written_pls = abs_item["human_written_pls"]
+                st.session_state.abstract_title = abs_item["abstract_title"]
+                st.session_state.prolific_id = prolific_id
+                st.session_state.progress_info = {
+                    "current_index": current_index,
+                    "total": total
+                }
+                st.session_state.batch_id = batch_id
+                st.session_state.full_type = full_type
+                st.session_state.time_familiarity = 0
+                st.session_state.time_extra_info = 0
+                st.session_state.fam_start_time = None
+                st.session_state.extra_start_time = None
+                st.session_state.stage_static = "familiarity"
+                initialized_id = st.session_state.get("short_answer_initialized_for")
+                if initialized_id != abstract_id:
+                    for key in ["qa_index", "feedback", "main_idea_box", "method_box", "result_box"]:
+                        st.session_state.pop(key, None)
+                    st.session_state.short_answer_initialized_for = abstract_id
+
+                st.switch_page("pages/static_short_answer.py")
 
 if "prolific_id" in st.session_state:
     run_terms(
