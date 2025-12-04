@@ -49,6 +49,22 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
+@st.cache_data
+def render_cached_abstract(abs_html, title, font_size):
+    return f"""
+        <div class="sticky-abs">
+            <div style="background-color:#f8f9fa;padding:1.1rem 1.3rem;border-radius:0.6rem;border:1px solid #dfe1e5;
+            max-height:550px;font-size:{font_size}px;overflow-y:auto;">
+                <div style="font-size:{font_size + 4}px;font-weight:600;margin-bottom:0.6rem;">
+                    {title}
+                </div>
+                <div style="font-size:{font_size + 4}px;line-height:1.55;">
+                    {abs_html}
+                </div>
+            </div>
+        </div>
+    """
+
 @st.fragment
 def familiarity_fragment(abs_item, abstract_id):
     updated_terms = []
@@ -442,8 +458,12 @@ def run_terms(prolific_id, batch_id, full_type):
             st.rerun()
 
     abs_item["highlighted_html"] = cached_highlight(abs_item["abstract"], abs_item["terms"])
-    abstract_fragment(abs_item, st.session_state.abstract_font_size)
-
+    html = render_cached_abstract(
+        abs_item["highlighted_html"].replace("\n", "<br>"),
+        abs_item["abstract_title"],
+        st.session_state.abstract_font_size,
+    )
+    st.markdown(html, unsafe_allow_html=True)
     if st.session_state.stage_static == "familiarity":
         if st.session_state.get("fam_start_time") is None:
             st.session_state.fam_start_time = datetime.datetime.utcnow()
