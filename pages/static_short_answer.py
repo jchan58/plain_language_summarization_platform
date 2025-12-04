@@ -51,6 +51,13 @@ def summary_fragment(pls_text, font_size):
         unsafe_allow_html=True
     )
 
+@st.cache_data
+def load_abstract_info(prolific_id, batch_id, abstract_id):
+    user = users_collection.find_one({"prolific_id": prolific_id})
+    if not user:
+        return None
+    return user["phases"]["static"]["batches"][batch_id]["abstracts"][abstract_id]
+
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     col1, col2 = st.columns(2)
@@ -102,9 +109,11 @@ def run_feedback():
         "full_type": st.session_state.get("full_type", None)
     }
 
-    user = users_collection.find_one({"prolific_id": data["prolific_id"]})
-    phase = "static"
-    abstract_info = user["phases"][phase]["batches"][data["batch_id"]]["abstracts"][data["abstract_id"]]
+    abstract_info = load_abstract_info(
+        data["prolific_id"], 
+        data["batch_id"], 
+        data["abstract_id"]
+    )
     with st.sidebar:
         st.write(f"**MTurk ID:** `{data['prolific_id']}`")
         if st.button("Logout"):
