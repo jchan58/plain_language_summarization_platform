@@ -247,7 +247,6 @@ def get_user_static_abstracts(prolific_id, batch_id):
 
     return abstracts
 
-@st.fragment
 def extra_info_term_block(
     idx, term, color, abstract_id, current_state
 ):
@@ -520,8 +519,6 @@ def run_terms(prolific_id, batch_id, full_type):
             pass
         with col_next:
             if st.button("Next ➡️", key=f"next_extra_{abstract_id}", disabled=not all_filled):
-
-                # STOP EXTRA INFO TIMER
                 if st.session_state.extra_start_time:
                     elapsed = (datetime.datetime.utcnow() - st.session_state.extra_start_time).total_seconds()
                     st.session_state.time_extra_info += elapsed
