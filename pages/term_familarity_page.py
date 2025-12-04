@@ -49,6 +49,7 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
+@st.fragment
 def familiarity_fragment(abs_item, abstract_id):
     updated_terms = []
 
