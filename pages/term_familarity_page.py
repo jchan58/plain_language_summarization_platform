@@ -304,18 +304,21 @@ def extra_info_term_block(
             def_val = st.checkbox(
                 "Definition", 
                 key=f"{base_key}_def",
+                disabled=none_selected,
                 value=("Definition" in current_state)
             )
         with c2:
             ex_val = st.checkbox(
                 "Example",
                 key=f"{base_key}_ex",
+                disabled=none_selected,
                 value=("Example" in current_state)
             )
         with c3:
             bg_val = st.checkbox(
                 "Background",
                 key=f"{base_key}_bg",
+                disabled=none_selected,
                 value=("Background" in current_state)
             )
         with c4:
