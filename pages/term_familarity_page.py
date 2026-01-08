@@ -132,6 +132,7 @@ def abstract_fragment(abs_item, font_size):
         unsafe_allow_html=True
     )
 @st.fragment
+@st.fragment
 def familiarity_page(abs_item, abstract_id):
     st.subheader("How familiar are you with each term?")
     st.markdown("""
@@ -143,16 +144,29 @@ def familiarity_page(abs_item, abstract_id):
     5 = Extremely familiar  
     """)
 
-    # sliders (use your existing fragment inside)
     updated_terms = familiarity_fragment(abs_item, abstract_id)
-
     st.markdown("---")
 
     LIKERT_PLACEHOLDER = "— Select familiarity —"
-    all_fam_filled = all(
-        st.session_state.get(f"fam_{abstract_id}_{idx}") != LIKERT_PLACEHOLDER
-        for idx in range(len(abs_item["terms"]))
-    )
+    total_terms = len(abs_item["terms"])
+    num_answered = 0
+
+    for idx in range(total_terms):
+        key = f"fam_{abstract_id}_{idx}"
+        val = st.session_state.get(key)
+        if val is not None and val != LIKERT_PLACEHOLDER:
+            num_answered += 1
+
+    if num_answered == total_terms and not st.session_state.get("fam_all_answered_rerun", False):
+        st.session_state.fam_all_answered_rerun = True
+        st.rerun()
+
+    # Reset flag if user changes something
+    if num_answered < total_terms:
+        st.session_state.fam_all_answered_rerun = False
+
+    all_fam_filled = (num_answered == total_terms)
+
     return updated_terms, all_fam_filled
 
 @st.cache_data
@@ -520,11 +534,6 @@ def run_terms(prolific_id, batch_id, full_type):
                 "extra_information": final_state
             })
         st.markdown("---")
-
-        st.subheader("DEBUG: Session State Values for Sliders")
-        for idx in range(len(abs_item["terms"])):
-            key = f"fam_{str(abstract_id)}_{idx}"
-            st.text(f"{key} = {st.session_state.get(key)}")
         all_filled = all(
             len(st.session_state.extra_info_state.get(term, [])) > 0
             for term in terms
