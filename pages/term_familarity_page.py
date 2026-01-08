@@ -156,16 +156,7 @@ def familiarity_page(abs_item, abstract_id):
         if val is not None and val != LIKERT_PLACEHOLDER:
             num_answered += 1
 
-    if num_answered == total_terms and not st.session_state.get("fam_all_answered_rerun", False):
-        st.session_state.fam_all_answered_rerun = True
-        st.rerun()
-
-    # Reset flag if user changes something
-    if num_answered < total_terms:
-        st.session_state.fam_all_answered_rerun = False
-
     all_fam_filled = (num_answered == total_terms)
-
     return updated_terms, all_fam_filled
 
 @st.cache_data
