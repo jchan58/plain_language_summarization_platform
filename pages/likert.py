@@ -246,7 +246,7 @@ def run_likert():
         all_answered = all(st.session_state.get(k) is not None for k in required_keys)
 
         def persistent_radio(label, key):
-            return st.radio(label, likert_scale, horizontal=True, key=key)
+            return st.radio(label, likert_scale, horizontal=True, key=key, index=None)
 
         # SUMMARY questions
         q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")

@@ -207,7 +207,7 @@ def run_feedback():
             {
             "key": "attention",
                 "label": (
-                    "“Please type the following sentence exactly as written.:\n\n"
+                    "Please type the following sentence exactly as written:\n\n"
                     "**\"I have read all instructions and fully understood what I must do for this task.\"**"
                 )
             },
