@@ -76,13 +76,33 @@ def familiarity_fragment(abs_item, abstract_id):
             )
 
         with col_slider:
-            familiarity = st.slider(
+            LIKERT_OPTIONS = [
+                "— Select familiarity —",  # Placeholder
+                "Not familiar",
+                "Somewhat unfamiliar",
+                "Moderately familiar",
+                "Familiar",
+                "Extremely familiar"
+            ]
+
+            # Get previous label from numeric score if available
+            if prev_val is not None and 1 <= prev_val <= 5:
+                default_val = LIKERT_OPTIONS[prev_val]
+            else:
+                default_val = LIKERT_OPTIONS[0]  # Placeholder
+
+            familiarity_label = st.select_slider(
                 label=" ",
-                min_value=1,
-                max_value=5,
-                value=prev_val if prev_val is not None else 3,
-                step=1,
+                options=LIKERT_OPTIONS,
+                value=default_val,
                 key=f"fam_{abstract_id}_{idx}",
+            )
+
+            # Convert to numeric value or None
+            familiarity = (
+                LIKERT_OPTIONS.index(familiarity_label)
+                if familiarity_label != LIKERT_OPTIONS[0]
+                else None
             )
 
         updated_terms.append({
@@ -128,11 +148,11 @@ def familiarity_page(abs_item, abstract_id):
 
     st.markdown("---")
 
+    LIKERT_PLACEHOLDER = "— Select familiarity —"
     all_fam_filled = all(
-        st.session_state.get(f"fam_{abstract_id}_{idx}") is not None
+        st.session_state.get(f"fam_{abstract_id}_{idx}") != LIKERT_PLACEHOLDER
         for idx in range(len(abs_item["terms"]))
     )
-
     return updated_terms, all_fam_filled
 
 @st.cache_data
