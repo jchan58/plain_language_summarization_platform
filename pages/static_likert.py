@@ -232,7 +232,7 @@ def run_likert():
         likert_scale = [1, 2, 3, 4, 5]
 
         def persistent_radio(label, key):
-            return st.radio(label, likert_scale, horizontal=True, key=key)
+            return st.radio(label, likert_scale, horizontal=True, key=key, index=None)
 
         q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
         q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
