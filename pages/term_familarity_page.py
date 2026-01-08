@@ -134,6 +134,7 @@ def abstract_fragment(abs_item, font_size):
 @st.fragment
 def familiarity_page(abs_item, abstract_id):
     st.subheader("How familiar are you with each term?")
+    st.markdown(":red[**All fields are required before continuing.**]")
     st.markdown("""
     **Familiarity Scale**  
     1 = Not familiar  
@@ -495,6 +496,7 @@ def run_terms(prolific_id, batch_id, full_type):
         # ------------------------------------------------ #
 
         st.subheader("What additional information would you like for each term?")
+        st.markdown(":red[**All fields are required before continuing.**]")
         st.markdown("Choose at least one option per term, unless you select 'None'.")
 
         terms = [t["term"] for t in abs_item["terms"]]
@@ -541,7 +543,17 @@ def run_terms(prolific_id, batch_id, full_type):
         with col_pass4: 
             pass
         with col_next:
-            if st.button("Next ➡️", key=f"next_extra_{abstract_id}", disabled=not all_filled):
+            next_clicked = st.button("Next ➡️", key=f"next_extra_{abstract_id}")
+
+        if next_clicked:
+            all_filled = all(
+                len(st.session_state.extra_info_state.get(term, [])) > 0
+                for term in terms
+            )
+
+            if not all_filled:
+                st.warning("⚠️ Please complete all fields to continue.")
+            else:
                 if st.session_state.extra_start_time:
                     elapsed = (datetime.datetime.utcnow() - st.session_state.extra_start_time).total_seconds()
                     st.session_state.time_extra_info += elapsed
@@ -560,6 +572,7 @@ def run_terms(prolific_id, batch_id, full_type):
                     }}
                 )
 
+                # Set session state and go to next
                 st.session_state.current_abstract_id = abstract_id
                 st.session_state.current_abstract = abs_item["abstract"]
                 st.session_state.human_written_pls = abs_item["human_written_pls"]
@@ -576,6 +589,7 @@ def run_terms(prolific_id, batch_id, full_type):
                 st.session_state.fam_start_time = None
                 st.session_state.extra_start_time = None
                 st.session_state.stage_static = "familiarity"
+
                 initialized_id = st.session_state.get("short_answer_initialized_for")
                 if initialized_id != abstract_id:
                     for key in ["qa_index", "feedback", "main_idea_box", "method_box", "result_box"]:
@@ -583,6 +597,7 @@ def run_terms(prolific_id, batch_id, full_type):
                     st.session_state.short_answer_initialized_for = abstract_id
 
                 st.switch_page("pages/static_short_answer.py")
+
 
 if "prolific_id" in st.session_state:
     run_terms(
