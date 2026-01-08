@@ -520,6 +520,11 @@ def run_terms(prolific_id, batch_id, full_type):
                 "extra_information": final_state
             })
         st.markdown("---")
+
+        st.subheader("DEBUG: Session State Values for Sliders")
+        for idx in range(len(abs_item["terms"])):
+            key = f"fam_{str(abstract_id)}_{idx}"
+            st.text(f"{key} = {st.session_state.get(key)}")
         all_filled = all(
             len(st.session_state.extra_info_state.get(term, [])) > 0
             for term in terms
