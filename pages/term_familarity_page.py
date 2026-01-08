@@ -132,7 +132,6 @@ def abstract_fragment(abs_item, font_size):
         unsafe_allow_html=True
     )
 @st.fragment
-@st.fragment
 def familiarity_page(abs_item, abstract_id):
     st.subheader("How familiar are you with each term?")
     st.markdown("""
@@ -480,22 +479,21 @@ def run_terms(prolific_id, batch_id, full_type):
             next_clicked = st.button(
                 "Next ➡️",
                 key=f"next_btn_fam_{abstract_id}",
-                disabled=not all_fam_filled
+                disabled=False  # Always enabled
             )
 
         if next_clicked:
-            if st.session_state.fam_start_time:
-                elapsed = (datetime.datetime.utcnow() - st.session_state.fam_start_time).total_seconds()
-                st.session_state.time_familiarity += elapsed
-                st.session_state.fam_start_time = None
+            if all_fam_filled:
+                if st.session_state.fam_start_time:
+                    elapsed = (datetime.datetime.utcnow() - st.session_state.fam_start_time).total_seconds()
+                    st.session_state.time_familiarity += elapsed
+                    st.session_state.fam_start_time = None
 
-            st.session_state.stage_static = "extra_info"
-            st.session_state.updated_terms_tmp = updated_terms
-            st.rerun()
-
-        if not all_fam_filled:
-            st.warning("⚠️ Please answer all familiarity questions before continuing.")
-        return
+                st.session_state.stage_static = "extra_info"
+                st.session_state.updated_terms_tmp = updated_terms
+                st.rerun()
+            else:
+                st.warning("⚠️ Please rate your familiarity for all terms before continuing.")
 
     # ---------------- EXTRA INFO PAGE ---------------- #
     if st.session_state.stage_static == "extra_info":
