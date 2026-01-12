@@ -78,12 +78,14 @@ def familiarity_fragment(abs_item, abstract_id):
         with col_slider:
             st.markdown(
                 """
-                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:-10px;">
+                <div style="width:100%; padding: 0 12px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
                     <span>Not familiar</span>
                     <span>Somewhat unfamiliar</span>
                     <span>Moderately familiar</span>
                     <span>Familiar</span>
                     <span>Extremely familiar</span>
+                </div>
                 </div>
                 """,
                 unsafe_allow_html=True,
