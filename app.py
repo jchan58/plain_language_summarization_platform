@@ -64,7 +64,11 @@ def get_current_batch(user_doc):
         phase = phases.get(phase_type, {})
         batches = phase.get("batches", {})
         batch = batches.get(batch_id)
-        
+
+        # Skip if this batch doesn't exist for this user
+        if batch is None:
+            continue
+
         # get the first incomplete batch 
         if not batch.get("completed", False):
             return {
@@ -75,6 +79,7 @@ def get_current_batch(user_doc):
             }
 
     return None
+
 
 # check if the user exists in db if they don't 
 if not st.session_state.get("logged_in", False):
