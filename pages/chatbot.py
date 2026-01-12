@@ -421,7 +421,7 @@ def run_chatbot(prolific_id, batch_id, full_type):
                 )
                 system_prompt = (
                     "You are an expert science communicator. Rewrite the abstract into a personalized plain-language "
-                    "summary that MUST incorporate all answers to the reader’s questions using the conversation.\n\n"
+                    "summary that MUST incorporate all answers to the reader’s questions using the conversation seamlessly.\n\n"
                     f"Conversation:\n{conversation_text}\n\n"
                     "Before writing the summary, do the following steps internally:\n"
                     "1. Extract every question the reader asked in the conversation.\n" 
