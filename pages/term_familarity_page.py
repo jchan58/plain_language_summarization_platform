@@ -76,23 +76,8 @@ def familiarity_fragment(abs_item, abstract_id):
             )
 
         with col_slider:
-            st.markdown(
-                """
-                <div style="width:100%; padding: 0 12px;">
-                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-                    <span>Not familiar</span>
-                    <span>Somewhat unfamiliar</span>
-                    <span>Moderately familiar</span>
-                    <span>Familiar</span>
-                    <span>Extremely familiar</span>
-                </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
             LIKERT_OPTIONS = [
-                "— Select familiarity —",
+                "— Select familiarity —",  # Placeholder
                 "Not familiar",
                 "Somewhat unfamiliar",
                 "Moderately familiar",
@@ -100,10 +85,11 @@ def familiarity_fragment(abs_item, abstract_id):
                 "Extremely familiar"
             ]
 
+            # Get previous label from numeric score if available
             if prev_val is not None and 1 <= prev_val <= 5:
                 default_val = LIKERT_OPTIONS[prev_val]
             else:
-                default_val = LIKERT_OPTIONS[0]
+                default_val = LIKERT_OPTIONS[0]  # Placeholder
 
             familiarity_label = st.select_slider(
                 label=" ",
@@ -112,11 +98,13 @@ def familiarity_fragment(abs_item, abstract_id):
                 key=f"fam_{abstract_id}_{idx}",
             )
 
+            # Convert to numeric value or None
             familiarity = (
                 LIKERT_OPTIONS.index(familiarity_label)
                 if familiarity_label != LIKERT_OPTIONS[0]
                 else None
             )
+
         updated_terms.append({
             "term": term,
             "familiarity_score": familiarity,
