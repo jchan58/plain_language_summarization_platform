@@ -295,7 +295,7 @@ def run_chatbot(prolific_id, batch_id, full_type):
         2. Use the **chatbot** on the right to ask questions about anything in the ABSTRACT you would like to understand better.  
         3. You must ask the chatbot **at least 3 questions** before moving on.  
         4. When you are finished asking questions, click **“I'm done asking questions.”**  
-        5. A confirmation popup will appear — please confirm that you would like to move on to the next task.
+        5. A confirmation popup will appear — please confirm that you would like to move on to the next task.\n\n
         **Note:** Once you move on, you will **not** be able to return to this page.
         """)
     col1, col2 = st.columns([1, 1], gap="large")
