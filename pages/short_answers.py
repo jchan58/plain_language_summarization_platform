@@ -92,13 +92,12 @@ def run_feedback():
     with st.expander("📝 Instructions", expanded=True):
         st.markdown("""
         1. Read the SUMMARY shown below.  
-        2. You must answer **4 short-answer questions**, each with **more than 75 characters**.  
-        - After completing a question, click **Next Question** to proceed.  
-        3. **Do NOT copy text from the SUMMARY** or provide irrelevant answers that has nothing to do with the question — doing so may risk your compensation.  
-        4. After finishing all questions, click outside the text box to activate the **Submit** button, then click **Submit** to continue.
+        2. Then answer all **5 select all that apply questions** .  
+            - After completing a question, click **Next Question** to proceed.  
+        3. After finishing all questions, click **Submit** button to continue.
 
         **Note:**  
-        You may use the **Previous Question** button to revisit a previous short-answer question *within this same abstract*.  
+        You may use the **Previous Question** button to revisit the previous select all that apply question.  
         """)
     if "summary_font_size" not in st.session_state:
         st.session_state.summary_font_size = 18
