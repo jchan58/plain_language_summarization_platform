@@ -173,6 +173,7 @@ def get_next_incomplete_abstract(prolific_id: str, batch_id: str):
             .get("abstracts", {})
     )
 
+    print("DEBUG abstracts keys:", abstracts.keys())
     for abstract_id in sorted(abstracts.keys(), key=lambda x: int(x)):
         a = abstracts[abstract_id]
         if not a.get("completed", False):
@@ -347,9 +348,9 @@ def run_chatbot(prolific_id, batch_id, full_type):
             for msg in st.session_state.messages:
                 messages.chat_message(msg["role"]).write(msg["content"])
 
-            # with st.expander("🧾 Conversation So Far"):
-            #     for msg in st.session_state.messages:
-            #         st.markdown(f"**{msg['role'].capitalize()}:** {msg['content']}")
+            with st.expander("🧾 Conversation So Far"):
+                for msg in st.session_state.messages:
+                    st.markdown(f"**{msg['role'].capitalize()}:** {msg['content']}")
 
             if not st.session_state.get("show_summary", False) and not st.session_state.get("generating_summary", False):
                 if prompt := st.chat_input("Type your question here..."):
