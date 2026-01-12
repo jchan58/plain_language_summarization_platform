@@ -227,7 +227,7 @@ def static_instructions(prolific_id, batch_id):
         - Rate how familiar you are with the term on a scale from 1 (not familiar at all) to 5 (very familiar).
         - Then, specify what additional information (if any) would help you better understand the term, including a definition, background, or example.
     2. **Select All That Apply (SATA):** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
-    3. **Comparing SUMMARY to ABSTRACT:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+    3. **Compare SUMMARY to ABSTRACT:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
     ---
    **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  

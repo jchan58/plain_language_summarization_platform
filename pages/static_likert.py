@@ -92,7 +92,7 @@ def run_likert():
     if "summary_font_size" not in st.session_state:
         st.session_state.summary_font_size = 16
 
-    st.title("Comparing SUMMARY to ABSTRACT")
+    st.title("Compare SUMMARY to ABSTRACT")
     current_index = st.session_state.progress_info["current_index"]
     total = st.session_state.progress_info["total"]
     progress_ratio = current_index / total if total > 0 else 0

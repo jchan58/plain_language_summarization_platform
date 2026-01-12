@@ -84,7 +84,7 @@ def run_likert():
             st.session_state.show_logout_dialog = False 
             logout_confirm_dialog(prolific_id)
 
-    st.title("Comparing SUMMARY to ABSTRACT")
+    st.title("Compare SUMMARY to ABSTRACT")
     current = st.session_state.progress_info["current"]
     total = st.session_state.progress_info["total"]
     progress_ratio = current / total if total > 0 else 0
