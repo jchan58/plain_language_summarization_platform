@@ -49,7 +49,7 @@ def confirm_next_abstract():
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT** questionnaire and click the **Next Abstract** button on this page. "
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire** and click the **Next Abstract button** on this page. "
         "If you log out before then, you will have to start this abstract over."
     )
     col1, col2 = st.columns(2)

@@ -79,7 +79,7 @@ def show_done_dialog():
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT** questionnaire and click the **Next Abstract** button. "
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire** and click the **Next Abstract button** . "
         "If you log out before then, you will have to start this abstract over."
     )
     col1, col2 = st.columns(2)
@@ -117,11 +117,11 @@ def interactive_instructions(prolific_id, batch_id):
     Answer 4 questions using the **SUMMARY**, which is another version of the ABSTRACT. **Do NOT copy and paste from the SUMMARY** — doing so may risk not being compensated.
 
     3. **Comparison Task:**  
-    Compare the SUMMARY to the original ABSTRACT by answering comparison questions and completing a few questions about the chatbot experience.
+    Compare the SUMMARY to the ABSTRACT by answering comparison questions and completing a few questions about your AI chatbot experience in this study.
     ---
     **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  
-    - You may open the sidebar at any time to log out **but note that your progress for the current abstract will not be saved unless you have fully completed it**.  
+    - You may open the sidebar at any time to log out. However, if you log out before finishing this abstract, your progress will not be saved and you will need to start over. Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire** and click the **Next Abstract button** . If you log out before then, you will have to start this abstract over.  
     - You may use the **Back** button to revisit earlier steps *within the same abstract*.  
     - Once you move on to the next abstract, you will **not** be able to return to previous abstracts.
     ---
