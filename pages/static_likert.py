@@ -103,11 +103,11 @@ def run_likert():
         """
         ### 📝 Instructions
         1. Read the ABSTRACT on the left and the **SUMMARY** on the right.  
-        2. Answer the comparison questions below, which assess how the **SUMMARY** compares to the ABSTRACT.  
+        2. Answer the questions below about how the **SUMMARY** compares to the ABSTRACT, specifically on clarity, organization, coverage of main ideas, inclusion of background information, and trustworthiness.
         3. When you have finished answering all questions, click the **Next Abstract** button.  
         4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
-        **Note:** You may use the **Back** button if you need to revisit your short-answer responses for this abstract.
+        **Note:** You may use the **Back** button if you need to revisit the Select All That Apply (SATA) questions for this abstract.
         """
         )
 
@@ -236,7 +236,7 @@ def run_likert():
 
         q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
         q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
-        q3 = persistent_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")
+        q3 = persistent_radio("How well did the SUMMARY capture the ABSTRACT’s main ideas?", "informativeness")
         q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
         q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
 

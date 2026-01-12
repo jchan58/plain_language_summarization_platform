@@ -95,11 +95,11 @@ def run_likert():
         """
         ### 📝 Instructions
         1. Read the ABSTRACT on the left and the **SUMMARY** on the right.  
-        2. Answer the comparison questions below, which assess how the **SUMMARY** compares to the ABSTRACT, along with a few questions about your experience using the chatbot.  
+        2. Answer the comparison questions below, to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, content, and trustworthiness, along with a few questions about your experience with using the AI chatbot.  
         3. When you have finished answering all questions, click the **Next Abstract** button.  
         4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
-        **Note:** You may use the **Back** button if you need to revisit your short-answer responses for this abstract.
+        **Note:** You may use the **Back** button if you need to revisit your Select All That Apply (SATA) questions for this abstract.
         """
         )
 

@@ -223,16 +223,15 @@ def static_instructions(prolific_id, batch_id):
     ### Before you begin, please read these instructions carefully.
 
     For this batch, you will complete **4 abstracts**. For each abstract, you will:
-    1. **Term Familiarity:** For each term in the ABSTRACT, indicate whether you are familiar with it.  
-    Then, specify what additional information (if any) would help you better understand the term.
-    2. **Short Answer Questions:** Answer four questions using the **SUMMARY**, which is another version of the ABSTRACT. **Do NOT copy and paste from the SUMMARY** — doing so may risk not being compensated.  
-    3. **Comparison Task:** Compare the SUMMARY to the original ABSTRACT by answering the comparison questions.
+    1. **Term Familiarity:**Then, specify what additional information (if any) would help you better understand the term, including definition, background, or example.
+    2. **Select All That Apply (SATA):** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
+    3. **Comparing SUMMARY to ABSTRACT:**Comparing the SUMMARY to the ABSTRACT: Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, content, and trustworthiness.
     ---
    **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  
     - You may open the sidebar at any time to log out.  
     - You can use the **Back** button to revisit earlier steps *within the same abstract*.  
-    - Once you proceed to the next abstract, you will **not** be able to return to previous abstracts.
+    - Once you proceed to the next abstract, you will **not** be able to return to any previous abstracts.
 
     Once you finish this batch, we will contact you with further instructions.
     """)
