@@ -241,10 +241,10 @@ def static_instructions(prolific_id, batch_id):
     - *Background:* Diabetes develops when the body does not make enough insulin or does not use insulin properly, which can lead to long-term health problems.
     - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.
 
-    2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
-    3. **Compare SUMMARY to ABSTRACT Questionnaire:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
+3. **Compare SUMMARY to ABSTRACT Questionnaire:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
     ---
-   **Additional Notes:**
+**Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  
     - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** and clicking the **Next Abstract** button. 
     - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progresss, Your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.
