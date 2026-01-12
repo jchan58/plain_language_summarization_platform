@@ -223,9 +223,11 @@ def static_instructions(prolific_id, batch_id):
     ### Before you begin, please read these instructions carefully.
 
     For this batch, you will complete **4 abstracts**. For each abstract, you will:
-    1. **Term Familiarity:**Then, specify what additional information (if any) would help you better understand the term, including definition, background, or example.
+    1. **Term Familiarity:**
+        - Rate how familiar you are with the term on a scale from 1 (not familiar at all) to 5 (very familiar).
+        - Then, specify what additional information (if any) would help you better understand the term, including a definition, background, or example.
     2. **Select All That Apply (SATA):** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
-    3. **Comparing SUMMARY to ABSTRACT:**Comparing the SUMMARY to the ABSTRACT: Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, content, and trustworthiness.
+    3. **Comparing SUMMARY to ABSTRACT:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, content, and readability.
     ---
    **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  
@@ -440,7 +442,7 @@ def run_terms(prolific_id, batch_id, full_type):
         1. Read the ABSTRACT — the 10 terms you will evaluate are **highlighted**.  
         2. Use the slider to rate how familiar you are with each term *in the context of the ABSTRACT*.  
         3. Click **Next** when you have finished rating all terms.  
-        4. On the following page, select the additional information you would need for each term:  
+        4. On the following page, select the additional information (definition, background, or example) you would need to better understand each term:  
         - You may select **all options that apply**.  
         - If **no additional information** is needed, choose **None** (do **not** select both None and other options).  
 
