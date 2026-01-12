@@ -226,10 +226,21 @@ def static_instructions(prolific_id, batch_id):
     st.markdown("""
     ### Before you begin, please read these instructions carefully.
 
-    For this batch, you will complete **4 abstracts**. For each abstract, you will:
-    1. **Term Familiarity:**
-        - Rate how familiar you are with the term on a scale from 1 (not familiar at all) to 5 (very familiar).
-        - Then, specify what additional information (if any) would help you better understand the term, including a definition, background, or example.
+   For this batch, you will complete **4 abstracts**. For each abstract, you will:
+
+1. **Term Familiarity:**
+    - Rate how familiar you are with the term on a scale from 1 (not familiar at all) to 5 (very familiar).
+    - Then, specify what additional information (if any) would help you better understand the term by selecting one or more of the following:
+
+        - **Definition:** A explanation of what the term means.
+        - **Background:** Contextual information that helps you understand the term.
+        - **Example:** A concrete case that shows how the term is used.
+
+    **Example (of the term “diabetes”):**
+    - *Definition:* Diabetes is a condition that happens when your blood sugar (glucose) is too high.
+    - *Background:* Diabetes develops when the body does not make enough insulin or does not use insulin properly, which can lead to long-term health problems.
+    - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.
+
     2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
     3. **Compare SUMMARY to ABSTRACT Questionnaire:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
     ---
@@ -444,15 +455,23 @@ def run_terms(prolific_id, batch_id, full_type):
     st.markdown(f"**Progress:** {current_index} / {total} abstracts")
     with st.expander("📝 Instructions", expanded=True):
         st.markdown("""
-        1. Read the ABSTRACT — the 10 terms you will evaluate are **highlighted**.  
-        2. Use the slider to rate how familiar you are with each term *in the context of the ABSTRACT*.  
-        3. Click **Next** when you have finished rating all terms.  
-        4. On the following page, select the additional information (definition, background, or example) you would need to better understand each term:  
-        - You may select **all options that apply**.  
-        - If **no additional information** is needed, choose **None** (do **not** select both None and other options).  
+            1. Read the ABSTRACT — the 10 terms you will evaluate are **highlighted**.  
+            2. Use the slider to rate how familiar you are with each term *in the context of the ABSTRACT*.  
+            3. Click **Next** when you have finished rating all terms.  
+            4. On the following page, select the additional information you would need to better understand each term:
 
-        **Note:** If you need to correct anything, please use the **Back** button to return to the previous page.
-        """)
+            - **Definition:** A explanation of what the term means.
+            - **Background:** Contextual information that helps you understand the term.
+            - **Example:** A concrete case that shows how the term is used. 
+
+            You may select **all options that apply**.  
+            If **no additional information** is needed, choose **None** (do **not** select both None and other options).
+
+            **Example (using the term “diabetes”):**  
+            - *Definition:* Diabetes is a condition that happens when your blood sugar (glucose) is too high.  
+            - *Background:* Diabetes develops when the body does not make enough insulin or does not use insulin properly.  
+            - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.
+            """)
     st.markdown("### ABSTRACT")
     btn_col1, _, btn_col3 = st.columns([0.25, 0.65, 0.10])
     with btn_col1:
