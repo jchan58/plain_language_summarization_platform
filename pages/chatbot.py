@@ -110,18 +110,14 @@ def interactive_instructions(prolific_id, batch_id):
 
     For this batch, you will complete **3 abstracts**. For each abstract, you will:
 
-    1. **Chat with the chatbot about the ABSTRACT:**  
-    Ask the chatbot questions about the ABSTRACT to help you better understand the information.
-
-    2. **Short Answer Questions:**  
-    Answer 4 questions using the **SUMMARY**, which is another version of the ABSTRACT. **Do NOT copy and paste from the SUMMARY** — doing so may risk not being compensated.
-
-    3. **Comparison Task:**  
-    Compare the SUMMARY to the ABSTRACT by answering comparison questions and completing a few questions about your AI chatbot experience in this study.
+    1. **Chat with the AI chatbot about the ABSTRACT:** After reading the ABSTRACT, ask the AI chatbot any questions you have to help you better understand it.
+    2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
+    3. **Compare SUMMARY to ABSTRACT Questionnaire:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, and complete a few questions about your AI chatbot experience in this study.
     ---
     **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  
-    - You may open the sidebar at any time to log out. However, if you log out before finishing this abstract, your progress will not be saved and you will need to start over. Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire** and click the **Next Abstract button** . If you log out before then, you will have to start this abstract over.  
+    - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** and clicking the **Next Abstract** button. 
+    - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progresss, Your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.
     - You may use the **Back** button to revisit earlier steps *within the same abstract*.  
     - Once you move on to the next abstract, you will **not** be able to return to previous abstracts.
     ---

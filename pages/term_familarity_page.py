@@ -235,7 +235,8 @@ def static_instructions(prolific_id, batch_id):
     ---
    **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  
-    - You may open the sidebar at any time to log out. However, if you log out before finishing this abstract, your progress will not be saved and you will need to start over. Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire** and click the **Next Abstract button** . If you log out before then, you will have to start this abstract over.  
+    - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** and clicking the **Next Abstract** button. 
+    - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progresss, Your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.
     - You can use the **Back** button to revisit earlier steps *within the same abstract*.  
     - Once you proceed to the next abstract, you will **not** be able to return to any previous abstracts.
 
