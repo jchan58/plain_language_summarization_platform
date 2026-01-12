@@ -469,14 +469,14 @@ def run_terms(prolific_id, batch_id, full_type):
             - **Definition:** A explanation of what the term means.
             - **Background:** Contextual information that helps you understand the term.
             - **Example:** A concrete case that shows how the term is used. 
-
-            You may select **all options that apply**.  
-            If **no additional information** is needed, choose **None** (do **not** select both None and other options).
-
+            
             **Example (using the term “diabetes”):**  
             - *Definition:* Diabetes is a condition that happens when your blood sugar (glucose) is too high.  
             - *Background:* Diabetes develops when the body does not make enough insulin or does not use insulin properly.  
             - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.
+
+            You may select **all options that apply**.  
+            If **no additional information** is needed, choose **None** (do **not** select both None and other options).
             """)
     st.markdown("### ABSTRACT")
     btn_col1, _, btn_col3 = st.columns([0.25, 0.65, 0.10])
