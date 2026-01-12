@@ -103,7 +103,7 @@ def run_likert():
         """
         ### 📝 Instructions
         1. Read the ABSTRACT on the left and the **SUMMARY** on the right.  
-        2. Answer the questions below about how the **SUMMARY** compares to the ABSTRACT, specifically on clarity, organization, coverage of main ideas, inclusion of background information, and trustworthiness.
+        2. Answer the questions below about how the **SUMMARY** compares to the ABSTRACT, specifically on clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
         3. When you have finished answering all questions, click the **Next Abstract** button.  
         4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
