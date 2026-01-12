@@ -98,12 +98,12 @@ def run_likert():
         st.markdown(
         """
         ### 📝 Instructions
-        1. Read the ABSTRACT on the left and the **SUMMARY** on the right.  
-        2. Answer the comparison questions below to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, along with a few questions about your experience using the AI chatbot in this study.
+        1. Read the **ABSTRACT** on the left and the **SUMMARY** on the right.  
+        2. Answer the comparison questions below to assess how the **SUMMARY** compares to the **ABSTRACT** in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, along with a few questions about your experience using the AI chatbot in this study.
         3. When you have finished answering all questions, click the **Next Abstract** button.  
         4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
-        **Note:** You may use the **Back** button if you need to revisit your Select All That Apply (SATA) questions for this abstract.
+        **Note:** You may use the **Back** button if you need to revisit the select all that apply questions you had completed for this abstract.
         """
         )
 
