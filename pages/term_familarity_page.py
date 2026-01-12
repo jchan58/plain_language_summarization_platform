@@ -229,7 +229,7 @@ def static_instructions(prolific_id, batch_id):
         For this batch, you will complete **4 abstracts**. For each abstract, you will:
 
         1. **Term Familiarity:**
-        - Rate how familiar you are with the term on a scale from 1 (not familiar at all) to 5 (very familiar).
+        - Rate your level of familiarity with each term on a scale from 1 (not familiar at all) to 5 (very familiar).
         - Then, specify what additional information (if any) would help you better understand the term by selecting one or more of the following:
 
             - **Definition:** An explanation of what the term means.  
@@ -462,7 +462,7 @@ def run_terms(prolific_id, batch_id, full_type):
     with st.expander("📝 Instructions", expanded=True):
         st.markdown("""
             1. Read the ABSTRACT — the 10 terms you will evaluate are **highlighted**.  
-            2. Use the slider to rate how familiar you are with each term *in the context of the ABSTRACT*.  
+            2. Use the slider to rate your level of familiarity with each term *in the context of the ABSTRACT*.  
             3. Click **Next** when you have finished rating all terms.  
             4. On the following page, select the additional information you would need to better understand each term:
 
@@ -516,7 +516,7 @@ def run_terms(prolific_id, batch_id, full_type):
                 st.session_state.updated_terms_tmp = updated_terms
                 st.rerun()
             else:
-                st.warning("⚠️ Please rate your familiarity for all terms before continuing.")
+                st.warning("⚠️ Please rate your level of familiarity for all terms before continuing.")
 
     # ---------------- EXTRA INFO PAGE ---------------- #
     if st.session_state.stage_static == "extra_info":
