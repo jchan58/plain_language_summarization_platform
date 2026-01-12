@@ -39,3 +39,5 @@ def logout_confirm_dialog(prolific_id):
 
 
 st.header("You have completed all the tasks for this batch!")
+if st.button("Go back to login page"):
+    st.switch_page("app.py")
