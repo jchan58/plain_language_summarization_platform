@@ -251,7 +251,7 @@ def static_instructions(prolific_id, batch_id):
 
         ### Additional Notes:
         - Refer to the instructions at the top of each page for detailed guidance.  
-        - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** and clicking the **Next Abstract** button.  
+        - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Abstract** button, and **confirming** that you want to move on to the next abstract.  
         - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progress, your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.  
         - You can use the **Back** button to revisit earlier steps *within the same abstract*.  
         - Once you proceed to the next abstract, you will **not** be able to return to any previous abstracts.
