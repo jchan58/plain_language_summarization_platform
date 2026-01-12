@@ -260,7 +260,15 @@ def run_likert():
         q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
 
         # CHATBOT questions
-        st.header("Use of the Chatbot")
+        st.header("Rate your experience with using the AI Chatbot")
+        st.markdown("""
+            ### Rating Scale 
+            **1 = Not helpful at all**  
+            **2 = Slightly helpful**  
+            **3 = Moderately helpful**  
+            **4 = Very helpful**  
+            **5 = Extremely helpful**  
+        """)
         q6 = persistent_radio("How useful was the chatbot in answering all your questions?", "chatbot_useful")
         q7 = persistent_radio("How much did the chatbot help you better understand the ABSTRACT?", "chatbot_understanding")
 
