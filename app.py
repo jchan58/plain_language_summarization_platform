@@ -131,7 +131,7 @@ if not st.session_state.get("logged_in", False):
                 else:
                     structured_terms = []
                 
-                abstract_key = str(row["abstract_id"])
+                abstract_key = int(row["abstract_id"])
                 phases[phase_type]["batches"][batch_id]["abstracts"][abstract_key]= {
                     "abstract_title": row["abstract_title"],
                     "abstract": re.sub(r"\s+", " ", ftfy.fix_text(row["abstract"])).strip(),
