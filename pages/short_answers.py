@@ -81,8 +81,6 @@ def run_feedback():
     user = users_collection.find_one({"prolific_id": prolific_id})
     phase = "interactive"
     abstract_info = user["phases"][phase]["batches"][batch_id]["abstracts"][abstract_id]
-    if "cached_pls" not in st.session_state:
-        st.session_state.cached_pls = data["pls"]
     with st.sidebar:
         st.write(f"**MTurk ID:** `{prolific_id}`")
         if st.button("Logout"):
@@ -122,6 +120,7 @@ def run_feedback():
         with btn_col1:
             if st.button("Decrease text size"):
                 st.session_state.summary_font_size = max(12, st.session_state.summary_font_size - 2)
+                st.rerun()
 
         with btn_col2:
             st.write("")
@@ -129,6 +128,7 @@ def run_feedback():
         with btn_col3:
             if st.button("Increase text size"):
                 st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
+                st.rerun()
 
         st.markdown("""
         <style>
@@ -163,7 +163,7 @@ def run_feedback():
                 line-height: 1.55;
             ">
                 <div style="line-height: 1.55;">
-                    {st.session_state.cached_pls}
+                    {data['pls']}
                 </div>
             </div>
             """,
@@ -250,12 +250,14 @@ def run_feedback():
                 if st.button("⬅ Previous Question"):
                     accumulate_question_time()
                     st.session_state.qa_index -= 1
+                    st.rerun()
 
         with nav3:
             if st.session_state.qa_index < 3:
                 if st.button("Next Question ➡"):
                     accumulate_question_time()
                     st.session_state.qa_index += 1
+                    st.rerun()
 
             else:
                 all_filled = completed == 4
