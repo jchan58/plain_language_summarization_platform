@@ -78,8 +78,12 @@ def show_done_dialog():
 
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
+    # st.markdown(
+    #     "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
+    #     "If you log out before then, you will have to start this abstract over."
+    # )
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
         "If you log out before then, you will have to start this abstract over."
     )
     col1, col2 = st.columns(2)
@@ -433,6 +437,7 @@ def run_chatbot(prolific_id, batch_id, full_type):
                     "2. For each question, produce a short note describing the answer found in the conversation.\n"
                     "3. Then rewrite the abstract into a personalized plain-language summary that integrates ALL of these answers while preserving the content of the orginal abstract with no extraneous information.\n"
                     "4. Absolutely NO question may be omitted.\n" 
+                    "Go through step by step whether any information from the conversation is not in the rewritten abstract if it is make sure to include it in the rewritten abstract."
                )
                 response = client_openai.chat.completions.create(
                     model="gpt-4o",

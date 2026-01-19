@@ -176,9 +176,13 @@ def load_user_info(prolific_id):
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
         "If you log out before then, you will have to start this abstract over."
     )
+    # st.markdown(
+    #     "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
+    #     "If you log out before then, you will have to start this abstract over."
+    # )
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Stay on page"):
@@ -220,13 +224,98 @@ def highlight_terms_in_abstract(abstract: str, terms: list):
         )
     return highlighted
 
+@st.dialog("Pilot Study Instructions", width="medium", dismissible=False)
+def pilot_popup(prolific_id, batch_id):
+    st.markdown("""
+    ### Pilot Study Instructions
+
+    You are participating in a **pilot study** with two phases:
+
+    1. **Static Phase (First Phase)**
+    2. **Interactive Phase (Second Phase)**
+
+    Each phase contains **one abstract**.
+
+    Instructions for each phase will be shown before you start.  
+    Please read them carefully.
+
+    ---
+
+    ## Timing Instructions for the Pilot Study
+
+    Although the system automatically records time, during the pilot study you must also  
+    **manually track your time**.
+
+    - Please use a stopwatch, phone timer, or clock.
+    - Record how long each phase takes in **seconds**.
+
+    Manually record:
+    - Time for the entire **Static Phase**
+    - Time for the entire **Interactive Phase**
+    - Time for the **Select All That Apply (SATA) questions section** should be recorded separately
+
+    You will be asked to provide these recordings before moving on to the **Next Batch**.
+
+    ---
+
+    This pilot is designed to test both versions of the task.  
+    If ypu have any suggestions or comments to improve this study, please mention it in the feedback section.
+
+    Thank you for helping us improve this study.
+    """)
+
+
+    if st.button("Continue"):
+        st.session_state.seen_pilot_popup = True
+        users_collection.update_one(
+            {"prolific_id": prolific_id},
+            {"$set": {f"phases.static.batches.{batch_id}.seen_pilot_popup": True}},
+            upsert=True
+        )
+        st.rerun()
+
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
 def static_instructions(prolific_id, batch_id):
     st.title(f"Welcome to Batch #{batch_id}")
+    # st.markdown("""
+    #     ### Before you begin, please read these instructions carefully.
+
+    #     For this batch, you will complete **4 abstracts**. For each abstract, you will:
+
+    #     1. **Term Familiarity:**
+    #     - Rate your level of familiarity with each term on a scale from 1 (not familiar at all) to 5 (very familiar).
+    #     - Then, specify what additional information (if any) would help you better understand the term by selecting one or more of the following:
+
+    #         - **Definition:** An explanation of what the term means.  
+    #         - **Background:** Contextual information that helps you understand the term.  
+    #         - **Example:** A concrete case that shows how the term is used.  
+
+    #         **Example (using the term “diabetes”):**
+    #         - *Definition:* Diabetes is a condition that happens when your blood sugar (glucose) is too high.  
+    #         - *Background:* Diabetes develops when the body does not make enough insulin or does not use insulin properly, which can lead to long-term health problems.  
+    #         - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.  
+
+    #     2. **Select All That Apply (SATA) Questions:**  
+    #     Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
+
+    #     3. **Compare SUMMARY to ABSTRACT Questionnaire:**  
+    #     Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+
+    #     ---
+
+    #     ### Additional Notes:
+    #     - Refer to the instructions at the top of each page for detailed guidance.  
+    #     - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Abstract** button, and **confirming** that you want to move on to the next abstract.  
+    #     - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progress, your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.  
+    #     - You can use the **Back** button to revisit earlier steps *within the same abstract*.  
+    #     - Once you proceed to the next abstract, you will **not** be able to return to any previous abstracts.
+
+    #     Once you finish this batch, we will contact you with further instructions.
+    #     """)
     st.markdown("""
         ### Before you begin, please read these instructions carefully.
 
-        For this batch, you will complete **4 abstracts**. For each abstract, you will:
+        For this static batch, you will complete **1 abstract**. For the abstract, you will:
 
         1. **Term Familiarity:**
         - Rate your level of familiarity with each term on a scale from 1 (not familiar at all) to 5 (very familiar).
@@ -254,10 +343,9 @@ def static_instructions(prolific_id, batch_id):
         - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Abstract** button, and **confirming** that you want to move on to the next abstract.  
         - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progress, your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.  
         - You can use the **Back** button to revisit earlier steps *within the same abstract*.  
-        - Once you proceed to the next abstract, you will **not** be able to return to any previous abstracts.
-
-        Once you finish this batch, we will contact you with further instructions.
+        - Once you proceed to the next batch, you will **not** be able to return to this abstract.
         """)
+
 
     if st.button("Start"):
         st.session_state.seen_static_instructions = True
@@ -397,9 +485,23 @@ def run_terms(prolific_id, batch_id, full_type):
             .get(batch_id, {})
             .get("seen_instructions", False)
     )
+    db_seen_pilot = (
+        user.get("phases", {})
+            .get("static", {})
+            .get("batches", {})
+            .get(batch_id, {})
+            .get("seen_pilot_popup", False)
+    )
+
+    if "seen_pilot_popup" not in st.session_state:
+        st.session_state.seen_pilot_popup = db_seen_pilot
 
     if "seen_static_instructions" not in st.session_state:
         st.session_state.seen_static_instructions = db_seen
+
+    if not st.session_state.seen_pilot_popup:
+        pilot_popup(prolific_id, batch_id)
+        return
 
     # If not seen → show instructions dialog
     if not st.session_state.seen_static_instructions:

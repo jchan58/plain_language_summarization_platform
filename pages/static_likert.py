@@ -49,9 +49,13 @@ def confirm_next_abstract():
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
         "If you log out before then, you will have to start this abstract over."
     )
+    # st.markdown(
+    #     "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
+    #     "If you log out before then, you will have to start this abstract over."
+    # )
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Stay on page"):
@@ -103,12 +107,23 @@ def run_likert():
     st.progress(progress_ratio)
     st.caption(f"Completed {current_index} of {total} abstracts")
     with st.expander("📝 Instructions", expanded=True):
+        # st.markdown(
+        # """
+        # ### 📝 Instructions
+        # 1. Read the ABSTRACT on the left and the **SUMMARY** on the right.  
+        # 2. Answer the questions below about how the **SUMMARY** compares to the ABSTRACT, specifically on clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+        # 3. When you have finished answering all questions, click the **Next Abstract** button.  
+        # 4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
+
+        # **Note:** You may use the **Back** button if you need to revisit the Select All That Apply (SATA) questions for this abstract.
+        # """
+        # )
         st.markdown(
         """
         ### 📝 Instructions
         1. Read the ABSTRACT on the left and the **SUMMARY** on the right.  
         2. Answer the questions below about how the **SUMMARY** compares to the ABSTRACT, specifically on clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
-        3. When you have finished answering all questions, click the **Next Abstract** button.  
+        3. When you have finished answering all questions, click the **Next Batch** button.  
         4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
         **Note:** You may use the **Back** button if you need to revisit the Select All That Apply (SATA) questions for this abstract.
@@ -265,7 +280,8 @@ def run_likert():
                 }
                 st.switch_page("pages/static_short_answer.py")
         with col_submit:
-            if st.button("Next Abstract", disabled=not all_answered):
+            if st.button("Next Batch", disabled=not all_answered):
+            # if st.button("Next Abstract", disabled=not all_answered):
                 st.session_state.show_next_dialog = True
         if st.session_state.get("show_next_dialog", False):
             confirm_next_abstract()
