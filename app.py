@@ -84,45 +84,49 @@ if "seen_pilot_intro" not in st.session_state:
     st.session_state.seen_pilot_intro = False
 
 if not st.session_state.seen_pilot_intro:
-    st.markdown("""
-    ### Pilot Study Instructions
 
-    You are participating in a **pilot study** with two phases:
+    @st.dialog("Pilot Study Instructions", width="large", dismissible=False)
+    def pilot_dialog():
+        st.markdown("""
+        ### Pilot Study Instructions
 
-    1. **Static Phase (First Phase)**
-    2. **Interactive Phase (Second Phase)**
+        You are participating in a **pilot study** with two phases:
 
-    Each phase contains **one abstract**.
+        1. **Static Phase (First Phase)**
+        2. **Interactive Phase (Second Phase)**
 
-    Instructions for each phase will be shown before you start. **Please read them carefully.**
+        Each phase contains **one abstract**.
 
-    ---
+        Instructions for each phase will be shown before you start. **Please read them carefully.**
 
-    ## Timing Instructions for the Pilot Study
+        ---
 
-    Although the system automatically records time, during the pilot study you must also  
-    **manually track your time**.
+        ### Timing Instructions for the Pilot Study
 
-    - Please use a stopwatch, phone timer, or clock.
-    - Record how long each phase takes in **seconds**.
+        Although the system automatically records time, during the pilot study you must also  
+        **manually track your time**.
 
-    Manually record:
-    - Time for the entire **Static Phase**
-    - Time for the entire **Interactive Phase**
-    - Time for the **Select All That Apply (SATA) questions section** should be recorded separately
+        - Please use a stopwatch, phone timer, or clock.
+        - Record how long each phase takes in **seconds**.
 
-    You will be asked to provide these recordings before moving on to the **Next Batch**.
+        Manually record:
+        - Time for the entire **Static Phase**
+        - Time for the entire **Interactive Phase**
+        - Time for the **Select All That Apply (SATA) questions section** should be recorded separately
 
-    ---
+        You will be asked to provide these recordings before moving on to the **Next Batch**.
 
-    If you have any suggestions or comments to improve this study, please mention it in the feedback section for each phase.
-    Thank you for helping us improve this study. Please login with your preferred email address after clicking the Continue button.  
-    """)
+        ---
 
-    if st.button("Continue"):
-        st.session_state.seen_pilot_intro = True
-        st.rerun()
+        If you have any suggestions or comments to improve this study, please mention it in the feedback section for each phase.
+        Thank you for helping us improve this study. Please click the continue button and then login with your preferred email address to start the study.
+        """)
 
+        if st.button("Continue"):
+            st.session_state.seen_pilot_intro = True
+            st.rerun()
+
+    pilot_dialog()
     st.stop()
 
 # check if the user exists in db if they don't 
