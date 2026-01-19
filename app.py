@@ -119,7 +119,8 @@ if not st.session_state.seen_pilot_intro:
         ---
 
         If you have any suggestions or comments to improve this study, please mention it in the feedback section for each phase.
-        Thank you for helping us improve this study. **Please click the continue button and then login with your preferred email address to start the study.**
+        Thank you for helping us improve this study. 
+        **Please click the continue button and then login with your preferred email address to start the study.**
         """)
 
         if st.button("Continue"):
