@@ -39,6 +39,9 @@ st.markdown(
 )
 st.set_page_config(layout="wide")
 
+if "seen_pilot_popup" not in st.session_state:
+    st.session_state.seen_pilot_popup = False
+
 @st.cache_resource
 def get_mongo_client():
     return MongoClient(st.secrets["MONGO_URI"])
@@ -236,8 +239,7 @@ def pilot_popup(prolific_id, batch_id):
 
     Each phase contains **one abstract**.
 
-    Instructions for each phase will be shown before you start.  
-    Please read them carefully.
+    Instructions for each phase will be shown before you start. **Please read them carefully.**
 
     ---
 
@@ -261,7 +263,7 @@ def pilot_popup(prolific_id, batch_id):
     This pilot is designed to test both versions of the task.  
     If ypu have any suggestions or comments to improve this study, please mention it in the feedback section.
 
-    Thank you for helping us improve this study.
+    Thank you for helping us improve this study. Please login with your preferred email address. 
     """)
 
 

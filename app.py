@@ -80,18 +80,66 @@ def get_current_batch(user_doc):
 
     return None
 
+if "seen_pilot_intro" not in st.session_state:
+    st.session_state.seen_pilot_intro = False
+
+if not st.session_state.seen_pilot_intro:
+    st.markdown("""
+    ### Pilot Study Instructions
+
+    You are participating in a **pilot study** with two phases:
+
+    1. **Static Phase (First Phase)**
+    2. **Interactive Phase (Second Phase)**
+
+    Each phase contains **one abstract**.
+
+    Instructions for each phase will be shown before you start. **Please read them carefully.**
+
+    ---
+
+    ## Timing Instructions for the Pilot Study
+
+    Although the system automatically records time, during the pilot study you must also  
+    **manually track your time**.
+
+    - Please use a stopwatch, phone timer, or clock.
+    - Record how long each phase takes in **seconds**.
+
+    Manually record:
+    - Time for the entire **Static Phase**
+    - Time for the entire **Interactive Phase**
+    - Time for the **Select All That Apply (SATA) questions section** should be recorded separately
+
+    You will be asked to provide these recordings before moving on to the **Next Batch**.
+
+    ---
+
+    If you have any suggestions or comments to improve this study, please mention it in the feedback section for each phase.
+    Thank you for helping us improve this study. Please login with your preferred email address after clicking the Continue button.  
+    """)
+
+    if st.button("Continue"):
+        st.session_state.seen_pilot_intro = True
+        st.rerun()
+
+    st.stop()
 
 # check if the user exists in db if they don't 
 if not st.session_state.get("logged_in", False):
     st.title("Making Research Articles Easier to Read – Pilot Study")
     st.markdown("""
-    By entering your Mturk ID you agree to our [Terms and Conditions](https://docs.google.com/document/d/1wfvGWg69Vg3xroLDxpJXwe1_KWY72w0Z4ut59hA5iTM/edit?usp=sharing).
+    By entering your email address you agree to our [Terms and Conditions](https://docs.google.com/document/d/1wfvGWg69Vg3xroLDxpJXwe1_KWY72w0Z4ut59hA5iTM/edit?usp=sharing).
     """, unsafe_allow_html=True)
+    # By entering your Mturk ID you agree to our [Terms and Conditions](https://docs.google.com/document/d/1wfvGWg69Vg3xroLDxpJXwe1_KWY72w0Z4ut59hA5iTM/edit?usp=sharing).
+    # """, unsafe_allow_html=True)
 
-    prolific_id = st.text_input("Please enter your Mturk ID to begin annotating").strip()
+    # prolific_id = st.text_input("Please enter your Mturk ID to begin annotating").strip()
+    prolific_id = st.text_input("Please enter your email address to begin the pilot study").strip()
     if st.button("Enter"):
         if not prolific_id:
-            st.error("Please enter your Mturk ID.")
+            st.error("Please enter your email address.")
+            # st.error("Please enter your Mturk ID.")
             st.stop()
 
         if prolific_id.lower() not in [str(id).lower() for id in approved_ids]:
