@@ -143,36 +143,43 @@ if not st.session_state.get("logged_in", False):
     if st.button("Enter"):
         if not prolific_id:
             st.error("Please enter your email address.")
+             # commented out for pilot
             # st.error("Please enter your Mturk ID.")
             st.stop()
 
-        if prolific_id.lower() not in [str(id).lower() for id in approved_ids]:
-            st.error("Sorry, your Mturk ID is not approved for this study.")
-            st.stop()
+        # commented out for pilot
+        # if prolific_id.lower() not in [str(id).lower() for id in approved_ids]:
+        #     st.error("Sorry, your Mturk ID is not approved for this study.")
+        #     st.stop()
 
         # check if user exists if it doesn't exist create using user_df
+        
+        # this is for the pilot study where we directly assign
         user = users_collection.find_one({"prolific_id": prolific_id})
         if not user:
-            user_rows = user_df[user_df["user_id"] == prolific_id]
             phases = {
                 "static": {"batches": {}, "completed": False},
                 "interactive": {"batches": {}, "completed": False},
                 "finetuned": {"batches": {}, "completed": False},
             }
-            for _, row in user_rows.iterrows():
-                full_type = row["type"]      
-                phase_type, batch_id = full_type.split("_") 
+
+            for _, row in user_df.iterrows():
+                full_type = row["type"]        
+                phase_type, batch_id = full_type.split("_")
+
                 if batch_id not in phases[phase_type]["batches"]:
-                    # unlock the very first abstract
-                    is_first_batch = (full_type == BATCH_ORDER[0])
+                    is_first_batch = (full_type == BATCH_ORDER[0]) or (full_type == "interactive_4")
+                    # commented out for the pilot phase need to recomment in 
+                    # is_first_batch = (full_type == BATCH_ORDER[0])
                     phases[phase_type]["batches"][batch_id] = {
                         "completed": False,
                         "approved": False,
                         "unlocked": is_first_batch,
                         "abstracts": {},
-                        "full_type": full_type,  
+                        "full_type": full_type,
                     }
 
+                # build terms only for static
                 if phase_type == "static":
                     raw_terms = str(row["terms"]).strip().strip("[]")
                     term_list = [t.strip() for t in raw_terms.split(",") if t.strip()]
@@ -182,32 +189,87 @@ if not st.session_state.get("logged_in", False):
                     ]
                 else:
                     structured_terms = []
-                
+
                 abstract_key = str(row["abstract_id"])
-                phases[phase_type]["batches"][batch_id]["abstracts"][abstract_key]= {
+                phases[phase_type]["batches"][batch_id]["abstracts"][abstract_key] = {
                     "abstract_title": row["abstract_title"],
                     "abstract": re.sub(r"\s+", " ", ftfy.fix_text(row["abstract"])).strip(),
                     "main_idea_question": row["main_idea_question"],
                     "method_question": row["method_question"],
                     "result_question": row["result_question"],
-                    "short_answers": {
-                        "main_idea": "",
-                        "methods": "",
-                        "results": "",
-                    },
+                    "short_answers": {"main_idea": "", "methods": "", "results": ""},
                     "term_familarity": structured_terms,
                     "human_written_pls": re.sub(r"\s+", " ", ftfy.fix_text(row["human_written"])).strip(),
                     "completed": False,
                 }
 
-
             users_collection.insert_one({
-                "prolific_id": prolific_id,
+                "prolific_id": prolific_id, 
                 "created_at": datetime.datetime.utcnow(),
                 "accepted_terms": True,
                 "phases": phases
             })
-            user = users_collection.find_one({"prolific_id": prolific_id}) 
+
+            user = users_collection.find_one({"prolific_id": prolific_id})
+            
+         # commented out for pilot
+        # user = users_collection.find_one({"prolific_id": prolific_id})
+        # if not user:
+        #     user_rows = user_df[user_df["user_id"] == prolific_id]
+        #     phases = {
+        #         "static": {"batches": {}, "completed": False},
+        #         "interactive": {"batches": {}, "completed": False},
+        #         "finetuned": {"batches": {}, "completed": False},
+        #     }
+        #     for _, row in user_rows.iterrows():
+        #         full_type = row["type"]      
+        #         phase_type, batch_id = full_type.split("_") 
+        #         if batch_id not in phases[phase_type]["batches"]:
+        #             # unlock the very first abstract
+        #             is_first_batch = (full_type == BATCH_ORDER[0])
+        #             phases[phase_type]["batches"][batch_id] = {
+        #                 "completed": False,
+        #                 "approved": False,
+        #                 "unlocked": is_first_batch,
+        #                 "abstracts": {},
+        #                 "full_type": full_type,  
+        #             }
+
+        #         if phase_type == "static":
+        #             raw_terms = str(row["terms"]).strip().strip("[]")
+        #             term_list = [t.strip() for t in raw_terms.split(",") if t.strip()]
+        #             structured_terms = [
+        #                 {"term": t, "familiar": None, "extra_information": None}
+        #                 for t in term_list
+        #             ]
+        #         else:
+        #             structured_terms = []
+                
+        #         abstract_key = str(row["abstract_id"])
+        #         phases[phase_type]["batches"][batch_id]["abstracts"][abstract_key]= {
+        #             "abstract_title": row["abstract_title"],
+        #             "abstract": re.sub(r"\s+", " ", ftfy.fix_text(row["abstract"])).strip(),
+        #             "main_idea_question": row["main_idea_question"],
+        #             "method_question": row["method_question"],
+        #             "result_question": row["result_question"],
+        #             "short_answers": {
+        #                 "main_idea": "",
+        #                 "methods": "",
+        #                 "results": "",
+        #             },
+        #             "term_familarity": structured_terms,
+        #             "human_written_pls": re.sub(r"\s+", " ", ftfy.fix_text(row["human_written"])).strip(),
+        #             "completed": False,
+        #         }
+
+
+        #     users_collection.insert_one({
+        #         "prolific_id": prolific_id,
+        #         "created_at": datetime.datetime.utcnow(),
+        #         "accepted_terms": True,
+        #         "phases": phases
+        #     })
+        #     user = users_collection.find_one({"prolific_id": prolific_id}) 
 
         # restore progress index if available
         start_index = (
