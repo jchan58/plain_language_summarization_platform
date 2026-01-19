@@ -131,7 +131,7 @@ if not st.session_state.seen_pilot_intro:
 
 # check if the user exists in db if they don't 
 if not st.session_state.get("logged_in", False):
-    st.title("Making Research Articles Easier to Read – Pilot Study")
+    st.title("Making Scientific Abstracts Easier to Understand – Pilot Study")
     st.markdown("""
     By entering your email address you agree to our [Terms and Conditions](https://docs.google.com/document/d/1wfvGWg69Vg3xroLDxpJXwe1_KWY72w0Z4ut59hA5iTM/edit?usp=sharing).
     """, unsafe_allow_html=True)
