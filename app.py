@@ -89,7 +89,7 @@ if not st.session_state.seen_pilot_intro:
     def pilot_dialog():
         st.markdown("""
         ## Welcome to the Pilot Study for Making Scientific Abstracts Easier to Understand for the Lay Person
-        You are participating in a **pilot study** with two phases:
+        This **pilot study** will have two phases:
 
         1. **Static Phase (First Phase)**
         2. **Interactive Phase (Second Phase)**
@@ -106,12 +106,12 @@ if not st.session_state.seen_pilot_intro:
         **manually track your time**.
 
         - Please use a stopwatch, phone timer, or clock.
-        - Record how long each phase takes in **seconds**.
+        - Record how long each phase and Select All That Apply (SATA) questions take in **seconds**.
 
         Manually record:
         - Time for the entire **Static Phase**
         - Time for the entire **Interactive Phase**
-        - Time for the **Select All That Apply (SATA) questions section** should be recorded separately
+        - Time for the **SATA questions section** should be recorded separately
 
         You will be asked to provide these recordings before moving on to the **Next Batch**.
 
