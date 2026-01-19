@@ -88,7 +88,7 @@ if not st.session_state.seen_pilot_intro:
     @st.dialog("Pilot Study Instructions", width="large", dismissible=False)
     def pilot_dialog():
         st.markdown("""
-        ### Pilot Study Instructions
+        ## Pilot Study Instructions
 
         You are participating in a **pilot study** with two phases:
 
@@ -101,7 +101,7 @@ if not st.session_state.seen_pilot_intro:
 
         ---
 
-        ### Timing Instructions for the Pilot Study
+        ## Timing Instructions for the Pilot Study
 
         Although the system automatically records time, during the pilot study you must also  
         **manually track your time**.
@@ -119,7 +119,7 @@ if not st.session_state.seen_pilot_intro:
         ---
 
         If you have any suggestions or comments to improve this study, please mention it in the feedback section for each phase.
-        Thank you for helping us improve this study. Please click the continue button and then login with your preferred email address to start the study.
+        Thank you for helping us improve this study. **Please click the continue button and then login with your preferred email address to start the study.**
         """)
 
         if st.button("Continue"):
