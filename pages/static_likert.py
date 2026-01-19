@@ -369,7 +369,8 @@ def run_likert():
                     "last_full_type": full_type
                 }}
             )
-            st.switch_page("pages/term_familarity_page.py")
+            # st.switch_page("pages/term_familarity_page.py")
+            st.switch_page("pages/time_completion_static.py")
             
 
 run_likert()

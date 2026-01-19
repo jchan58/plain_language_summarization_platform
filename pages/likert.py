@@ -390,5 +390,6 @@ def run_likert():
                     "last_full_type": full_type
                 }}
             )
-            st.switch_page("pages/chatbot.py")
+            # st.switch_page("pages/chatbot.py")
+            st.switch_page("pages/time_completion_interactive.py")
 run_likert()
