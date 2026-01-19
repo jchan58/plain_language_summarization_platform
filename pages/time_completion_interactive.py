@@ -16,7 +16,7 @@ Please enter the following in **seconds**:
 
 batch_time = st.text_input("Please enter the total time it took to complete this batch (in seconds)")
 sata_time = st.text_input("Please enter the total time it took to answer the **Select All That Apply (SATA)** questions (in seconds)")
-feedback = st.text_area("Please enter any suggestions or comments you have for this static batch (optional)")
+feedback = st.text_area("Please enter any suggestions or comments you have for this interactive batch (optional)")
 
 def is_number(x):
     try:
