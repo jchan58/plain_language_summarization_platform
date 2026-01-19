@@ -7,7 +7,6 @@ print("=== SESSION STATE DUMP ===", file=sys.stderr)
 for k, v in st.session_state.items():
     print(f"{k}: {v}", file=sys.stderr)
 print("===========================", file=sys.stderr)
-MIN_CHARS = 75
 st.markdown(
     """
     <style>
@@ -18,6 +17,12 @@ st.markdown(
 )
 
 st.set_page_config(layout="wide")
+
+if "q1_time" not in st.session_state:
+    st.session_state.q1_time = 0
+    st.session_state.q2_time = 0
+    st.session_state.q3_time = 0
+    st.session_state.q4_time = 0
 
 @st.cache_resource
 def get_mongo_client():
@@ -88,16 +93,18 @@ def accumulate_question_time():
         return
     elapsed = (datetime.utcnow() - st.session_state.question_start_time).total_seconds()
     key_map = {
-        0: "main_idea_time",
-        1: "method_time",
-        2: "attention_time",
-        3: "result_time"
+        0: "q1_time",
+        1: "q2_time",
+        2: "q3_time",
+        3: "q4_time"
     }
     q_key = key_map.get(st.session_state.qa_index)
     if q_key:
         st.session_state[q_key] = st.session_state.get(q_key, 0) + elapsed
     st.session_state.question_start_time = datetime.utcnow()
 
+def parse_choices(s):
+    return [x.strip() for x in s.split(";") if x.strip()]
 
 def show_progress():
     if "progress_info" in st.session_state:
@@ -205,51 +212,57 @@ def run_feedback():
                 accumulate_question_time()
                 st.session_state.last_qa_index = st.session_state.qa_index
 
-        # Feedback dict
-        if "feedback" not in st.session_state:
-            st.session_state.feedback = {"main_idea": "", "method": "", "attention": "", "result": ""}
-
         questions = [
-            {"key": "main_idea", "label": f"🧠 {abstract_info['main_idea_question']}"},
-            {"key": "method", "label": f"🧪 {abstract_info['method_question']}"},
             {
-            "key": "attention",
-                "label": (
-                    "Please type the following sentence exactly as written:\n\n"
-                    "**\"I have read all instructions and fully understood what I must do for this task.\"**"
-                )
+                "key": "q1",
+                "text": abstract_info["question_1"],
+                "choices": parse_choices(abstract_info["question_1_answers_choices"]),
+                "correct": parse_choices(abstract_info["question_1_correct_answers"])
             },
-            {"key": "result", "label": f"📊 {abstract_info['result_question']}"}
+            {
+                "key": "q2",
+                "text": abstract_info["question_2"],
+                "choices": parse_choices(abstract_info["question_2_answers_choices"]),
+                "correct": parse_choices(abstract_info["question_2_correct_answers"])
+            },
+            {
+                "key": "q3",
+                "text": abstract_info["question_3"],
+                "choices": parse_choices(abstract_info["question_3_answers_choices"]),
+                "correct": parse_choices(abstract_info["question_3_correct_answers"])
+            },
+            {
+                "key": "q4",
+                "text": abstract_info["question_4"],
+                "choices": parse_choices(abstract_info["question_4_answers_choices"]),
+                "correct": parse_choices(abstract_info["question_4_correct_answers"])
+            },
         ]
 
+        if "sata_answers" not in st.session_state:
+            st.session_state.sata_answers = {q["key"]: [] for q in questions}
+
         q = questions[st.session_state.qa_index]
-        key = q["key"]
+        st.subheader(q["text"])
 
-        # Question text area
-        st.subheader(q["label"])
-        box_key = f"{key}_box"
-        if box_key not in st.session_state:
-            st.session_state[box_key] = st.session_state.feedback[key]
-        st.text_area(
-            "",
-            key=box_key,
-            on_change=lambda k=key, b=box_key: st.session_state.feedback.__setitem__(
-                k, st.session_state[b]
+        selected = []
+        for choice in q["choices"]:
+            checked = st.checkbox(
+                choice,
+                key=f"{q['key']}_{choice}",
+                value=choice in st.session_state.sata_answers[q["key"]]
             )
-        )
-        st.caption(f"{len(st.session_state.feedback[key])} characters")
-        st.markdown(
-            f"<span style='color:#555;'>Each response must be more than {MIN_CHARS} characters. Click outside textbox to see character count.</span>",
-            unsafe_allow_html=True
-        )
+            if checked:
+                selected.append(choice)
 
+        st.session_state.sata_answers[q["key"]] = selected
         completed = sum(
-            len(st.session_state.feedback[k].strip()) >= MIN_CHARS
-            for k in ["main_idea", "method", "attention", "result"]
+            len(st.session_state.sata_answers[q["key"]]) > 0
+            for q in questions
         )
 
         st.markdown(
-            f"<div style='font-size:0.9rem; color:#444;'><strong>Questions completed:</strong> {completed} / 4</div>",
+            f"<div><strong>Questions completed:</strong> {completed} / {len(questions)}</div>",
             unsafe_allow_html=True
         )
 
@@ -273,15 +286,12 @@ def run_feedback():
                     accumulate_question_time()
                     # Save
                     feedback_data = {
-                        "main_idea": st.session_state.feedback["main_idea"].strip(),
-                        "methods": st.session_state.feedback["method"].strip(),
-                        "attention": st.session_state.feedback["attention"].strip(),
-                        "results": st.session_state.feedback["result"].strip(),
+                        "sata_answers": st.session_state.sata_answers,
                         "submitted_at": datetime.utcnow(),
-                        "time_main_idea": st.session_state.get("main_idea_time", 0),
-                        "time_method": st.session_state.get("method_time", 0),
-                        "time_attention": st.session_state.get("attention_time", 0),
-                        "time_result": st.session_state.get("result_time", 0),
+                        "time_q1": st.session_state.get("q1_time", 0),
+                        "time_q2": st.session_state.get("q2_time", 0),
+                        "time_q3": st.session_state.get("q3_time", 0),
+                        "time_q4": st.session_state.get("q4_time", 0),
                     }
                     users_collection.update_one(
                         {"prolific_id": data['prolific_id']},
