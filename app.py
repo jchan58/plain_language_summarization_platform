@@ -163,7 +163,11 @@ if not st.session_state.get("logged_in", False):
                 "finetuned": {"batches": {}, "completed": False},
             }
 
-            for _, row in user_df.iterrows():
+            pilot_rows = pd.concat([
+                user_df[user_df["type"] == "static_1"].head(1),
+                user_df[user_df["type"] == "interactive_4"].head(1),
+            ])
+            for _, row in pilot_rows.iterrows():
                 full_type = row["type"]        
                 phase_type, batch_id = full_type.split("_")
 
@@ -211,7 +215,7 @@ if not st.session_state.get("logged_in", False):
             })
 
             user = users_collection.find_one({"prolific_id": prolific_id})
-            
+
          # commented out for pilot
         # user = users_collection.find_one({"prolific_id": prolific_id})
         # if not user:
