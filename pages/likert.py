@@ -361,7 +361,8 @@ def run_likert():
                     {"$set": {f"phases.interactive.batches.{batch_id}.completed": True}}
                 )
                 st.session_state.next_interactive_abstract = None
-                st.switch_page("app.py")
+                st.switch_page("pages/time_completion_interactive.py")
+                # st.switch_page("app.py")
                 return
 
             # Otherwise, move on to next abstract
@@ -390,6 +391,6 @@ def run_likert():
                     "last_full_type": full_type
                 }}
             )
-            # st.switch_page("pages/chatbot.py")
-            st.switch_page("pages/time_completion_interactive.py")
+            st.switch_page("pages/chatbot.py")
+           
 run_likert()

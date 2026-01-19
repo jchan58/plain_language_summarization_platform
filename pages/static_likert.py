@@ -286,7 +286,6 @@ def run_likert():
                 else:
                     st.session_state.show_next_dialog = True
             # if st.button("Next Abstract", disabled=not all_answered):
-                st.session_state.show_next_dialog = True
         if st.session_state.get("show_next_dialog", False):
             confirm_next_abstract()
         if st.session_state.get("user_confirmed_next", False):
@@ -337,7 +336,8 @@ def run_likert():
                     {"$set": {f"phases.static.batches.{batch_id}.completed": True}}
                 )
                 st.session_state.next_static_abstract = None
-                st.switch_page("app.py")
+                st.switch_page("pages/time_completion_static.py")
+                # st.switch_page("app.py")
                 return
 
             # Otherwise, move on to next abstract
@@ -369,8 +369,6 @@ def run_likert():
                     "last_full_type": full_type
                 }}
             )
-            # st.switch_page("pages/term_familarity_page.py")
-            st.switch_page("pages/time_completion_static.py")
-            
+            st.switch_page("pages/term_familarity_page.py")            
 
 run_likert()
