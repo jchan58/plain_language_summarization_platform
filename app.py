@@ -198,12 +198,25 @@ if not st.session_state.get("logged_in", False):
                 phases[phase_type]["batches"][batch_id]["abstracts"][abstract_key] = {
                     "abstract_title": row["abstract_title"],
                     "abstract": re.sub(r"\s+", " ", ftfy.fix_text(row["abstract"])).strip(),
-                    "main_idea_question": row["main_idea_question"],
-                    "method_question": row["method_question"],
-                    "result_question": row["result_question"],
-                    "short_answers": {"main_idea": "", "methods": "", "results": ""},
-                    "term_familarity": structured_terms,
                     "human_written_pls": re.sub(r"\s+", " ", ftfy.fix_text(row["human_written"])).strip(),
+
+                    # NEW SATA QUESTIONS
+                    "question_1": row["question_1"],
+                    "question_2": row["question_2"],
+                    "question_3": row["question_3"],
+                    "question_4": row["question_4"],
+
+                    "question_1_answers_choices": row["question_1_answers_choices"],
+                    "question_1_correct_answers": row["question_1_correct_answers"],
+                    "question_2_answers_choices": row["question_2_answers_choices"],
+                    "question_2_correct_answers": row["question_2_correct_answers"],
+                    "question_3_answers_choices": row["question_3_answers_choices"],
+                    "question_3_correct_answers": row["question_3_correct_answers"],
+                    "question_4_answers_choices": row["question_4_answers_choices"],
+                    "question_4_correct_answers": row["question_4_correct_answers"],
+
+                    "term_familarity": structured_terms,
+                    "short_answers": {},
                     "completed": False,
                 }
 
