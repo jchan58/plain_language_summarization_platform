@@ -280,7 +280,11 @@ def run_likert():
                 }
                 st.switch_page("pages/static_short_answer.py")
         with col_submit:
-            if st.button("Next Batch", disabled=not all_answered):
+            if st.button("Next Batch"):
+                if not all_answered:
+                    st.warning("Please answer all questions to move on.")
+                else:
+                    st.session_state.show_next_dialog = True
             # if st.button("Next Abstract", disabled=not all_answered):
                 st.session_state.show_next_dialog = True
         if st.session_state.get("show_next_dialog", False):
