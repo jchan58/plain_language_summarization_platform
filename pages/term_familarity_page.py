@@ -297,7 +297,8 @@ def static_instructions(prolific_id, batch_id):
         - You can use the **Back** button to revisit earlier steps *within the same abstract*.  
         - Once you proceed to the next batch, you will **not** be able to return to this abstract.
         ---
-        Once you finish this batch, please record your time on how long it took you to complete this batch and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**
+        Once you finish this batch, please record your time on how long it took you to complete this batch and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**  
+        You will also be able to leave any optional feedback about the task, instructions, or your experience.
         """)
     
 
