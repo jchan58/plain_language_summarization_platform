@@ -192,7 +192,7 @@ def run_feedback():
             st.session_state.stage_static = "extra_info"
             st.switch_page("pages/term_familarity_page.py")
     with col2:
-        st.title("Short Answer Questions")
+        st.title("Select All That Apply (SATA) Questions")
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0
 

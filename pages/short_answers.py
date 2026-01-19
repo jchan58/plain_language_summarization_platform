@@ -169,7 +169,7 @@ def run_feedback():
         )
 
     with col2:
-        st.title("Short Answer Questions")
+        st.title("Select All That Apply (SATA) Questions")
 
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0
