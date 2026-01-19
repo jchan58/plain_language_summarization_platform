@@ -108,11 +108,30 @@ def get_conversation():
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
 def interactive_instructions(prolific_id, batch_id):
     st.title(f"Welcome to Batch #{batch_id}")
+    # st.markdown("""
+    # ### Before you begin, please read these instructions carefully  
+    # Please follow these steps:
+
+    # For this batch, you will complete **3 abstracts**. For each abstract, you will:
+
+    # 1. **Chat with the AI chatbot about the ABSTRACT:** After reading the ABSTRACT, ask the AI chatbot any questions you have to help you better understand it.
+    # 2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
+    # 3. **Compare SUMMARY to ABSTRACT Questionnaire:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, and complete a few questions about your AI chatbot experience in this study.
+    # ---
+    # **Additional Notes:**
+    # - Refer to the instructions at the top of each page for detailed guidance.  
+    # - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Abstract** button, and **confirming** that you want to move on to the next abstract.  
+    # - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progresss, Your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.
+    # - You may use the **Back** button to revisit earlier steps *within the same abstract*.  
+    # - Once you move on to the next abstract, you will **not** be able to return to previous abstracts.
+    # ---
+    # Once you finish this batch, we will contact you with further instructions.       
+    # """)
     st.markdown("""
     ### Before you begin, please read these instructions carefully  
     Please follow these steps:
 
-    For this batch, you will complete **3 abstracts**. For each abstract, you will:
+    For this batch, you will complete **1 abstract**. For the abstract, you will:
 
     1. **Chat with the AI chatbot about the ABSTRACT:** After reading the ABSTRACT, ask the AI chatbot any questions you have to help you better understand it.
     2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
@@ -123,9 +142,8 @@ def interactive_instructions(prolific_id, batch_id):
     - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Abstract** button, and **confirming** that you want to move on to the next abstract.  
     - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progresss, Your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.
     - You may use the **Back** button to revisit earlier steps *within the same abstract*.  
-    - Once you move on to the next abstract, you will **not** be able to return to previous abstracts.
     ---
-    Once you finish this batch, we will contact you with further instructions.       
+    Once you finish this batch, please record your time on how long it took you to complete this batch and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**
     """)
 
     if st.button("Start"):

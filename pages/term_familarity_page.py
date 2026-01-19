@@ -296,7 +296,10 @@ def static_instructions(prolific_id, batch_id):
         - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progress, your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.  
         - You can use the **Back** button to revisit earlier steps *within the same abstract*.  
         - Once you proceed to the next batch, you will **not** be able to return to this abstract.
+        ---
+        Once you finish this batch, please record your time on how long it took you to complete this batch and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**
         """)
+    
 
 
     if st.button("Start"):
