@@ -296,8 +296,8 @@ def run_feedback():
                     users_collection.update_one(
                         {"prolific_id": data['prolific_id']},
                         {"$set": {
-                            f"phases.static.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.short_answers": feedback_data,
-                            f"phases.static.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.feedback_submitted": True
+                            f"phases.static.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.sata": feedback_data,
+                            f"phases.static.batches.{data['batch_id']}.abstracts.{data['abstract_id']}.sata_submitted": True
                         }}
                     )
 
