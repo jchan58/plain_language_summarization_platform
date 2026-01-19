@@ -39,8 +39,6 @@ st.markdown(
 )
 st.set_page_config(layout="wide")
 
-if "seen_pilot_popup" not in st.session_state:
-    st.session_state.seen_pilot_popup = False
 
 @st.cache_resource
 def get_mongo_client():
@@ -227,54 +225,6 @@ def highlight_terms_in_abstract(abstract: str, terms: list):
         )
     return highlighted
 
-@st.dialog("Pilot Study Instructions", width="medium", dismissible=False)
-def pilot_popup(prolific_id, batch_id):
-    st.markdown("""
-    ### Pilot Study Instructions
-
-    You are participating in a **pilot study** with two phases:
-
-    1. **Static Phase (First Phase)**
-    2. **Interactive Phase (Second Phase)**
-
-    Each phase contains **one abstract**.
-
-    Instructions for each phase will be shown before you start. **Please read them carefully.**
-
-    ---
-
-    ## Timing Instructions for the Pilot Study
-
-    Although the system automatically records time, during the pilot study you must also  
-    **manually track your time**.
-
-    - Please use a stopwatch, phone timer, or clock.
-    - Record how long each phase takes in **seconds**.
-
-    Manually record:
-    - Time for the entire **Static Phase**
-    - Time for the entire **Interactive Phase**
-    - Time for the **Select All That Apply (SATA) questions section** should be recorded separately
-
-    You will be asked to provide these recordings before moving on to the **Next Batch**.
-
-    ---
-
-    This pilot is designed to test both versions of the task.  
-    If ypu have any suggestions or comments to improve this study, please mention it in the feedback section.
-
-    Thank you for helping us improve this study. Please login with your preferred email address. 
-    """)
-
-
-    if st.button("Continue"):
-        st.session_state.seen_pilot_popup = True
-        users_collection.update_one(
-            {"prolific_id": prolific_id},
-            {"$set": {f"phases.static.batches.{batch_id}.seen_pilot_popup": True}},
-            upsert=True
-        )
-        st.rerun()
 
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
 def static_instructions(prolific_id, batch_id):
@@ -487,23 +437,9 @@ def run_terms(prolific_id, batch_id, full_type):
             .get(batch_id, {})
             .get("seen_instructions", False)
     )
-    db_seen_pilot = (
-        user.get("phases", {})
-            .get("static", {})
-            .get("batches", {})
-            .get(batch_id, {})
-            .get("seen_pilot_popup", False)
-    )
-
-    if "seen_pilot_popup" not in st.session_state:
-        st.session_state.seen_pilot_popup = db_seen_pilot
 
     if "seen_static_instructions" not in st.session_state:
         st.session_state.seen_static_instructions = db_seen
-
-    if not st.session_state.seen_pilot_popup:
-        pilot_popup(prolific_id, batch_id)
-        return
 
     # If not seen → show instructions dialog
     if not st.session_state.seen_static_instructions:
