@@ -290,7 +290,7 @@ def run_chatbot(prolific_id, batch_id, full_type):
     )
     total = len(abstracts_dict)
     completed = sum(1 for a in abstracts_dict.values() if a.get("completed", False))
-    current = completed + 1
+    current = completed
     progress_ratio = current / total if total > 0 else 0
     st.progress(progress_ratio)
     st.caption(f"Completed {current} of {total} abstracts")

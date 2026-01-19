@@ -496,7 +496,7 @@ def run_terms(prolific_id, batch_id, full_type):
         st.session_state.current_term_abs_id = current_abs_id
 
     completed, total = get_static_progress(prolific_id, batch_id)
-    current_index = completed + 1
+    current_index = completed
     st.progress(current_index / total)
     st.markdown(f"**Progress:** {current_index} / {total} abstracts")
     with st.expander("📝 Instructions", expanded=True):
