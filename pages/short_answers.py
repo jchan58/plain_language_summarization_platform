@@ -258,7 +258,7 @@ def run_feedback():
                     st.rerun()
 
         with nav3:
-            if st.session_state.qa_index < 3:
+            if st.session_state.qa_index < len(questions) - 1:
                 if st.button("Next Question ➡"):
                     accumulate_question_time()
                     st.session_state.qa_index += 1

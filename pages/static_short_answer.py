@@ -241,7 +241,7 @@ def run_feedback():
                 "correct": parse_choices(abstract_info["question_4_correct_answers"])
             },
             {
-                "key": "q4",
+                "key": "q5",
                 "text": abstract_info["question_5"],
                 "choices": parse_choices(abstract_info["question_5_answers_choices"]),
                 "correct": parse_choices(abstract_info["question_5_correct_answers"])
@@ -284,7 +284,7 @@ def run_feedback():
                 st.rerun()
 
         with nav3:
-            if st.session_state.qa_index < 3:
+            if st.session_state.qa_index < len(questions) - 1:
                 if st.button("Next Question ➡"):
                     st.session_state.qa_index += 1
                     st.rerun()
@@ -301,7 +301,7 @@ def run_feedback():
                         "time_q2": st.session_state.get("q2_time", 0),
                         "time_q3": st.session_state.get("q3_time", 0),
                         "time_q4": st.session_state.get("q4_time", 0),
-                        "time_q4": st.session_state.get("q5_time", 0),
+                        "time_q5": st.session_state.get("q5_time", 0),
                     }
                     users_collection.update_one(
                         {"prolific_id": data['prolific_id']},
