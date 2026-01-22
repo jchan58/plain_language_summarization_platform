@@ -205,7 +205,7 @@ if not st.session_state.get("logged_in", False):
                     "question_2": row["question_2"],
                     "question_3": row["question_3"],
                     "question_4": row["question_4"],
-
+                    "question_5": row["question_5"],
                     "question_1_answers_choices": row["question_1_answers_choices"],
                     "question_1_correct_answers": row["question_1_correct_answers"],
                     "question_2_answers_choices": row["question_2_answers_choices"],
@@ -214,7 +214,8 @@ if not st.session_state.get("logged_in", False):
                     "question_3_correct_answers": row["question_3_correct_answers"],
                     "question_4_answers_choices": row["question_4_answers_choices"],
                     "question_4_correct_answers": row["question_4_correct_answers"],
-
+                    "question_5_answers_choices": row["question_5_answers_choices"],
+                    "question_5_correct_answers": row["question_5_correct_answers"],
                     "term_familarity": structured_terms,
                     "short_answers": {},
                     "completed": False,
