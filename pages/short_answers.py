@@ -221,8 +221,18 @@ def run_feedback():
             }
         ]
 
-        if "sata_answers" not in st.session_state:
+        if "sata_for_abstract" not in st.session_state:
+            st.session_state.sata_for_abstract = None
+
+        if st.session_state.sata_for_abstract != abstract_id:
             st.session_state.sata_answers = {q["key"]: [] for q in questions}
+            st.session_state.qa_index = 0
+            st.session_state.question_start_time = datetime.utcnow()
+
+            for k in ["q1_time", "q2_time", "q3_time", "q4_time", "q5_time"]:
+                st.session_state[k] = 0
+
+            st.session_state.sata_for_abstract = abstract_id
 
         q = questions[st.session_state.qa_index]
         st.subheader(q["text"])
@@ -263,7 +273,6 @@ def run_feedback():
                 if st.button("Next Question ➡"):
                     accumulate_question_time()
                     st.session_state.qa_index += 1
-                    st.rerun()
 
             else:
                 all_filled = completed == 5
