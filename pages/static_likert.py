@@ -260,8 +260,8 @@ def run_likert():
         q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
         q6 = persistent_radio("How well did this SUMMARY match your level of understanding?", "understanding")
         q7 = persistent_radio("How well did this SUMMARY explain the information you were unfamiliar with?", "explanation")
-        q8 = persistent_radio("How well did this summary focus on the aspects that mattered most to you?", "importance")
-        q9 = persistent_radio("How well did this summary feel tailored to you?", "tailored")
+        q8 = persistent_radio("How well did this SUMMARY focus on the aspects that mattered most to you?", "importance")
+        q9 = persistent_radio("How well did this SUMMARY feel tailored to you?", "tailored")
 
         client = MongoClient(st.secrets["MONGO_URI"])
         db = client["pls"]
