@@ -7,8 +7,6 @@ print("=== SESSION STATE DUMP ===", file=sys.stderr)
 for k, v in st.session_state.items():
     print(f"{k}: {v}", file=sys.stderr)
 print("===========================", file=sys.stderr)
-
-MIN_CHARS = 75
 st.markdown(
     """
     <style>
@@ -42,7 +40,8 @@ def accumulate_question_time():
         0: "q1_time",
         1: "q2_time",
         2: "q3_time",
-        3: "q4_time"
+        3: "q4_time",
+        4: "q5_time"
     }
     q_key = key_map.get(st.session_state.qa_index)
 
@@ -214,6 +213,12 @@ def run_feedback():
                 "choices": parse_choices(abstract_info["question_4_answers_choices"]),
                 "correct": parse_choices(abstract_info["question_4_correct_answers"])
             },
+            {
+                "key": "q5",
+                "text": abstract_info["question_5"],
+                "choices": parse_choices(abstract_info["question_5_answers_choices"]),
+                "correct": parse_choices(abstract_info["question_5_correct_answers"])
+            }
         ]
 
         if "sata_answers" not in st.session_state:
@@ -260,7 +265,7 @@ def run_feedback():
                     st.rerun()
 
             else:
-                all_filled = completed == 4
+                all_filled = completed == 5
 
                 if st.button("Submit", disabled=not all_filled):
 
@@ -274,6 +279,7 @@ def run_feedback():
                         "time_q2": st.session_state.get("q2_time", 0),
                         "time_q3": st.session_state.get("q3_time", 0),
                         "time_q4": st.session_state.get("q4_time", 0),
+                        "time_q5": st.session_state.get("q5_time", 0),
                     }
                     users_collection.update_one(
                         {"prolific_id": data['prolific_id']},

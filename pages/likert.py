@@ -259,7 +259,7 @@ def run_likert():
         required_keys = [
             "simplicity", "coherence", "informativeness",
             "background", "faithfulness",
-            "chatbot_useful", "chatbot_understanding"
+            "chatbot_useful", "chatbot_understanding", "understanding", "explanation", "importance", "tailored"
         ]
 
         all_answered = all(st.session_state.get(k) is not None for k in required_keys)
@@ -273,6 +273,10 @@ def run_likert():
         q3 = persistent_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")
         q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
         q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
+        q8 = persistent_radio("How well did this SUMMARY match your level of understanding?", "understanding")
+        q9 = persistent_radio("How well did this SUMMARY explain the information you were unfamiliar with?", "explanation")
+        q10 = persistent_radio("How well did this summary focus on the aspects that mattered most to you?", "importance")
+        q11 = persistent_radio("How well did this summary feel tailored to you?", "tailored")
 
         # CHATBOT questions
         st.header("Rate your experience with using the AI Chatbot")
@@ -297,7 +301,11 @@ def run_likert():
                     "background": st.session_state.get("background"),
                     "faithfulness": st.session_state.get("faithfulness"),
                     "chatbot_useful": st.session_state.get("chatbot_useful"),
-                    "chatbot_understanding": st.session_state.get("chatbot_understanding")
+                    "chatbot_understanding": st.session_state.get("chatbot_understanding"), 
+                    "understanding": st.session_state.get("understanding"),
+                    "explanation": st.session_state.get("explanation"),
+                    "importance": st.session_state.get("importance"),
+                    "tailored": st.session_state.get("tailored")
                 }
                 st.switch_page("pages/short_answers.py")
 
@@ -324,7 +332,11 @@ def run_likert():
                     "background_information": q4,
                     "faithfulness": q5, 
                     "chatbot_useful":q6, 
-                    "chatbot_understanding":q7
+                    "chatbot_understanding":q7,
+                    "understanding": q8,
+                    "explanation": q9,
+                    "importance": q10,
+                    "tailored": q11
                 }
             }
             users_collection.update_one(

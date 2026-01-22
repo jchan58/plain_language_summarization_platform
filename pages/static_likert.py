@@ -258,13 +258,17 @@ def run_likert():
         q3 = persistent_radio("How well did the SUMMARY capture the ABSTRACT’s main ideas?", "informativeness")
         q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
         q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
+        q6 = persistent_radio("How well did this SUMMARY match your level of understanding?", "understanding")
+        q7 = persistent_radio("How well did this SUMMARY explain the information you were unfamiliar with?", "explanation")
+        q8 = persistent_radio("How well did this summary focus on the aspects that mattered most to you?", "importance")
+        q9 = persistent_radio("How well did this summary feel tailored to you?", "tailored")
 
         client = MongoClient(st.secrets["MONGO_URI"])
         db = client["pls"]
         users_collection = db["users"]
         all_answered = all(
             st.session_state.get(k) is not None for k in
-            ["simplicity", "coherence", "informativeness", "background", "faithfulness"]
+            ["simplicity", "coherence", "informativeness", "background", "faithfulness", "understanding", "explanation", "importance", "tailored"]
         )
 
         # Navigation row under Likert questions
@@ -277,6 +281,10 @@ def run_likert():
                     "informativeness": st.session_state.get("informativeness"),
                     "background": st.session_state.get("background"),
                     "faithfulness": st.session_state.get("faithfulness"),
+                    "understanding": st.session_state.get("understanding"),
+                    "explanation": st.session_state.get("explanation"),
+                    "importance": st.session_state.get("importance"),
+                    "tailored": st.session_state.get("tailored"),
                 }
                 st.switch_page("pages/static_short_answer.py")
         with col_submit:
@@ -299,7 +307,11 @@ def run_likert():
                     "coherence": q2,
                     "informativeness": q3,
                     "background_information": q4,
-                    "faithfulness": q5
+                    "faithfulness": q5,
+                    "understanding": q6,
+                    "explanation": q7,
+                    "importance": q8,
+                    "tailored": q9
                 }
             }
             users_collection.update_one(
