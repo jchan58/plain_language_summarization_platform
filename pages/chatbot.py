@@ -232,6 +232,54 @@ def get_user_interactive_abstracts(prolific_id: str, batch_id: str):
         })
     return abstracts
 
+def format_sata(sata_list):
+    out = []
+    for i, q in enumerate(sata_list, 1):
+        out.append(f"SATA {i}: {q['question']}")
+        for j, opt in enumerate(q["options"], 1):
+            out.append(f"  {j}. {opt}")
+        out.append(f"Correct answers: {', '.join(q['correct_answers'])}")
+        out.append("")
+    return "\n".join(out)
+
+def build_conversation_text(conversation_log):
+    user_messages = [
+        msg["content"].strip()
+        for msg in conversation_log
+        if msg.get("role") == "user" and msg.get("content")
+    ]
+
+    if not user_messages:
+        raise ValueError("No user questions found in conversation log")
+
+    return "\n".join(f"User: {q}" for q in user_messages)
+
+def parse_choices(s):
+    if not s:
+        return []
+    return [x.strip() for x in str(s).split(";") if x.strip()]
+
+def build_sata_questions(abstract_info):
+    sata_questions = []
+    allowed_questions = {1, 2, 3, 5}
+
+    for i in allowed_questions:
+        q_key = f"question_{i}"
+        choices_key = f"question_{i}_answers_choices"
+        correct_key = f"question_{i}_correct_answers"
+        if q_key not in abstract_info:
+            continue
+
+        sata_questions.append({
+            "question": abstract_info[q_key],
+            "options": parse_choices(abstract_info.get(choices_key, "")),
+            "correct_answers": parse_choices(abstract_info.get(correct_key, "")),
+        })
+
+    if not sata_questions:
+        raise ValueError("No valid SATA questions found after filtering")
+
+    return sata_questions
 
 def run_chatbot(prolific_id, batch_id, full_type):
     # detect batch change 
@@ -442,22 +490,50 @@ def run_chatbot(prolific_id, batch_id, full_type):
                         .get(abstract_key, {})
                         .get("conversation_log", [])
                 )
-
-                conversation_text = "\n".join(
-                    f"{msg['role'].capitalize()}: {msg['content']}"
-                    for msg in conversation_log
-                )
+                conversation_text = build_conversation_text(conversation_log)
+                print(conversation_text)
+                abstract_info = abstracts_dict.get(abstract_key, {})
+                sata_list = build_sata_questions(abstract_info)
+                sata_text = format_sata(sata_list)
+                print(sata_text)
                 system_prompt = (
-                    "You are an expert science communicator. Rewrite the abstract into a personalized plain-language "
-                    "summary that MUST incorporate all answers to the reader’s questions using the conversation seamlessly.\n\n"
-                    f"Conversation:\n{conversation_text}\n\n"
-                    "Before writing the summary, do the following steps internally:\n"
-                    "1. Extract every question the reader asked in the conversation.\n" 
-                    "2. For each question, produce a short note describing the answer found in the conversation.\n"
-                    "3. Then rewrite the abstract into a personalized plain-language summary that integrates ALL of these answers while preserving the content of the orginal abstract with no extraneous information.\n"
-                    "4. Absolutely NO question may be omitted.\n" 
-                    "Go through step by step whether any information from the conversation is not in the rewritten abstract if it is make sure to include it in the rewritten abstract."
-               )
+                    "CRITICAL RULE:\n"
+                    "If the user asks 'why' or 'how' and the abstract does not give a reason, you MUST include an explicit sentence saying the reason is unknown or not well understood.\n\n"
+
+                    "You are an expert science communicator.\n\n"
+                    "Your task is to rewrite the abstract into a personalized, plain-language summary for this specific reader.\n\n"
+                    "You MUST use the questions the user is confused about below to understand what the user is confused about or curious about, "
+                    "and make sure those topics are clearly explained in the rewritten abstract.\n\n"
+                    f"Questions:\n{conversation_text}\n\n"
+                    f"Select-All-That-Apply (SATA) Questions:\n{sata_text}\n\n"
+                    "For each SATA item:\n"
+                    "- The rewritten summary MUST contain information that allows a careful reader to logically deduce every correct answer.\n"
+                    "- You must NOT explicitly list, label, or reference answer choices or say which options are correct inside the summary.\n"
+                    "- The summary MUST avoid adding statements that would also justify incorrect options.\n"
+                    "- Add background knowledge only if it is necessary to answer a user question or enable SATA deduction.\n"
+                    "- The summary must remain natural narrative, not exam-style reasoning.\n\n"
+                    "Follow these steps internally (do NOT show them in your final answer):\n"
+                    "1. Identify every user question in the conversation text.\n"
+                    "2. For each user question:\n"
+                    "   - If the abstract contains the answer, explain it clearly using only abstract content.\n"
+                    "   - If not, add only the minimal well-established background needed to answer it.\n"
+                    "   - For any 'why' or 'how' question, include a causal explanation.\n"
+                    "   - If a user asks 'why' or 'how' and the abstract does not provide a reason, you MUST include an explicit sentence stating that the reason is unknown or not well understood.\n"
+                    "3. For each SATA question:\n"
+                    "   - Identify what facts allow correct options to be inferred.\n"
+                    "   - Embed those facts naturally in the summary.\n"
+                    "   - Ensure no incorrect option is supported.\n"
+                    "4. Final internal check:\n"
+                    "   - Every user question is answered by at least one sentence.\n"
+                    "   - No sentence exists that does not help answer a user question or support SATA deduction.\n"
+                    "   - No incorrect SATA option is supported.\n"
+                    "   - If any condition fails, rewrite until all pass.\n\n"
+                    "Final output rules:\n"
+                    "- Output only the final personalized plain-language summary.\n"
+                    "- Do NOT show reasoning steps, checklists, or internal notes.\n"
+                    "- If any user question is not clearly answered, the output is wrong.\n"
+                    "- Do not add information that does not serve answering user questions or enabling SATA deduction."
+                )
                 response = client_openai.chat.completions.create(
                     model="gpt-4o",
                     messages=[
