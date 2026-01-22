@@ -229,9 +229,10 @@ def run_feedback():
 
         selected = []
         for choice in q["choices"]:
+            checkbox_key = f"{abstract_id}_{q['key']}_{hash(choice)}"
             checked = st.checkbox(
                 choice,
-                key=f"{q['key']}_{choice}",
+                key=checkbox_key,
                 value=choice in st.session_state.sata_answers[q["key"]]
             )
             if checked:
