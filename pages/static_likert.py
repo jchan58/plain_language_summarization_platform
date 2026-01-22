@@ -288,7 +288,7 @@ def run_likert():
                 }
                 st.switch_page("pages/static_short_answer.py")
         with col_submit:
-            if st.button("Next Batch"):
+            if st.button("Next Batch ➡️"):
                 if not all_answered:
                     st.warning("Please answer all questions to move on.")
                 else:
