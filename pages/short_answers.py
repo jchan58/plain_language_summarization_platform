@@ -273,6 +273,7 @@ def run_feedback():
                 if st.button("Next Question ➡"):
                     accumulate_question_time()
                     st.session_state.qa_index += 1
+                    st.rerun()
 
             else:
                 all_filled = completed == 5
