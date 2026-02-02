@@ -112,7 +112,7 @@ if not st.session_state.seen_pilot_intro:
         - Time for the entire **Interactive Phase**
         - Time for the **SATA questions section** should be recorded separately
 
-        You will be asked to provide these recordings before moving on to the **Next Batch**.
+        You will be asked to provide these times before moving on to the **next phase**.
 
         ---
 
