@@ -284,7 +284,12 @@ def static_instructions(prolific_id, batch_id):
         2. You will then be shown a SUMMARY derived from the ABSTRACT. Read the SUMMARY and answer the following:
         Answer all five SATA questions using the SUMMARY derived from the ABSTRACT.  
 
-       3. You will then be shown both the ABSTRACT and the SUMMARY and asked to answer questions that evaluate how the SUMMARY compares to the ABSTRACT (e.g., clarity, organization, coverage of information, inclusion of background information, and trustworthiness), as well as questions that assess the SUMMARY on its own, including whether it met your information needs.
+       3. You will then be shown both the ABSTRACT and the SUMMARY and asked to complete the following:
+            (a) Comparing the SUMMARY to the ABSTRACT:
+            Answer questions that evaluate how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+
+            (b) Thinking only about the SUMMARY:
+            Answer questions that assess the SUMMARY on its own, including whether it met your information needs.
 
         ### Additional Notes:
         - Refer to the instructions at the top of each page for detailed guidance.  

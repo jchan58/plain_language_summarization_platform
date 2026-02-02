@@ -107,7 +107,8 @@ def get_conversation():
 
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
 def interactive_instructions(prolific_id, batch_id):
-    st.title(f"Welcome to Batch #{batch_id}")
+    st.title(f"Welcome to Phase 2")
+    # st.title(f"Welcome to Batch #{batch_id}")
     # st.markdown("""
     # ### Before you begin, please read these instructions carefully  
     # Please follow these steps:
@@ -131,11 +132,21 @@ def interactive_instructions(prolific_id, batch_id):
     ### Before you begin, please read these instructions carefully  
     Please follow these steps:
 
-    For this batch, you will complete **1 abstract**. For the abstract, you will:
+     For this interactive phase, you will complete **1 abstract**. First, read the abstract. Then you will be asked to do the following.
 
-    1. **Chat with the AI chatbot about the ABSTRACT:** After reading the ABSTRACT, ask the AI chatbot any questions you have to help you better understand it.
-    2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
-    3. **Compare SUMMARY to ABSTRACT Questionnaire:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, and complete a few questions about your AI chatbot experience in this study.
+    1. After reading the ABSTRACT, use the AI chatbot to ask any questions you have to help you better understand the content and any questions you may have:
+    **For example:**\n
+        “Is this medication FDA approved for me to take?”
+    2. You will then be shown a SUMMARY derived from the ABSTRACT. Read the SUMMARY and answer all five Select-All-That-Apply (SATA) questions using the information provided in the SUMMARY.
+    3. You will then be shown both the ABSTRACT and the SUMMARY and asked to complete the following:
+        (a) Comparing the SUMMARY to the ABSTRACT:
+        Answer questions that evaluate how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+
+        (b) Thinking only about the SUMMARY:
+        Answer questions that assess the SUMMARY on its own, including whether it met your information needs.
+
+        (c) Your experience using the AI chatbot:
+        Answer a few questions about your experience using the AI chatbot in this study.
     ---
     **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  

@@ -145,7 +145,7 @@ def run_likert():
         For the questions in this section, compare the SUMMARY to the ABSTRACT you just read. Rate how well the SUMMARY reflects the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
         2b. Thinking only about the SUMMARY
         For the questions in this section, focus only on the SUMMARY itself, without comparing it to the ABSTRACT. Base your answers on your own understanding, information needs, and perspective.
-        3. When you have finished answering all questions, click the **Next Batch** button.  
+        3. When you have finished answering all questions, click the **Next Phase** button.  
         4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
         **Note:** You may use the **Back** button if you need to revisit the Select All That Apply (SATA) questions for this abstract.
