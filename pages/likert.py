@@ -210,7 +210,7 @@ def run_likert():
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
         st.markdown(f"### ABSTRACT")
-        btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
+        btn1, btn2, btn3 = st.columns([0.25, 0.65, 0.10])
 
         with btn1:
             if st.button("A-", key="abs_decrease"):
@@ -248,7 +248,7 @@ def run_likert():
 
     with col2:
         st.markdown("### AI-Generated SUMMARY")
-        btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
+        btn1, btn2, btn3 = st.columns([0.25, 0.65, 0.10])
 
         with btn1:
             if st.button("A-", key="sum_decrease"):
