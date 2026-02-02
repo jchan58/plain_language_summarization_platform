@@ -248,11 +248,10 @@ def static_instructions(prolific_id, batch_id):
     #         - *Background:* Diabetes develops when the body does not make enough insulin or does not use insulin properly, which can lead to long-term health problems.  
     #         - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.  
 
-    #     2. **Select All That Apply (SATA) Questions:**  
+    #     2. You will then be shown a SUMMARY derived from the abstract. Read the SUMMARY and answer the following:
     #     Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
 
-    #     3. **Compare SUMMARY to ABSTRACT Questionnaire:**  
-    #     Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+    #     3. You will then be shown both the ABSTRACT and the SUMMARY and asked to answer questions evaluating how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, trustworthiness, and whether it met your information needs.
 
     #     ---
 
