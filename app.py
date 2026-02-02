@@ -94,7 +94,7 @@ if not st.session_state.seen_pilot_intro:
         1. **Static Phase (First Phase)**
         2. **Interactive Phase (Second Phase)**
 
-        For each phase, you will be asked to read one scientific abstract and answer some questions about it.
+        For each phase, you will be asked to read one scientific abstract and answer some questions about it.\n
         Instructions for each phase will be shown before you start. **Please read them carefully.**
 
         ---
