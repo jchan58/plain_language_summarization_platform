@@ -166,7 +166,7 @@ def run_feedback():
         st.title("SUMMARY")
 
         # Font size buttons
-        b1, b2, b3 = st.columns([0.25, 0.70, 0.05])
+        b1, b2, b3 = st.columns([0.25, 0.60, 0.15])
         with b1:
             if st.button("A-"):
                 st.session_state.summary_font_size = max(12, st.session_state.summary_font_size - 2)
