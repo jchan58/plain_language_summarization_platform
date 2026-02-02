@@ -157,7 +157,7 @@ def interactive_instructions(prolific_id, batch_id):
     - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progresss, Your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.
     - You may use the **Back** button to revisit earlier steps *within the same abstract*.  
     ---
-    - Once you finish this batch, please record your time on how long it took you to complete this batch and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**  
+    - Once you finish this phase, please record your time on how long it took you to complete this phase and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**  
     - You will also be able to leave any optional feedback about the task, instructions, or your experience.
     """)
 
