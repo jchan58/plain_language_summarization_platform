@@ -49,7 +49,7 @@ def confirm_next_abstract():
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Phase button**, and **confirm** that you want to move on.\n\n"
         "If you log out before then, you will have to start this abstract over."
     )
     # st.markdown(
@@ -111,7 +111,10 @@ def run_likert():
         # """
         # ### 📝 Instructions
         # 1. Read the ABSTRACT on the left and the **SUMMARY** on the right.  
-        # 2. Answer the questions below about how the **SUMMARY** compares to the ABSTRACT, specifically on clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+        # 2a. Comparing the SUMMARY to the ABSTRACT
+        # For the questions in this section, compare the SUMMARY to the ABSTRACT you just read. Rate how well the SUMMARY reflects the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+        # 2b. Thinking only about the SUMMARY
+        # For the questions in this section, focus only on the SUMMARY itself, without comparing it to the ABSTRACT. Base your answers on your own understanding, information needs, and perspective.
         # 3. When you have finished answering all questions, click the **Next Abstract** button.  
         # 4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
@@ -122,7 +125,10 @@ def run_likert():
         """
         ### 📝 Instructions
         1. Read the ABSTRACT on the left and the **SUMMARY** on the right.  
-        2. Answer the questions below about how the **SUMMARY** compares to the ABSTRACT, specifically on clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+        2a. Comparing the SUMMARY to the ABSTRACT
+        For the questions in this section, compare the SUMMARY to the ABSTRACT you just read. Rate how well the SUMMARY reflects the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+        2b. Thinking only about the SUMMARY
+        For the questions in this section, focus only on the SUMMARY itself, without comparing it to the ABSTRACT. Base your answers on your own understanding, information needs, and perspective.
         3. When you have finished answering all questions, click the **Next Batch** button.  
         4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
@@ -238,7 +244,6 @@ def run_likert():
 
     spacer_left, main, spacer_right = st.columns([0.25, 1, 0.25])
     with main:
-        st.markdown("### Comparing the SUMMARY to the ABSTRACT")
         st.markdown("""
         ### Rating Scale  
         **1 = Very Poor**  
@@ -248,7 +253,35 @@ def run_likert():
         **5 = Excellent**  
         """)
 
-        likert_scale = [1, 2, 3, 4, 5]
+        st.markdown("### Comparing the SUMMARY to the ABSTRACT")
+        st.caption(
+            "For the following questions, compare the SUMMARY to the ABSTRACT."
+        )
+
+        q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
+        q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
+        q3 = persistent_radio("How well did the SUMMARY capture the ABSTRACT’s main ideas?", "informativeness")
+        q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
+        q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
+
+        st.divider()
+        st.markdown("### Thinking Only About the SUMMARY")
+        st.caption(
+            "For the following questions, consider only the SUMMARY itself, without comparing it to the ABSTRACT."
+        )
+
+        q6 = persistent_radio("How well did this SUMMARY match your level of understanding?", "understanding")
+        q7 = persistent_radio("How well did this SUMMARY explain the information you were unfamiliar with?", "explanation")
+        q8 = persistent_radio("How well did this SUMMARY focus on the aspects that mattered most to you?", "importance")
+        q9 = persistent_radio("How well did this SUMMARY feel tailored to you?", "tailored")
+
+        likert_scale = [
+            "1 — Very Poor",
+            "2 — Poor",
+            "3 — Fair",
+            "4 — Good",
+            "5 — Excellent"
+        ]
 
         def persistent_radio(label, key):
             return st.radio(label, likert_scale, horizontal=True, key=key, index=None)
@@ -288,7 +321,8 @@ def run_likert():
                 }
                 st.switch_page("pages/static_short_answer.py")
         with col_submit:
-            if st.button("Next Batch ➡️"):
+            if st.button("Next Phase ➡️"):
+            # if st.button("Next Batch ➡️"):
                 if not all_answered:
                     st.warning("Please answer all questions to move on.")
                 else:

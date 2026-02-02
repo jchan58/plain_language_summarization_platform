@@ -281,10 +281,10 @@ def static_instructions(prolific_id, batch_id):
             - *Background:* Diabetes develops when the body does not make enough insulin or does not use insulin properly, which can lead to long-term health problems.  
             - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.  
 
-        2. You will then be shown a SUMMARY derived from the abstract. Read the SUMMARY and answer the following:
-        Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
+        2. You will then be shown a SUMMARY derived from the ABSTRACT. Read the SUMMARY and answer the following:
+        Answer all five SATA questions using the SUMMARY derived from the ABSTRACT.  
 
-        3. You will then be shown both the ABSTRACT and the SUMMARY and asked to answer questions evaluating how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, trustworthiness, and whether it met your information needs.
+       3. You will then be shown both the ABSTRACT and the SUMMARY and asked to answer questions that evaluate how the SUMMARY compares to the ABSTRACT (e.g., clarity, organization, coverage of information, inclusion of background information, and trustworthiness), as well as questions that assess the SUMMARY on its own, including whether it met your information needs.
 
         ### Additional Notes:
         - Refer to the instructions at the top of each page for detailed guidance.  
@@ -293,11 +293,9 @@ def static_instructions(prolific_id, batch_id):
         - You can use the **Back** button to revisit earlier steps *within the same abstract*.  
         - Once you proceed to the next batch, you will **not** be able to return to this abstract.
         ---
-        - Once you finish this batch, please record your time on how long it took you to complete this batch and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**  
+        - Once you finish this phase, please record your time on how long it took you to complete this batch and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**  
         - You will also be able to leave any optional feedback about the task, instructions, or your experience.
         """)
-    
-
 
     if st.button("Start"):
         st.session_state.seen_static_instructions = True
@@ -474,7 +472,7 @@ def run_terms(prolific_id, batch_id, full_type):
     else:
         abstracts = get_user_static_abstracts(prolific_id, batch_id)
         if not abstracts:
-            st.success("🎉 All abstracts completed for this batch!")
+            st.success("🎉 All abstracts completed for both phases!")
             st.stop()
 
         abs_item = abstracts[0]
@@ -504,7 +502,7 @@ def run_terms(prolific_id, batch_id, full_type):
             1. Read the ABSTRACT — the 10 terms you will evaluate are **highlighted**.  
             2. Use the slider to rate your level of familiarity with each term *in the context of the ABSTRACT*.  
             3. Click **Next** when you have finished rating all terms.  
-            4. On the following page, select the additional information you would need to better understand each term:
+            4. On the following page, specify if any additional information would help you better understand each term:
 
             - **Definition:** A explanation of what the term means.
             - **Background:** Contextual information that helps you understand the term.
