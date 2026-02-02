@@ -88,14 +88,13 @@ if not st.session_state.seen_pilot_intro:
     @st.dialog("Pilot Study Instructions", width="large", dismissible=False)
     def pilot_dialog():
         st.markdown("""
-        ## Welcome to the Pilot Study for Making Scientific Abstracts Easier to Understand for the Lay Person
+        ## Welcome to the Plain Language Abstracts Pilot Study
         This **pilot study** will have two phases:
 
         1. **Static Phase (First Phase)**
         2. **Interactive Phase (Second Phase)**
 
-        Each phase contains **one abstract**.
-
+        For each phase, you will be asked to read one scientific abstract and answer some questions about it.
         Instructions for each phase will be shown before you start. **Please read them carefully.**
 
         ---
