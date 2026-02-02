@@ -138,7 +138,7 @@ def interactive_instructions(prolific_id, batch_id):
        **For example:**\n
         “Is this medication FDA approved for me to take?”
     2. You will then be shown a SUMMARY derived from the ABSTRACT. Read the SUMMARY and answer all five Select-All-That-Apply (SATA) questions using the information provided in the SUMMARY.
-    3. You will then be shown both the ABSTRACT and the SUMMARY and asked to complete the following:
+    3. You will then be shown both the ABSTRACT and the SUMMARY and asked to complete the following:\n
         (a) Comparing the SUMMARY to the ABSTRACT:
                 
         Answer questions that evaluate how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
