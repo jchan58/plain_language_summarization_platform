@@ -235,9 +235,9 @@ def static_instructions(prolific_id, batch_id):
 
     #     For this batch, you will complete **4 abstracts**. First, read the abstract. Then you will be asked to do the following.
 
-    #     1. **Term Familiarity:**
-    #     - Rate your level of familiarity with each term on a scale from 1 (not familiar at all) to 5 (very familiar).
+    #     1. You will be shown a list of terms present in the abstract. For each term, rate your level of familiarity on a scale from 1 (not familiar at all) to 5 (very familiar).
     #     - Then, specify what additional information (if any) would help you better understand the term by selecting one or more of the following:
+
 
     #         - **Definition:** An explanation of what the term means.  
     #         - **Background:** Contextual information that helps you understand the term.  
@@ -282,13 +282,10 @@ def static_instructions(prolific_id, batch_id):
             - *Background:* Diabetes develops when the body does not make enough insulin or does not use insulin properly, which can lead to long-term health problems.  
             - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.  
 
-        2. **Select All That Apply (SATA) Questions:**  
+        2. You will then be shown a SUMMARY derived from the abstract. Read the SUMMARY and answer the following:
         Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
 
-        3. **Compare SUMMARY to ABSTRACT Questionnaire:**  
-        Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
-
-        ---
+        3. You will then be shown both the ABSTRACT and the SUMMARY and asked to answer questions evaluating how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, trustworthiness, and whether it met your information needs.
 
         ### Additional Notes:
         - Refer to the instructions at the top of each page for detailed guidance.  
