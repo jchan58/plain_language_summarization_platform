@@ -115,7 +115,7 @@ def interactive_instructions(prolific_id, batch_id):
 
     # For this batch, you will complete **3 abstracts**. For each abstract, you will:
 
-    # 1. **Chat with the AI chatbot about the ABSTRACT:** After reading the ABSTRACT, ask the AI chatbot any questions you have to help you better understand it.
+    # 1. **Chat with the AI chatbot about the ABSTRACT by asking it any questions you may have about the ABSTRACT**
     # 2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **AI-Generated SUMMARY** derived from the ABSTRACT.  
     # 3. **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire:** Answer the questions on the page to assess how the AI-Generated SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, and complete a few questions about your AI chatbot experience in this study.
     # ---
@@ -132,9 +132,9 @@ def interactive_instructions(prolific_id, batch_id):
     ### Before you begin, please read these instructions carefully  
     Please follow these steps:
 
-     For this interactive phase, you will complete **1 abstract**. First, read the abstract. Then you will be asked to do the following.
+     For this interactive phase, you will complete **1 abstract**. For the abstract, you will be asked to do the following.
 
-    1. After reading the ABSTRACT, use the AI chatbot to ask any questions you have to help you better understand the content and any questions you may have:\n
+    1. Use the AI chatbot to ask any questions you have to help you better understand the ABSTRACT and any questions you may have about it:\n
        **For example:**\n
         “Is this medication FDA approved for me to take?”
     2. You will then be shown an AI-Generated SUMMARY derived from the ABSTRACT. Read the AI-Generated SUMMARY and answer all five Select-All-That-Apply (SATA) questions using the information provided in the AI-Generated SUMMARY.
@@ -376,12 +376,12 @@ def run_chatbot(prolific_id, batch_id, full_type):
     st.progress(progress_ratio)
     st.caption(f"Completed {current} of {total} abstracts")
     with st.expander("📝 Instructions", expanded=True):
+        # 1. Read the ABSTRACT on the **left side of the screen**.  
         st.markdown("""
-        1. Read the ABSTRACT on the **left side of the screen**.  
-        2. Use the **chatbot** on the right to ask questions about anything in the ABSTRACT you would like to understand better.  
-        3. You must ask the chatbot **at least 3 questions** before moving on.  
-        4. When you are finished asking questions, click **“I'm done asking questions.”**  
-        5. A confirmation popup will appear — please confirm that you would like to move on to the next task.\n\n
+        1. Use the **chatbot** on the right to ask questions about anything in the ABSTRACT you would like to understand better.  
+        2. You must ask the chatbot **at least 3 questions** before moving on.  
+        3. When you are finished asking questions, click **“I'm done asking questions.”**  
+        4. A confirmation popup will appear — please confirm that you would like to move on to the next task.\n\n
         **Note:** Once you move on, you will **not** be able to return to this page.
         """)
     col1, col2 = st.columns([1, 1], gap="large")
@@ -389,7 +389,7 @@ def run_chatbot(prolific_id, batch_id, full_type):
         st.markdown(f"### ABSTRACT")
         btn_col1, btn_col2, btn_col3 = st.columns([0.25, 0.55, 0.20])
         with btn_col1:
-            if st.button("Decrease text size"):
+            if st.button("A-"):
                 st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
                 st.rerun()
 
@@ -397,7 +397,7 @@ def run_chatbot(prolific_id, batch_id, full_type):
             st.write("")  # 
 
         with btn_col3:
-            if st.button("Increase text size"):
+            if st.button("A+"):
                 st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
                 st.rerun()
         formatted_abstract = abstract.replace("\n", "  \n")

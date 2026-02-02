@@ -186,7 +186,7 @@ def run_likert():
         btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
 
         with btn1:
-            if st.button("Decrease text size", key="abs_decrease"):
+            if st.button("A-", key="abs_decrease"):
                 st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
                 st.rerun()
 
@@ -194,7 +194,7 @@ def run_likert():
             st.write("")
 
         with btn3:
-            if st.button("Increase text size", key="abs_increase"):
+            if st.button("A+", key="abs_increase"):
                 st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
                 st.rerun()
 
@@ -224,7 +224,7 @@ def run_likert():
         btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
 
         with btn1:
-            if st.button("Decrease text size", key="sum_decrease"):
+            if st.button("A-", key="sum_decrease"):
                 st.session_state.summary_font_size = max(12, st.session_state.summary_font_size - 2)
                 st.rerun()
 
@@ -232,7 +232,7 @@ def run_likert():
             st.write("")
 
         with btn3:
-            if st.button("Increase text size", key="sum_increase"):
+            if st.button("A+", key="sum_increase"):
                 st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
                 st.rerun()
 

@@ -117,7 +117,7 @@ def run_feedback():
         btn_col1, btn_col2, btn_col3 = st.columns([0.25, 0.55, 0.20])
 
         with btn_col1:
-            if st.button("Decrease text size"):
+            if st.button("A-"):
                 st.session_state.summary_font_size = max(12, st.session_state.summary_font_size - 2)
                 st.rerun()
 
@@ -125,7 +125,7 @@ def run_feedback():
             st.write("")
 
         with btn_col3:
-            if st.button("Increase text size"):
+            if st.button("A+"):
                 st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
                 st.rerun()
 

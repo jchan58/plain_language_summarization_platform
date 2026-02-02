@@ -525,11 +525,11 @@ def run_terms(prolific_id, batch_id, full_type):
     st.markdown("### ABSTRACT")
     btn_col1, _, btn_col3 = st.columns([0.25, 0.65, 0.10])
     with btn_col1:
-        if st.button("Decrease text size"):
+        if st.button("A-"):
             st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
             st.rerun()
     with btn_col3:
-        if st.button("Increase text size"):
+        if st.button("A+"):
             st.session_state.abstract_font_size = min(30, st.session_state.abstract_font_size + 2)
             st.rerun()
 

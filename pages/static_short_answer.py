@@ -168,11 +168,11 @@ def run_feedback():
         # Font size buttons
         b1, b2, b3 = st.columns([0.25, 0.55, 0.20])
         with b1:
-            if st.button("Decrease Text Size"):
+            if st.button("A-"):
                 st.session_state.summary_font_size = max(12, st.session_state.summary_font_size - 2)
                 st.rerun()
         with b3:
-            if st.button("Increase Text Size"):
+            if st.button("A+"):
                 st.session_state.summary_font_size = min(30, st.session_state.summary_font_size + 2)
                 st.rerun()
 
