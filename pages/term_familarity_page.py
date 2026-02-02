@@ -268,10 +268,9 @@ def static_instructions(prolific_id, batch_id):
     st.markdown("""
         ### Before you begin, please read these instructions carefully.
 
-        For this static batch, you will complete **1 abstract**. First, read the abstract. Then you will be asked to do the following.
+        For this static phase, you will complete **1 abstract**. First, read the abstract. Then you will be asked to do the following.
 
-        1. **Term Familiarity:**
-        - Rate your level of familiarity with each term on a scale from 1 (not familiar at all) to 5 (very familiar).
+        1. You will be shown a list of terms present in the abstract. For each term, rate your level of familiarity on a scale from 1 (not familiar at all) to 5 (very familiar).
         - Then, specify what additional information (if any) would help you better understand the term by selecting one or more of the following:
 
             - **Definition:** An explanation of what the term means.  
