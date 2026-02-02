@@ -284,7 +284,7 @@ def run_likert():
         # 2b — Summary only
         st.markdown("### Thinking Only About the SUMMARY")
         st.caption(
-            "For the following questions, consider only the SUMMARY itself, without comparing it to the ABSTRACT."
+            "For the following questions, consider only the SUMMARY."
         )
 
         q6 = persistent_radio("How well did this SUMMARY match your level of understanding?", "understanding")
