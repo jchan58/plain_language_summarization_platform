@@ -523,7 +523,7 @@ def run_terms(prolific_id, batch_id, full_type):
             If **no additional information** is needed, choose **None** (do **not** select both None and other options).
             """)
     st.markdown("### ABSTRACT")
-    btn_col1, _, btn_col3 = st.columns([0.25, 0.65, 0.10])
+    btn_col1, _, btn_col3 = st.columns([0.25, 0.65, 0.01])
     with btn_col1:
         if st.button("A-"):
             st.session_state.abstract_font_size = max(12, st.session_state.abstract_font_size - 2)
