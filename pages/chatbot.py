@@ -83,7 +83,7 @@ def logout_confirm_dialog(prolific_id):
     #     "If you log out before then, you will have to start this abstract over."
     # )
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire**, click the **Next Phase button**, and **confirm** that you want to move on.\n\n"
         "If you log out before then, you will have to start this abstract over."
     )
     col1, col2 = st.columns(2)
@@ -150,7 +150,7 @@ def interactive_instructions(prolific_id, batch_id):
     ---
     **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  
-    - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Abstract** button, and **confirming** that you want to move on to the next abstract.  
+    - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Phase** button, and **confirming** that you want to move on to the next phase.  
     - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progresss, Your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.
     - You may use the **Back** button to revisit earlier steps *within the same abstract*.  
     ---

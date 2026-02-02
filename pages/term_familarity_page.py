@@ -78,7 +78,7 @@ def familiarity_fragment(abs_item, abstract_id):
 
         with col_slider:
             LIKERT_OPTIONS = [
-                "— Select familiarity —",  # Placeholder
+                "— Select familiarity —", 
                 "Not familiar",
                 "Somewhat unfamiliar",
                 "Moderately familiar",
@@ -177,7 +177,7 @@ def load_user_info(prolific_id):
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Phase button**, and **confirm** that you want to move on.\n\n"
         "If you log out before then, you will have to start this abstract over."
     )
     # st.markdown(

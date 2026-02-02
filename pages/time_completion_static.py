@@ -12,19 +12,19 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("Time Recording and Feedback for Batch")
+st.title("Time Recording and Feedback for Phase")
 
 st.markdown("""
 Please enter the following in **seconds**:
 
-1. Time to complete this **batch**
+1. Time to complete this **phase**
 2. Time to complete the **Select All That Apply (SATA)** questions  
-3. Any optional feedback about this batch
+3. Any optional feedback about this phase
 """)
 
-batch_time = st.text_input("Please enter the total time it took to complete this batch (in seconds)")
+batch_time = st.text_input("Please enter the total time it took to complete this phase (in seconds)")
 sata_time = st.text_input("Please enter the total time it took to answer the **Select All That Apply (SATA)** questions (in seconds)")
-feedback = st.text_area("Please enter any suggestions or comments you have for this static batch (optional)")
+feedback = st.text_area("Please enter any suggestions or comments you have for this static phase (optional)")
 
 def is_number(x):
     try:
@@ -63,5 +63,5 @@ if st.button("Submit"):
         }}
     )
 
-    st.success("Saved! Moving to next batch…")
+    st.success("Saved! Moving to next phase…")
     st.switch_page("app.py")
