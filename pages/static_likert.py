@@ -78,6 +78,22 @@ def run_likert():
     pls = data["pls"]
     batch_id = data['batch_id']
     full_type = data['full_type']
+    likert_scale = [
+        "1 — Very Poor",
+        "2 — Poor",
+        "3 — Fair",
+        "4 — Good",
+        "5 — Excellent"
+    ]
+
+    def persistent_radio(label, key):
+        return st.radio(
+            label,
+            likert_scale,
+            horizontal=True,
+            key=key,
+            index=None
+        )
     if "likert_start_time" not in st.session_state:
         st.session_state.likert_start_time = datetime.utcnow()
     with st.sidebar:
@@ -253,10 +269,9 @@ def run_likert():
         **5 = Excellent**  
         """)
 
+        # 2a — Comparative
         st.markdown("### Comparing the SUMMARY to the ABSTRACT")
-        st.caption(
-            "For the following questions, compare the SUMMARY to the ABSTRACT."
-        )
+        st.caption("For the following questions, compare the SUMMARY to the ABSTRACT.")
 
         q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
         q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
@@ -265,32 +280,13 @@ def run_likert():
         q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
 
         st.divider()
+
+        # 2b — Summary only
         st.markdown("### Thinking Only About the SUMMARY")
         st.caption(
             "For the following questions, consider only the SUMMARY itself, without comparing it to the ABSTRACT."
         )
 
-        q6 = persistent_radio("How well did this SUMMARY match your level of understanding?", "understanding")
-        q7 = persistent_radio("How well did this SUMMARY explain the information you were unfamiliar with?", "explanation")
-        q8 = persistent_radio("How well did this SUMMARY focus on the aspects that mattered most to you?", "importance")
-        q9 = persistent_radio("How well did this SUMMARY feel tailored to you?", "tailored")
-
-        likert_scale = [
-            "1 — Very Poor",
-            "2 — Poor",
-            "3 — Fair",
-            "4 — Good",
-            "5 — Excellent"
-        ]
-
-        def persistent_radio(label, key):
-            return st.radio(label, likert_scale, horizontal=True, key=key, index=None)
-
-        q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
-        q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
-        q3 = persistent_radio("How well did the SUMMARY capture the ABSTRACT’s main ideas?", "informativeness")
-        q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
-        q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
         q6 = persistent_radio("How well did this SUMMARY match your level of understanding?", "understanding")
         q7 = persistent_radio("How well did this SUMMARY explain the information you were unfamiliar with?", "explanation")
         q8 = persistent_radio("How well did this SUMMARY focus on the aspects that mattered most to you?", "importance")
