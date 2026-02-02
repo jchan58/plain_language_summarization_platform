@@ -228,11 +228,12 @@ def highlight_terms_in_abstract(abstract: str, terms: list):
 
 @st.dialog("📝 Instructions", width="medium", dismissible=False)
 def static_instructions(prolific_id, batch_id):
-    st.title(f"Welcome to Batch #{batch_id}")
+    st.title(f"Welcome to Phase #1")
+    # st.title(f"Welcome to Batch #{batch_id}")
     # st.markdown("""
     #     ### Before you begin, please read these instructions carefully.
 
-    #     For this batch, you will complete **4 abstracts**. For each abstract, you will:
+    #     For this batch, you will complete **4 abstracts**. First, read the abstract. Then you will be asked to do the following.
 
     #     1. **Term Familiarity:**
     #     - Rate your level of familiarity with each term on a scale from 1 (not familiar at all) to 5 (very familiar).
@@ -267,7 +268,7 @@ def static_instructions(prolific_id, batch_id):
     st.markdown("""
         ### Before you begin, please read these instructions carefully.
 
-        For this static batch, you will complete **1 abstract**. For the abstract, you will:
+        For this static batch, you will complete **1 abstract**. First, read the abstract. Then you will be asked to do the following.
 
         1. **Term Familiarity:**
         - Rate your level of familiarity with each term on a scale from 1 (not familiar at all) to 5 (very familiar).
