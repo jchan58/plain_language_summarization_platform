@@ -49,11 +49,11 @@ def confirm_next_abstract():
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     # st.markdown(
-    #     "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
+    #     "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
     #     "If you log out before then, you will have to start this abstract over."
     # )
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
         "If you log out before then, you will have to start this abstract over."
     )
     col1, col2 = st.columns(2)
@@ -125,7 +125,7 @@ def run_likert():
             st.session_state.show_logout_dialog = False 
             logout_confirm_dialog(prolific_id)
 
-    st.title("Compare SUMMARY to ABSTRACT")
+    st.title("Compare AI-Generated SUMMARY to ABSTRACT")
     current = st.session_state.progress_info["current"]
     total = st.session_state.progress_info["total"]
     progress_ratio = current / total if total > 0 else 0
@@ -135,8 +135,8 @@ def run_likert():
         # st.markdown(
         # """
         # ### 📝 Instructions
-        # 1. Read the **ABSTRACT** on the left and the **SUMMARY** on the right.  
-        # 2. Answer the comparison questions below to assess how the **SUMMARY** compares to the **ABSTRACT** in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, along with a few questions about your experience using the AI chatbot in this study.
+        # 1. Read the **ABSTRACT** on the left and the **AI-Generated SUMMARY** on the right.  
+        # 2. Answer the comparison questions below to assess how the **AI-Generated SUMMARY** compares to the **ABSTRACT** in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, along with a few questions about your experience using the AI chatbot in this study.
         # 3. When you have finished answering all questions, click the **Next Abstract** button.  
         # 4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
@@ -146,17 +146,25 @@ def run_likert():
         st.markdown(
         """
         ### 📝 Instructions
-        1. Read the **ABSTRACT** on the left and the **SUMMARY** on the right.  
-        2a. **Comparing the SUMMARY to the ABSTRACT**
-        For the questions in this section, compare the SUMMARY to the ABSTRACT you just read. Rate how well the SUMMARY reflects the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
-        2b. **Thinking Only About the SUMMARY**
-        For the questions in this section, focus only on the SUMMARY, without comparing it to the ABSTRACT. Base your answers on your own understanding, information needs, and perspective.
-        2c. **Your Experience Using the AI Chatbot**
-        For the questions in this section, think about your experience using the AI chatbot during this study. Rate how helpful the chatbot was in answering your questions and supporting your understanding of the ABSTRACT.
-        3. When you have finished answering all questions, click the **Next Phase** button.  
-        4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
-        **Note:** You may use the **Back** button if you need to revisit the Select All That Apply (SATA) questions you had completed for this abstract.
+        **1.** Read the **ABSTRACT** on the left and the **AI-Generated SUMMARY** on the right.
+        **2.** Answer the questions below, which are organized into three parts:
+
+        &nbsp;&nbsp;**a. Comparing the AI-Generated SUMMARY to the ABSTRACT**  
+        &nbsp;&nbsp;Compare the AI-Generated SUMMARY to the ABSTRACT you just read. Rate how well the SUMMARY reflects the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+
+        &nbsp;&nbsp;**b. Thinking Only About the AI-Generated SUMMARY**  
+        &nbsp;&nbsp;Focus only on the AI-Generated SUMMARY, without comparing it to the ABSTRACT. Base your answers on your own understanding, information needs, and perspective.
+
+        &nbsp;&nbsp;**c. Your Experience Using the AI Chatbot**  
+        &nbsp;&nbsp;Think about your experience using the AI chatbot during this study. Rate how helpful the chatbot was in answering your questions and supporting your understanding of the ABSTRACT.
+
+        **3.** When you have finished answering all questions, click the **Next Phase** button.  
+        You will be asked to confirm before moving on. Once you proceed, you **will not** be able to return to this abstract.
+
+        ---
+
+        **Note:** You may use the **Back** button if you need to revisit the Select All That Apply (SATA) questions you completed for this abstract.
         """
         )
 
@@ -239,7 +247,7 @@ def run_likert():
 
 
     with col2:
-        st.markdown("### SUMMARY")
+        st.markdown("### AI-Generated SUMMARY")
         btn1, btn2, btn3 = st.columns([0.25, 0.55, 0.20])
 
         with btn1:
@@ -277,9 +285,19 @@ def run_likert():
 
     st.divider()
 
+    required_keys = [
+        "simplicity", "coherence", "informativeness",
+        "background", "faithfulness",
+        "understanding", "explanation", "importance", "tailored",
+        "chatbot_useful", "chatbot_understanding"
+    ]
+
+    all_answered = all(
+        st.session_state.get(k) is not None for k in required_keys
+    )
+
     spacer_left, main, spacer_right = st.columns([0.25, 1, 0.25])
     with main:
-        st.markdown("### Comparing the SUMMARY to the ABSTRACT")
         st.markdown("""
         ### Rating Scale  
         **1 = Very Poor**  
@@ -289,42 +307,74 @@ def run_likert():
         **5 = Excellent**  
         """)
 
-        
-        client = MongoClient(st.secrets["MONGO_URI"])
-        db = client["pls"]
-        users_collection = db["users"]
-        required_keys = [
-            "simplicity", "coherence", "informativeness",
-            "background", "faithfulness",
-            "chatbot_useful", "chatbot_understanding", "understanding", "explanation", "importance", "tailored"
-        ]
+        st.markdown("### Comparing the SUMMARY to the ABSTRACT")
+        st.caption("For the following questions, compare the SUMMARY to the ABSTRACT.")
 
-        all_answered = all(st.session_state.get(k) is not None for k in required_keys)
+        q1 = summary_radio(
+            "How easy was the AI-Generated SUMMARY to understand?",
+            "simplicity"
+        )
+        q2 = summary_radio(
+            "How well-structured and logically organized was the AI-Generated SUMMARY?",
+            "coherence"
+        )
+        q3 = summary_radio(
+            "How well did the AI-Generated SUMMARY capture the abstract’s main ideas?",
+            "informativeness"
+        )
+        q4 = summary_radio(
+            "Was necessary background information included in the AI-Generated SUMMARY?",
+            "background"
+        )
+        q5 = summary_radio(
+            "How much do you trust the AI-Generated SUMMARY?",
+            "faithfulness"
+        )
 
-        # SUMMARY questions
-        q1 = summary_radio("How easy was the SUMMARY to understand?", "simplicity")
-        q2 = summary_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
-        q3 = summary_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")
-        q4 = summary_radio("Was necessary background information included in the SUMMARY?", "background")
-        q5 = summary_radio("How much do you trust the SUMMARY?", "faithfulness")
-        q8 = summary_radio("How well did this SUMMARY match your level of understanding?", "understanding")
-        q9 = summary_radio("How well did this SUMMARY explain the information you were unfamiliar with?", "explanation")
-        q10 = summary_radio("How well did this SUMMARY focus on the aspects that mattered most to you?", "importance")
-        q11 = summary_radio("How well did this SUMMARY feel tailored to you?", "tailored")
+        st.divider()
 
-        # CHATBOT questions
-        st.header("Rate your experience with using the AI Chatbot")
+        st.markdown("### Thinking Only About the SUMMARY")
+        st.caption(
+            "For the following questions, consider only the SUMMARY itself, without comparing it to the ABSTRACT."
+        )
+
+        q8 = summary_radio(
+            "How well did this AI-Generated SUMMARY match your level of understanding?",
+            "understanding"
+        )
+        q9 = summary_radio(
+            "How well did this AI-Generated SUMMARY explain the information you were unfamiliar with?",
+            "explanation"
+        )
+        q10 = summary_radio(
+            "How well did this AI-Generated SUMMARY focus on the aspects that mattered most to you?",
+            "importance"
+        )
+        q11 = summary_radio(
+            "How well did this AI-Generated SUMMARY feel tailored to you?",
+            "tailored"
+        )
+
+        st.divider()
+
+        st.markdown("### c. Your Experience Using the AI Chatbot")
         st.markdown("""
-            ### Rating Scale 
-            **1 = Not helpful at all**  
-            **2 = Slightly helpful**  
-            **3 = Moderately helpful**  
-            **4 = Very helpful**  
-            **5 = Extremely helpful**  
+        **Rating Scale**  
+        **1 = Not helpful at all**  
+        **2 = Slightly helpful**  
+        **3 = Moderately helpful**  
+        **4 = Very helpful**  
+        **5 = Extremely helpful**  
         """)
-        q6 = chatbot_radio("How useful was the chatbot in answering all your questions?", "chatbot_useful")
-        q7 = chatbot_radio("How much did the chatbot help you better understand the ABSTRACT?", "chatbot_understanding")
 
+        q6 = chatbot_radio(
+            "How useful was the chatbot in answering all your questions?",
+            "chatbot_useful"
+        )
+        q7 = chatbot_radio(
+            "How much did the chatbot help you better understand the ABSTRACT?",
+            "chatbot_understanding"
+        )
         col_back, col_sp1, col_sp2, col_sp3, col_sp4, col_submit = st.columns([1,1,1,1,1,1])
         with col_back:
             if st.button("⬅️ Back", key="likert_back_btn"):
@@ -344,7 +394,8 @@ def run_likert():
                 st.switch_page("pages/short_answers.py")
 
         with col_submit:
-            if st.button("Next Batch"):
+            if st.button("Next Phase"):
+            # if st.button("Next Batch"):
                 if not all_answered:
                     st.warning("Please answer all questions before moving on.")
                 else:

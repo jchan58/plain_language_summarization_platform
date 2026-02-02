@@ -52,11 +52,11 @@ def accumulate_question_time():
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     # st.markdown(
-    #     "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
+    #     "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
     #     "If you log out before then, you will have to start this abstract over."
     # )
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
         "If you log out before then, you will have to start this abstract over."
     )
     col1, col2 = st.columns(2)
@@ -87,7 +87,7 @@ def run_feedback():
         if st.session_state.get("show_logout_dialog", False):
             st.session_state.show_logout_dialog = False 
             logout_confirm_dialog(prolific_id)
-    st.title("Answer Questions About SUMMARY")
+    st.title("Answer Questions About AI-Generated SUMMARY")
     current = st.session_state.progress_info["current"]
     total = st.session_state.progress_info["total"]
     progress_ratio = current / total if total > 0 else 0
@@ -96,7 +96,7 @@ def run_feedback():
     st.caption(f"Completed {current} of {total} abstracts")
     with st.expander("📝 Instructions", expanded=True):
         st.markdown("""
-        1. Read the SUMMARY shown below.  
+        1. Read the AI-Generated SUMMARY shown below.  
         2. Then answer all **5 select all that apply questions** .  
             - After completing a question, click **Next Question** to proceed.  
         3. After finishing all questions, click **Submit** button to continue.
@@ -113,7 +113,7 @@ def run_feedback():
 
     col1, col2 = st.columns([1, 1], gap="large")
     with col1:
-        st.title("SUMMARY")
+        st.title("AI-Generated SUMMARY")
         btn_col1, btn_col2, btn_col3 = st.columns([0.25, 0.55, 0.20])
 
         with btn_col1:

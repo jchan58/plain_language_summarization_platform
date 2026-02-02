@@ -59,7 +59,7 @@ def show_done_dialog():
         st.markdown("</div>", unsafe_allow_html=True)
         return 
     st.markdown(
-        """You will be answering questions about the SUMMARY derived from the ABSTRACT on the next page and will not be able to return to this page."""
+        """You will be answering questions about the AI-Generated SUMMARY derived from the ABSTRACT on the next page and will not be able to return to this page."""
     )
 
     col1, col2 = st.columns([1, 1])
@@ -79,11 +79,11 @@ def show_done_dialog():
 @st.dialog("Are you sure you want to log out?", dismissible=False)
 def logout_confirm_dialog(prolific_id):
     # st.markdown(
-    #     "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
+    #     "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire**, click the **Next Abstract button**, and **confirm** that you want to move on.\n\n"
     #     "If you log out before then, you will have to start this abstract over."
     # )
     st.markdown(
-        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
+        "Your progress will not be saved until you finish this abstract, which happens after you complete the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire**, click the **Next Batch button**, and **confirm** that you want to move on.\n\n"
         "If you log out before then, you will have to start this abstract over."
     )
     col1, col2 = st.columns(2)
@@ -116,8 +116,8 @@ def interactive_instructions(prolific_id, batch_id):
     # For this batch, you will complete **3 abstracts**. For each abstract, you will:
 
     # 1. **Chat with the AI chatbot about the ABSTRACT:** After reading the ABSTRACT, ask the AI chatbot any questions you have to help you better understand it.
-    # 2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **SUMMARY** derived from the ABSTRACT.  
-    # 3. **Compare SUMMARY to ABSTRACT Questionnaire:** Answer the questions on the page to assess how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, and complete a few questions about your AI chatbot experience in this study.
+    # 2. **Select All That Apply (SATA) Questions:** Answer all five SATA questions using the **AI-Generated SUMMARY** derived from the ABSTRACT.  
+    # 3. **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire:** Answer the questions on the page to assess how the AI-Generated SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, and complete a few questions about your AI chatbot experience in this study.
     # ---
     # **Additional Notes:**
     # - Refer to the instructions at the top of each page for detailed guidance.  
@@ -137,15 +137,15 @@ def interactive_instructions(prolific_id, batch_id):
     1. After reading the ABSTRACT, use the AI chatbot to ask any questions you have to help you better understand the content and any questions you may have:\n
        **For example:**\n
         “Is this medication FDA approved for me to take?”
-    2. You will then be shown a SUMMARY derived from the ABSTRACT. Read the SUMMARY and answer all five Select-All-That-Apply (SATA) questions using the information provided in the SUMMARY.
-    3. You will then be shown both the ABSTRACT and the SUMMARY and asked to complete the following:\n
-        (a) Comparing the SUMMARY to the ABSTRACT:
+    2. You will then be shown an AI-Generated SUMMARY derived from the ABSTRACT. Read the AI-Generated SUMMARY and answer all five Select-All-That-Apply (SATA) questions using the information provided in the AI-Generated SUMMARY.
+    3. You will then be shown both the ABSTRACT and the AI-Generated SUMMARY and asked to complete the following:\n
+        (a) Comparing the AI-Generated SUMMARY to the ABSTRACT:
                 
-        Answer questions that evaluate how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+        Answer questions that evaluate how the AI-Generated SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
 
-        (b) Thinking only about the SUMMARY:
+        (b) Thinking only about the AI-Generated SUMMARY:
                 
-        Answer questions that assess the SUMMARY on its own, including whether it met your information needs.
+        Answer questions that assess the AI-Generated SUMMARY on its own, including whether it met your information needs.
 
         (c) Your experience using the AI chatbot:
                 
@@ -153,11 +153,11 @@ def interactive_instructions(prolific_id, batch_id):
     ---
     **Additional Notes:**
     - Refer to the instructions at the top of each page for detailed guidance.  
-    - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Abstract** button, and **confirming** that you want to move on to the next abstract.  
+    - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Abstract** button, and **confirming** that you want to move on to the next abstract.  
     - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progresss, Your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.
     - You may use the **Back** button to revisit earlier steps *within the same abstract*.  
     ---
-    - Once you finish this phase, please record your time on how long it took you to complete this phase and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**  
+    - Once you finish this phase, please record your time on how long it took you to complete this phase and the Select All That Apply (SATA) questions in seconds on the page after the **Compare AI-Generated SUMMARY to ABSTRACT Questionnaire.**  
     - You will also be able to leave any optional feedback about the task, instructions, or your experience.
     """)
 
