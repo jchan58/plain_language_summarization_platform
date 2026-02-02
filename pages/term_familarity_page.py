@@ -282,13 +282,16 @@ def static_instructions(prolific_id, batch_id):
             - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.  
 
         2. You will then be shown a SUMMARY derived from the ABSTRACT. Read the SUMMARY and answer the following:
+                
         Answer all five SATA questions using the SUMMARY derived from the ABSTRACT.  
 
        3. You will then be shown both the ABSTRACT and the SUMMARY and asked to complete the following:\n
-            (a) Comparing the SUMMARY to the ABSTRACT:\n
+            (a) Comparing the SUMMARY to the ABSTRACT:
+                
             Answer questions that evaluate how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.\n
 
-            (b) Thinking only about the SUMMARY:\n
+            (b) Thinking only about the SUMMARY:
+                
             Answer questions that assess the SUMMARY on its own, including whether it met your information needs.\n
 
         ### Additional Notes:
