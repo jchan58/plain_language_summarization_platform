@@ -433,10 +433,6 @@ def run_chatbot(prolific_id, batch_id, full_type):
             for msg in st.session_state.messages:
                 messages.chat_message(msg["role"]).write(msg["content"])
 
-            with st.expander("🧾 Conversation So Far"):
-                for msg in st.session_state.messages:
-                    st.markdown(f"**{msg['role'].capitalize()}:** {msg['content']}")
-
             if not st.session_state.get("show_summary", False) and not st.session_state.get("generating_summary", False):
                 if prompt := st.chat_input("Type your question here..."):
                     st.session_state.messages.append({"role": "user", "content": prompt})
