@@ -147,7 +147,7 @@ def run_likert():
         """
         ### 📝 Instructions
 
-        **1.** Read the **ABSTRACT** on the left and the **AI-Generated SUMMARY** on the right.
+        **1.** Read the **ABSTRACT** on the left and the **AI-Generated SUMMARY** on the right.\n
         **2.** Answer the questions below, which are organized into three parts:
 
         &nbsp;&nbsp;**a. Comparing the AI-Generated SUMMARY to the ABSTRACT**  
