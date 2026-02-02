@@ -76,6 +76,39 @@ def run_likert():
     abstract = data["abstract"]
     batch_id = data["batch_id"]
     full_type = data["full_type"]
+    summary_scale = [
+        "1 — Very Poor",
+        "2 — Poor",
+        "3 — Fair",
+        "4 — Good",
+        "5 — Excellent"
+    ]
+
+    def summary_radio(label, key):
+        return st.radio(
+            label,
+            summary_scale,
+            horizontal=True,
+            key=key,
+            index=None
+        )
+
+    chatbot_scale = [
+        "1 — Not helpful at all",
+        "2 — Slightly helpful",
+        "3 — Moderately helpful",
+        "4 — Very helpful",
+        "5 — Extremely helpful"
+    ]
+
+    def chatbot_radio(label, key):
+        return st.radio(
+            label,
+            chatbot_scale,
+            horizontal=True,
+            key=key,
+            index=None
+        )
     pls = data["pls"]
     if "likert_saved" in st.session_state:
         for k, v in st.session_state.likert_saved.items():
@@ -114,8 +147,13 @@ def run_likert():
         """
         ### 📝 Instructions
         1. Read the **ABSTRACT** on the left and the **SUMMARY** on the right.  
-        2. Answer the comparison questions below to assess how the **SUMMARY** compares to the **ABSTRACT** in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness, along with a few questions about your experience using the AI chatbot in this study.
-        3. When you have finished answering all questions, click the **Next Batch** button.  
+        2a. **Comparing the SUMMARY to the ABSTRACT**
+        For the questions in this section, compare the SUMMARY to the ABSTRACT you just read. Rate how well the SUMMARY reflects the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+        2b. **Thinking Only About the SUMMARY**
+        For the questions in this section, focus only on the SUMMARY, without comparing it to the ABSTRACT. Base your answers on your own understanding, information needs, and perspective.
+        2c. **Your Experience Using the AI Chatbot**
+        For the questions in this section, think about your experience using the AI chatbot during this study. Rate how helpful the chatbot was in answering your questions and supporting your understanding of the ABSTRACT.
+        3. When you have finished answering all questions, click the **Next Phase** button.  
         4. In the confirmation popup, verify that you are ready to move on — once you proceed, you **will not** be able to return to this abstract.  
 
         **Note:** You may use the **Back** button if you need to revisit the Select All That Apply (SATA) questions you had completed for this abstract.
@@ -255,7 +293,6 @@ def run_likert():
         client = MongoClient(st.secrets["MONGO_URI"])
         db = client["pls"]
         users_collection = db["users"]
-        likert_scale = [1, 2, 3, 4, 5]
         required_keys = [
             "simplicity", "coherence", "informativeness",
             "background", "faithfulness",
@@ -264,19 +301,16 @@ def run_likert():
 
         all_answered = all(st.session_state.get(k) is not None for k in required_keys)
 
-        def persistent_radio(label, key):
-            return st.radio(label, likert_scale, horizontal=True, key=key, index=None)
-
         # SUMMARY questions
-        q1 = persistent_radio("How easy was the SUMMARY to understand?", "simplicity")
-        q2 = persistent_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
-        q3 = persistent_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")
-        q4 = persistent_radio("Was necessary background information included in the SUMMARY?", "background")
-        q5 = persistent_radio("How much do you trust the SUMMARY?", "faithfulness")
-        q8 = persistent_radio("How well did this SUMMARY match your level of understanding?", "understanding")
-        q9 = persistent_radio("How well did this SUMMARY explain the information you were unfamiliar with?", "explanation")
-        q10 = persistent_radio("How well did this SUMMARY focus on the aspects that mattered most to you?", "importance")
-        q11 = persistent_radio("How well did this SUMMARY feel tailored to you?", "tailored")
+        q1 = summary_radio("How easy was the SUMMARY to understand?", "simplicity")
+        q2 = summary_radio("How well-structured and logically organized was the SUMMARY?", "coherence")
+        q3 = summary_radio("How well did the SUMMARY capture the abstract’s main ideas?", "informativeness")
+        q4 = summary_radio("Was necessary background information included in the SUMMARY?", "background")
+        q5 = summary_radio("How much do you trust the SUMMARY?", "faithfulness")
+        q8 = summary_radio("How well did this SUMMARY match your level of understanding?", "understanding")
+        q9 = summary_radio("How well did this SUMMARY explain the information you were unfamiliar with?", "explanation")
+        q10 = summary_radio("How well did this SUMMARY focus on the aspects that mattered most to you?", "importance")
+        q11 = summary_radio("How well did this SUMMARY feel tailored to you?", "tailored")
 
         # CHATBOT questions
         st.header("Rate your experience with using the AI Chatbot")
@@ -288,8 +322,8 @@ def run_likert():
             **4 = Very helpful**  
             **5 = Extremely helpful**  
         """)
-        q6 = persistent_radio("How useful was the chatbot in answering all your questions?", "chatbot_useful")
-        q7 = persistent_radio("How much did the chatbot help you better understand the ABSTRACT?", "chatbot_understanding")
+        q6 = chatbot_radio("How useful was the chatbot in answering all your questions?", "chatbot_useful")
+        q7 = chatbot_radio("How much did the chatbot help you better understand the ABSTRACT?", "chatbot_understanding")
 
         col_back, col_sp1, col_sp2, col_sp3, col_sp4, col_submit = st.columns([1,1,1,1,1,1])
         with col_back:
