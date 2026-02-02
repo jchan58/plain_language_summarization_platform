@@ -286,10 +286,10 @@ def static_instructions(prolific_id, batch_id):
 
        3. You will then be shown both the ABSTRACT and the SUMMARY and asked to complete the following:\n
             (a) Comparing the SUMMARY to the ABSTRACT:\n
-            Answer questions that evaluate how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
+            Answer questions that evaluate how the SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.\n
 
             (b) Thinking only about the SUMMARY:\n
-            Answer questions that assess the SUMMARY on its own, including whether it met your information needs.
+            Answer questions that assess the SUMMARY on its own, including whether it met your information needs.\n
 
         ### Additional Notes:
         - Refer to the instructions at the top of each page for detailed guidance.  
