@@ -56,7 +56,7 @@ if st.button("Continue"):
     components.html(
         """
         <script>
-            window.location.replace("https://app.prolific.com/submissions/complete?cc=XXXXXXX");
+            window.location.replace("https://app.prolific.com/");
         </script>
         """,
         height=0
