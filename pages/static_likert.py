@@ -28,7 +28,7 @@ client = MongoClient(MONGO_URI)
 db = client["pls"]
 users_collection = db["users"]
 
-@st.dialog("Are you sure you want move onto the next abstract?", dismissible=True)
+@st.dialog("Are you sure you want to move on from this abstract?", dismissible=True)
 def confirm_next_abstract():
     st.markdown("You will **not** be able to come back to this abstract if you click **Yes**.")
 
