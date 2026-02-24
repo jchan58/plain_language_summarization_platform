@@ -394,7 +394,7 @@ def run_likert():
                 st.switch_page("pages/short_answers.py")
 
         with col_submit:
-            if st.button("Next Phase"):
+            if st.button("Done"):
             # if st.button("Next Batch"):
                 if not all_answered:
                     st.warning("Please answer all questions before moving on.")
@@ -458,8 +458,7 @@ def run_likert():
                     {"$set": {f"phases.interactive.batches.{batch_id}.completed": True}}
                 )
                 st.session_state.next_interactive_abstract = None
-                st.switch_page("pages/time_completion_interactive.py")
-                # st.switch_page("app.py")
+                st.switch_page("pages/completed_phase.py")
                 return
 
             # Otherwise, move on to next abstract
