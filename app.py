@@ -80,100 +80,45 @@ def get_current_batch(user_doc):
 
     return None
 
-if "seen_pilot_intro" not in st.session_state:
-    st.session_state.seen_pilot_intro = False
-
-if not st.session_state.seen_pilot_intro:
-
-    @st.dialog("Pilot Study Instructions", width="large", dismissible=False)
-    def pilot_dialog():
-        st.markdown("""
-        ## Welcome to the Plain Language Abstracts Pilot Study
-        This **pilot study** will have two phases:
-
-        1. **Static Phase (First Phase)**
-        2. **Interactive Phase (Second Phase)**
-
-        For each phase, you will be asked to read one scientific abstract and answer some questions about it.\n
-        Instructions for each phase will be shown before you start. **Please read them carefully.**
-
-        ---
-
-        ## Keep Track of Time for the Pilot Study
-
-        Although the system automatically records time, during the pilot study you must also  
-        **manually track your time**.
-
-        - Please use a stopwatch, phone timer, or clock.
-        - Record how long each phase and Select All That Apply (SATA) questions take in **seconds**.
-
-        Manually record:
-        - Time for the entire **Static Phase**
-        - Time for the entire **Interactive Phase**
-        - Time for the **SATA questions section** should be recorded separately
-
-        You will be asked to provide these times before moving on to the **next phase**.
-
-        ---
-
-        If you have any suggestions or comments to improve this study, please mention it in the feedback section for each phase.
-        Thank you for helping us improve this study. 
-        **Please click the continue button and then login with your preferred email address to start the study.**
-        """)
-
-        if st.button("Continue"):
-            st.session_state.seen_pilot_intro = True
-            st.rerun()
-
-    pilot_dialog()
-    st.stop()
-
 # check if the user exists in db if they don't 
 if not st.session_state.get("logged_in", False):
-    st.title("Making Scientific Abstracts Easier to Understand – Pilot Study")
+    st.title("Making Scientific Abstracts Easier to Understand")
     st.markdown("""
-    By entering your email address you agree to our [Terms and Conditions](https://docs.google.com/document/d/1wfvGWg69Vg3xroLDxpJXwe1_KWY72w0Z4ut59hA5iTM/edit?usp=sharing).
+    By entering your Prolific ID, you accept the terms and conditions [Terms and Conditions](https://docs.google.com/document/d/1wfvGWg69Vg3xroLDxpJXwe1_KWY72w0Z4ut59hA5iTM/edit?usp=sharing).
     """, unsafe_allow_html=True)
-    # By entering your Mturk ID you agree to our [Terms and Conditions](https://docs.google.com/document/d/1wfvGWg69Vg3xroLDxpJXwe1_KWY72w0Z4ut59hA5iTM/edit?usp=sharing).
-    # """, unsafe_allow_html=True)
-
-    # prolific_id = st.text_input("Please enter your Mturk ID to begin annotating").strip()
-    prolific_id = st.text_input("Please enter your email address to begin the pilot study").strip()
+    prolific_id = st.text_input("Please enter your Prolific ID to begin the study").strip()
     if st.button("Enter"):
         if not prolific_id:
-            st.error("Please enter your email address.")
-             # commented out for pilot
-            # st.error("Please enter your Mturk ID.")
+            st.error("Please enter your Prolific ID.")
             st.stop()
 
-        # commented out for pilot
-        # if prolific_id.lower() not in [str(id).lower() for id in approved_ids]:
-        #     st.error("Sorry, your Mturk ID is not approved for this study.")
-        #     st.stop()
+        if prolific_id.lower() not in [str(id).lower() for id in approved_ids]:
+            st.error("Sorry, your Prolific ID is not approved for this study.")
+            st.stop()
 
         # check if user exists if it doesn't exist create using user_df
-        
-        # this is for the pilot study where we directly assign
         user = users_collection.find_one({"prolific_id": prolific_id})
         if not user:
+            # grab all rows assigned to this user from the spreadsheet
+            user_rows = user_df[user_df["user_id"] == prolific_id]
+
+            if user_rows.empty:
+                st.error("No assignments found for this user. Please contact the study administrator.")
+                st.stop()
+
             phases = {
                 "static": {"batches": {}, "completed": False},
                 "interactive": {"batches": {}, "completed": False},
                 "finetuned": {"batches": {}, "completed": False},
             }
 
-            pilot_rows = pd.concat([
-                user_df[user_df["type"] == "static_1"].head(1),
-                user_df[user_df["type"] == "interactive_4"].head(1),
-            ])
-            for _, row in pilot_rows.iterrows():
-                full_type = row["type"]        
+            for _, row in user_rows.iterrows():
+                full_type = row["type"]              # e.g. "static_1"
                 phase_type, batch_id = full_type.split("_")
 
+                # initialize batch if needed
                 if batch_id not in phases[phase_type]["batches"]:
-                    is_first_batch = (full_type == BATCH_ORDER[0]) or (full_type == "interactive_4")
-                    # commented out for the pilot phase need to recomment in 
-                    # is_first_batch = (full_type == BATCH_ORDER[0])
+                    is_first_batch = (full_type == BATCH_ORDER[0])
                     phases[phase_type]["batches"][batch_id] = {
                         "completed": False,
                         "approved": False,
@@ -182,7 +127,7 @@ if not st.session_state.get("logged_in", False):
                         "full_type": full_type,
                     }
 
-                # build terms only for static
+                # build term familiarity only for static
                 if phase_type == "static":
                     raw_terms = str(row["terms"]).strip().strip("[]")
                     term_list = [t.strip() for t in raw_terms.split(",") if t.strip()]
@@ -199,7 +144,7 @@ if not st.session_state.get("logged_in", False):
                     "abstract": re.sub(r"\s+", " ", ftfy.fix_text(row["abstract"])).strip(),
                     "human_written_pls": re.sub(r"\s+", " ", ftfy.fix_text(row["human_written"])).strip(),
 
-                    # NEW SATA QUESTIONS
+                    # SATA questions
                     "question_1": row["question_1"],
                     "question_2": row["question_2"],
                     "question_3": row["question_3"],
@@ -215,79 +160,20 @@ if not st.session_state.get("logged_in", False):
                     "question_4_correct_answers": row["question_4_correct_answers"],
                     "question_5_answers_choices": row["question_5_answers_choices"],
                     "question_5_correct_answers": row["question_5_correct_answers"],
+
                     "term_familarity": structured_terms,
                     "short_answers": {},
                     "completed": False,
                 }
 
             users_collection.insert_one({
-                "prolific_id": prolific_id, 
+                "prolific_id": prolific_id,
                 "created_at": datetime.datetime.utcnow(),
                 "accepted_terms": True,
-                "phases": phases
+                "phases": phases,
             })
 
             user = users_collection.find_one({"prolific_id": prolific_id})
-
-         # commented out for pilot
-        # user = users_collection.find_one({"prolific_id": prolific_id})
-        # if not user:
-        #     user_rows = user_df[user_df["user_id"] == prolific_id]
-        #     phases = {
-        #         "static": {"batches": {}, "completed": False},
-        #         "interactive": {"batches": {}, "completed": False},
-        #         "finetuned": {"batches": {}, "completed": False},
-        #     }
-        #     for _, row in user_rows.iterrows():
-        #         full_type = row["type"]      
-        #         phase_type, batch_id = full_type.split("_") 
-        #         if batch_id not in phases[phase_type]["batches"]:
-        #             # unlock the very first abstract
-        #             is_first_batch = (full_type == BATCH_ORDER[0])
-        #             phases[phase_type]["batches"][batch_id] = {
-        #                 "completed": False,
-        #                 "approved": False,
-        #                 "unlocked": is_first_batch,
-        #                 "abstracts": {},
-        #                 "full_type": full_type,  
-        #             }
-
-        #         if phase_type == "static":
-        #             raw_terms = str(row["terms"]).strip().strip("[]")
-        #             term_list = [t.strip() for t in raw_terms.split(",") if t.strip()]
-        #             structured_terms = [
-        #                 {"term": t, "familiar": None, "extra_information": None}
-        #                 for t in term_list
-        #             ]
-        #         else:
-        #             structured_terms = []
-                
-        #         abstract_key = str(row["abstract_id"])
-        #         phases[phase_type]["batches"][batch_id]["abstracts"][abstract_key]= {
-        #             "abstract_title": row["abstract_title"],
-        #             "abstract": re.sub(r"\s+", " ", ftfy.fix_text(row["abstract"])).strip(),
-        #             "main_idea_question": row["main_idea_question"],
-        #             "method_question": row["method_question"],
-        #             "result_question": row["result_question"],
-        #             "short_answers": {
-        #                 "main_idea": "",
-        #                 "methods": "",
-        #                 "results": "",
-        #             },
-        #             "term_familarity": structured_terms,
-        #             "human_written_pls": re.sub(r"\s+", " ", ftfy.fix_text(row["human_written"])).strip(),
-        #             "completed": False,
-        #         }
-
-
-        #     users_collection.insert_one({
-        #         "prolific_id": prolific_id,
-        #         "created_at": datetime.datetime.utcnow(),
-        #         "accepted_terms": True,
-        #         "phases": phases
-        #     })
-        #     user = users_collection.find_one({"prolific_id": prolific_id}) 
-
         # restore progress index if available
         start_index = (
             user.get("phases", {})
