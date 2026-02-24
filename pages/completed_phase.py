@@ -1,7 +1,5 @@
 import streamlit as st
 from pymongo import MongoClient
-from datetime import datetime
-import streamlit.components.v1 as components
 from datetime import datetime, timezone
 
 st.set_page_config(layout="wide")
@@ -53,13 +51,11 @@ if st.button("Continue"):
         }}
     )
 
-    components.html(
-        """
-        <script>
-            window.location.replace("https://app.prolific.com/");
-        </script>
-        """,
-        height=0
+    st.success("Your response has been recorded.")
+
+    st.link_button(
+        "Continue",
+        PROLIFIC_LINK
     )
 
     st.stop()
