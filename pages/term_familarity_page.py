@@ -265,9 +265,8 @@ def static_instructions(prolific_id, batch_id):
     #     Once you finish this batch, we will contact you with further instructions.
     #     """)
     st.markdown("""
-        ### Before you begin, please read these instructions carefully.
-
-        For this static phase, you will complete **1 abstract**. First, read the abstract. Then you will be asked to do the following.
+        ### Before you begin, please read these instructions carefully and complete all tasks in one sitting, as you are being compensated for doing so. This task should not take more than 20 minutes.
+        For this phase, you will complete **1 abstract**. First, read the abstract. Then you will be asked to do the following.
 
         1. You will be shown a list of terms present in the abstract. For each term, rate your level of familiarity on a scale from 1 (not familiar at all) to 5 (very familiar).
         - Then, specify what additional information (if any) would help you better understand the term by selecting one or more of the following:
@@ -297,10 +296,7 @@ def static_instructions(prolific_id, batch_id):
         - Your progress is **not automatically saved** as you go. Your progress is only saved when you finish the current abstract by completing the **Compare SUMMARY to ABSTRACT Questionnaire** , clicking the **Next Abstract** button, and **confirming** that you want to move on to the next abstract.  
         - You may open the sidebar at any time to log out. However, if you log out before finishing the abstract in progress, your progress for that abstract will not be saved, and you will have to recomplete that same abstract when you log back in.  
         - You can use the **Back** button to revisit earlier steps *within the same abstract*.  
-        - Once you proceed to the next batch, you will **not** be able to return to this abstract.
-        ---
-        - Once you finish this phase, please record your time on how long it took you to complete this batch and the Select All That Apply (SATA) questions in seconds on the page after the **Compare SUMMARY to ABSTRACT Questionnaire.**  
-        - You will also be able to leave any optional feedback about the task, instructions, or your experience.
+        - Once you proceed to the next phase, you will **not** be able to return to this abstract.
         """)
 
     if st.button("Start"):
@@ -415,7 +411,7 @@ def run_terms(prolific_id, batch_id, full_type):
         st.session_state.pop("next_static_abstract", None)
         st.session_state.current_batch_id = batch_id
     with st.sidebar:
-        st.write(f"**MTurk ID:** `{prolific_id}`")
+        st.write(f"**Prolific ID:** `{prolific_id}`")
         if st.button("Logout"):
             st.session_state.show_logout_dialog = True
         if st.session_state.get("show_logout_dialog", False):
@@ -430,7 +426,6 @@ def run_terms(prolific_id, batch_id, full_type):
         st.session_state.time_familiarity = 0
     if "time_extra_info" not in st.session_state:
         st.session_state.time_extra_info = 0
-    # ------------------------------------------------ #
 
     # Instruction check
     user = load_user_info(prolific_id)
@@ -562,10 +557,7 @@ def run_terms(prolific_id, batch_id, full_type):
             else:
                 st.warning("⚠️ Please rate your level of familiarity for all terms before continuing.")
 
-    # ---------------- EXTRA INFO PAGE ---------------- #
     if st.session_state.stage_static == "extra_info":
-
-        ### TIMER ADDITION ###
         if st.session_state.get("extra_start_time") is None:
             st.session_state.extra_start_time = datetime.datetime.utcnow()
         # ------------------------------------------------ #
