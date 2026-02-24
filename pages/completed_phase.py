@@ -19,14 +19,14 @@ st.title("Study Completion")
 st.markdown("""
 Thank you for completing this study.
 
-Please confirm whether you wish to proceed to the completion page on Prolific.
+Please choose yes or no if you would like to participate in the next stage of this study.
 """)
 
 choice = st.radio(
     "Please select one option:",
     [
-        "Yes, I am ready to return to Prolific",
-        "No, I am not ready yet"
+        "Yes, I would like to participate in the next stage of this study",
+        "No, I would not like to participate in the next stage of this study"
     ],
     index=None
 )
