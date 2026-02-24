@@ -12,7 +12,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-PROLIFIC_LINK = "https://app.prolific.com/submissions/complete/YOUR_COMPLETION_CODE"
+PROLIFIC_LINK = "https://app.prolific.com/"
 
 st.title("Study Completion")
 
