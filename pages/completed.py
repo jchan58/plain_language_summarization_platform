@@ -3,6 +3,8 @@ from pymongo import MongoClient
 from datetime import datetime
 from navigation import render_nav
 
+
+
 @st.cache_resource
 def get_mongo_client():
     return MongoClient(st.secrets["MONGO_URI"])

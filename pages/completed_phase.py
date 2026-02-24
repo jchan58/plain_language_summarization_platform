@@ -14,6 +14,17 @@ st.markdown(
 
 PROLIFIC_LINK = "https://app.prolific.com/"
 
+# ---------------------------
+# FLOW GUARD
+# ---------------------------
+if "prolific_id" not in st.session_state or "last_batch" not in st.session_state:
+    st.error("This page can only be accessed after completing the study.")
+    st.stop()
+
+prolific_id = st.session_state.prolific_id
+batch_id = st.session_state.last_batch
+
+
 st.title("Study Completion")
 
 st.markdown("""
@@ -36,9 +47,6 @@ if st.button("Submit answer"):
         st.error("Please make a selection to continue.")
         st.stop()
 
-    prolific_id = st.session_state.get("prolific_id")
-    batch_id = st.session_state.get("last_batch")
-
     client = MongoClient(st.secrets["MONGO_URI"])
     db = client["pls"]
     users_collection = db["users"]
@@ -57,5 +65,4 @@ if st.button("Submit answer"):
         "Go back to Prolific",
         PROLIFIC_LINK
     )
-
     st.stop()
