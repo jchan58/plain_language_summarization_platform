@@ -118,7 +118,7 @@ def run_likert():
     if "likert_start_time" not in st.session_state:
         st.session_state.likert_start_time = datetime.utcnow()
     with st.sidebar:
-        st.write(f"**MTurk ID:** `{prolific_id}`")
+        st.write(f"**Prolific ID:** `{prolific_id}`")
         if st.button("Logout"):
             st.session_state.show_logout_dialog = True
         if st.session_state.get("show_logout_dialog", False):

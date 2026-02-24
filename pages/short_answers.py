@@ -81,7 +81,7 @@ def run_feedback():
     phase = "interactive"
     abstract_info = user["phases"][phase]["batches"][batch_id]["abstracts"][abstract_id]
     with st.sidebar:
-        st.write(f"**MTurk ID:** `{prolific_id}`")
+        st.write(f"**Prolific ID:** `{prolific_id}`")
         if st.button("Logout"):
             st.session_state.show_logout_dialog = True
         if st.session_state.get("show_logout_dialog", False):

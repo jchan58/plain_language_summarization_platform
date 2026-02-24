@@ -347,7 +347,7 @@ def run_chatbot(prolific_id, batch_id, full_type):
         return
     st.title("💬 Chat with a chatbot about the scientific abstract")
     with st.sidebar:
-        st.write(f"**MTurk ID:** `{prolific_id}`")
+        st.write(f"**Prolific ID:** `{prolific_id}`")
         if st.button("Logout"):
             st.session_state.show_logout_dialog = True
         if st.session_state.get("show_logout_dialog", False):
