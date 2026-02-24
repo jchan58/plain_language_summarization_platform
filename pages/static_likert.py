@@ -378,8 +378,7 @@ def run_likert():
                     {"$set": {f"phases.static.batches.{batch_id}.completed": True}}
                 )
                 st.session_state.next_static_abstract = None
-                st.switch_page("pages/time_completion_static.py")
-                # st.switch_page("app.py")
+                st.switch_page("pages/completed_phase.py")
                 return
 
             # Otherwise, move on to next abstract
