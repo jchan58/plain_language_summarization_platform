@@ -1,6 +1,8 @@
 import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
+import streamlit.components.v1 as components
+from datetime import datetime, timezone
 
 st.set_page_config(layout="wide")
 st.markdown(
@@ -47,14 +49,17 @@ if st.button("Continue"):
         {"prolific_id": prolific_id},
         {"$set": {
             f"phases.static.batches.{batch_id}.confirmed_completion": choice.startswith("Yes"),
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.now(timezone.utc)
         }}
     )
 
-    # Immediate redirect to Prolific
-    st.markdown(
-        f"""
-        <meta http-equiv="refresh" content="0; url={PROLIFIC_LINK}">
+    components.html(
+        """
+        <script>
+            window.location.replace("https://app.prolific.com/submissions/complete?cc=XXXXXXX");
+        </script>
         """,
-        unsafe_allow_html=True
+        height=0
     )
+
+    st.stop()
