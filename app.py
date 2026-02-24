@@ -38,7 +38,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 # set the page to wide mode
-
 st.set_page_config(layout="wide")
 
 # connect to mongodb
@@ -208,7 +207,7 @@ else:
     if not current["unlocked"]:
         # add in the sidebar
         with st.sidebar:
-            st.write(f"**MTurk ID:** `{st.session_state.prolific_id}`")
+            st.write(f"**Prolific ID:** `{st.session_state.prolific_id}`")
             if st.button("Logout"):
                 st.session_state.logged_in = False
                 st.session_state.prolific_id = None

@@ -129,7 +129,7 @@ def interactive_instructions(prolific_id, batch_id):
     # Once you finish this batch, we will contact you with further instructions.       
     # """)
     st.markdown("""
-    ### Before you begin, please read these instructions carefully  
+    ### Before you begin, please read these instructions carefully and it will only take 20 minutes to complete this task.
     Please follow these steps:
 
      For this interactive phase, you will complete **1 abstract**. For the abstract, you will be asked to do the following.
