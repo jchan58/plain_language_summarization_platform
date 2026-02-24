@@ -159,7 +159,7 @@ def run_likert():
         &nbsp;&nbsp;**c. Your Experience Using the AI Chatbot**  
         &nbsp;&nbsp;Think about your experience using the AI chatbot during this study. Rate how helpful the chatbot was in answering your questions and supporting your understanding of the ABSTRACT.
 
-        **3.** When you have finished answering all questions, click the **Next Phase** button.  
+        **3.** When you have finished answering all questions, click the **Done** button.  
         You will be asked to confirm before moving on. Once you proceed, you **will not** be able to return to this abstract.
 
         ---
