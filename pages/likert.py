@@ -457,6 +457,9 @@ def run_likert():
                     {"prolific_id": prolific_id},
                     {"$set": {f"phases.interactive.batches.{batch_id}.completed": True}}
                 )
+                st.session_state.last_batch = batch_id
+                st.session_state.prolific_id = prolific_id
+
                 st.session_state.next_interactive_abstract = None
                 st.switch_page("pages/completed_phase.py")
                 return
