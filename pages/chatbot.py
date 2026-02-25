@@ -375,7 +375,7 @@ def run_chatbot(prolific_id, batch_id, full_type):
     with st.expander("📝 Instructions", expanded=True):
         # 1. Read the ABSTRACT on the **left side of the screen**.  
         st.markdown("""
-        1. Use the **chatbot** on the right to ask questions about anything in the ABSTRACT you would like to understand better.  
+        1. Use the **chatbot** on the right to ask questions about anything in the ABSTRACT you would like to understand better. **Please only ask questions regarding the ABSTRACT, any questions that is not about the ABSTRACT will cayse your submission to be reject.**
         2. You must ask the chatbot **at least 3 questions** before moving on.  
         3. When you are finished asking questions, click **“I'm done asking questions.”**  
         4. A confirmation popup will appear — please confirm that you would like to move on to the next task.\n\n
