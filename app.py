@@ -52,7 +52,7 @@ abstract_collection = db['abstracts']
 
 # load approved IDs and dataframe for all the abstracts etc., 
 approved_ids = pd.read_csv("approved_ids.csv")["prolific_id"].tolist()
-user_df = pd.read_csv("final_user_batches_new.csv", encoding="latin1")
+user_df = pd.read_csv("final_user_batches.csv", encoding="latin1")
 
 # determine what batch user will start off with 
 def get_current_batch(user_doc):
