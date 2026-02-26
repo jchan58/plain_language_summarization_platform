@@ -74,6 +74,9 @@ def logout_confirm_dialog(prolific_id):
 
 def run_feedback():
     data = st.session_state.last_completed_abstract
+     for k in ["q1_time", "q2_time", "q3_time", "q4_time", "q5_time"]:
+        if k not in st.session_state:
+            st.session_state[k] = 0
     prolific_id = data["prolific_id"]
     abstract_id = data["abstract_id"]
     batch_id = data['batch_id']
@@ -173,16 +176,25 @@ def run_feedback():
     with col2:
         st.title("Select All That Apply (SATA) Questions")
 
+        if "sata_for_abstract" not in st.session_state:
+            st.session_state.sata_for_abstract = None
+
+        if st.session_state.sata_for_abstract != abstract_id:
+            st.session_state.sata_answers = {f"q{i}": [] for i in range(1, 6)}
+            st.session_state.qa_index = 0
+            st.session_state.question_start_time = datetime.utcnow()
+
+            for k in ["q1_time", "q2_time", "q3_time", "q4_time", "q5_time"]:
+                st.session_state[k] = 0
+
+            st.session_state.sata_for_abstract = abstract_id
+
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0
 
         # Start timer if first load OR if we switched questions
         if "question_start_time" not in st.session_state:
             st.session_state.question_start_time = datetime.utcnow()
-
-        # Ensure answers dict exists
-        if "feedback" not in st.session_state:
-            st.session_state.feedback = {"main_idea": "", "method": "", "attention": "", "result": ""}
 
         questions = [
             {
@@ -216,19 +228,6 @@ def run_feedback():
                 "correct": parse_choices(abstract_info["question_5_correct_answers"])
             }
         ]
-
-        if "sata_for_abstract" not in st.session_state:
-            st.session_state.sata_for_abstract = None
-
-        if st.session_state.sata_for_abstract != abstract_id:
-            st.session_state.sata_answers = {q["key"]: [] for q in questions}
-            st.session_state.qa_index = 0
-            st.session_state.question_start_time = datetime.utcnow()
-
-            for k in ["q1_time", "q2_time", "q3_time", "q4_time", "q5_time"]:
-                st.session_state[k] = 0
-
-            st.session_state.sata_for_abstract = abstract_id
 
         q = questions[st.session_state.qa_index]
         st.subheader(q["text"])
