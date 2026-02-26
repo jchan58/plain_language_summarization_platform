@@ -12,7 +12,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-PROLIFIC_LINK = "https://app.prolific.com/"
+PROLIFIC_LINK = "https://app.prolific.com/submissions/complete?cc=CZFT8YSF"
 
 # ---------------------------
 # FLOW GUARD
