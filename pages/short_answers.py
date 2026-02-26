@@ -30,12 +30,12 @@ users_collection = db["users"]
 def parse_choices(s):
     return [x.strip() for x in s.split(";") if x.strip()]
 
-def accumulate_question_time():
-    """Add elapsed time to the current question."""
+def accumulate_question_time(index):
     if "question_start_time" not in st.session_state:
         return
 
     elapsed = (datetime.utcnow() - st.session_state.question_start_time).total_seconds()
+
     key_map = {
         0: "q1_time",
         1: "q2_time",
@@ -43,10 +43,11 @@ def accumulate_question_time():
         3: "q4_time",
         4: "q5_time"
     }
-    q_key = key_map.get(st.session_state.qa_index)
 
+    q_key = key_map.get(index)
     if q_key:
         st.session_state[q_key] = st.session_state.get(q_key, 0) + elapsed
+
     st.session_state.question_start_time = datetime.utcnow()
 
 @st.dialog("Are you sure you want to log out?", dismissible=False)
@@ -178,11 +179,6 @@ def run_feedback():
         # Start timer if first load OR if we switched questions
         if "question_start_time" not in st.session_state:
             st.session_state.question_start_time = datetime.utcnow()
-            st.session_state.last_qa_index = st.session_state.qa_index
-        else:
-            if st.session_state.last_qa_index != st.session_state.qa_index:
-                accumulate_question_time()
-                st.session_state.last_qa_index = st.session_state.qa_index
 
         # Ensure answers dict exists
         if "feedback" not in st.session_state:
@@ -264,14 +260,14 @@ def run_feedback():
         with nav1:
             if st.session_state.qa_index > 0:
                 if st.button("⬅ Previous Question"):
-                    accumulate_question_time()
+                    accumulate_question_time(st.session_state.qa_index)
                     st.session_state.qa_index -= 1
                     st.rerun()
 
         with nav3:
             if st.session_state.qa_index < len(questions) - 1:
                 if st.button("Next Question ➡"):
-                    accumulate_question_time()
+                    accumulate_question_time(st.session_state.qa_index)
                     st.session_state.qa_index += 1
                     st.rerun()
 
@@ -281,7 +277,7 @@ def run_feedback():
                 if st.button("Submit", disabled=not all_filled):
 
                     # Final time accumulation
-                    accumulate_question_time()
+                    accumulate_question_time(st.session_state.qa_index)
 
                     feedback_data = {
                         "sata_answers": st.session_state.sata_answers,
