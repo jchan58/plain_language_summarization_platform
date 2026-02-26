@@ -174,6 +174,9 @@ def run_feedback():
 
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0
+        
+        if "last_qa_index" not in st.session_state:
+            st.session_state.last_qa_index = 0
 
         # Start timer if first load OR if we switched questions
         if "question_start_time" not in st.session_state:
@@ -277,10 +280,7 @@ def run_feedback():
 
             else:
                 all_filled = completed == 5
-
                 if st.button("Submit", disabled=not all_filled):
-
-                    # Final time accumulation
                     accumulate_question_time()
 
                     feedback_data = {
