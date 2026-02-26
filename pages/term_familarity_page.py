@@ -280,7 +280,7 @@ def static_instructions(prolific_id, batch_id):
             - *Background:* Diabetes develops when the body does not make enough insulin or does not use insulin properly, which can lead to long-term health problems.  
             - *Example:* A person with diabetes might check their blood sugar every day and take insulin or medication to manage it.  
 
-        2. You will then be shown a SUMMARY derived from the ABSTRACT. Read the SUMMARY and answer all five SATA questions using the SUMMARY derived from the ABSTRACT.  
+        2. You will then be shown a SUMMARY derived from the ABSTRACT. Read the SUMMARY and answer all five SATA questions using the SUMMARY derived from the ABSTRACT - Please DO NOT use any external AI tools (e.g., ChatGPT) to answer these questions. Answer to the best of your ability..  
 
        3. You will then be shown both the ABSTRACT and the SUMMARY and asked to complete the following:\n
             (a) Comparing the SUMMARY to the ABSTRACT:

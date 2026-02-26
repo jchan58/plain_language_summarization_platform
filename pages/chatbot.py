@@ -137,7 +137,7 @@ def interactive_instructions(prolific_id, batch_id):
     1. Use the AI chatbot to ask any questions you have to help you better understand the ABSTRACT and any questions you may have about it:\n
        &nbsp;&nbsp;For example:
        &nbsp;&nbsp;“Is this medication FDA approved for me to take?”
-    2. You will then be shown an AI-Generated SUMMARY derived from the ABSTRACT. Read the AI-Generated SUMMARY and answer all five Select-All-That-Apply (SATA) questions using the information provided in the AI-Generated SUMMARY.
+    2. You will then be shown an AI-Generated SUMMARY derived from the ABSTRACT. Read the AI-Generated SUMMARY and answer all five Select-All-That-Apply (SATA) questions using the information provided in the AI-Generated SUMMARY. (Please DO NOT use any external AI tools (e.g., ChatGPT) to answer these questions. Answer to the best of your ability.)
     3. You will then be shown both the ABSTRACT and the AI-Generated SUMMARY and asked to complete the following:\n
         &nbsp;&nbsp;(a) Comparing the AI-Generated SUMMARY to the ABSTRACT:
         &nbsp;&nbsp;Answer questions that evaluate how the AI-Generated SUMMARY compares to the ABSTRACT in terms of clarity, organization, coverage of information, inclusion of background information, and trustworthiness.
