@@ -206,6 +206,9 @@ def run_feedback():
         
         if "qa_index" not in st.session_state:
             st.session_state.qa_index = 0
+
+        if "last_qa_index" not in st.session_state:
+            st.session_state.last_qa_index = 0
         
         if "question_start_time" not in st.session_state:
             st.session_state.question_start_time = datetime.utcnow()
