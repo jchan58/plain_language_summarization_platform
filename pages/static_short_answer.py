@@ -155,7 +155,7 @@ def run_feedback():
         3. After finishing all questions, click **Submit** button to continue.
 
         **Note:**  
-        You may use the **Previous Question** button to revisit the previous select all that apply question.  
+        You may use the Previous Question button to revisit earlier select-all-that-apply questions. Please DO NOT use any external AI tools (e.g., ChatGPT) to answer these questions. Answer to the best of your ability.
         """)
 
     if "summary_font_size" not in st.session_state:
