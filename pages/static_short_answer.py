@@ -273,11 +273,6 @@ def run_feedback():
             for q in questions
         )
 
-        st.markdown(
-            f"<div><strong>Questions completed:</strong> {completed} / {len(questions)}</div>",
-            unsafe_allow_html=True
-        )
-
         # Navigation
         nav1, nav2, nav3 = st.columns([1, 2, 1])
 
