@@ -129,10 +129,10 @@ def interactive_instructions(prolific_id, batch_id):
     # Once you finish this batch, we will contact you with further instructions.       
     # """)
     st.markdown("""
-    ### Before you begin, please read these instructions carefully and it will only take 20 minutes to complete this task.
+    ### Before you begin, please read these instructions carefully and it will only take 54 minutes to complete this task.
     Please follow these steps:
 
-     For this interactive phase, you will complete **1 abstract**. For the abstract, you will be asked to do the following.
+     For this interactive phase, you will complete **3 abstract**. For each abstract, you will be asked to do the following.
 
     1. Use the AI chatbot to ask any questions you have to help you better understand the ABSTRACT and any questions you may have about it:\n
        &nbsp;&nbsp;For example:

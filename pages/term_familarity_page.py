@@ -265,8 +265,8 @@ def static_instructions(prolific_id, batch_id):
     #     Once you finish this batch, we will contact you with further instructions.
     #     """)
     st.markdown("""
-        ### Before you begin, please read these instructions carefully and complete all tasks in one sitting, as you are being compensated for doing so. This task should not take more than 20 minutes.
-        For this phase, you will complete **1 abstract**. First, read the abstract. Then you will be asked to do the following.
+        ### Before you begin, please read these instructions carefully and complete all tasks in one sitting, as you are being compensated for doing so. This task should not take more than 17 minutes per abstract.
+        For this phase, you will complete **the abstract(s)**. First, read the abstract. Then you will be asked to do the following.
 
         1. You will be shown a list of terms present in the abstract. For each term, rate your level of familiarity on a scale from 1 (not familiar at all) to 5 (very familiar).
         - Then, specify what additional information (if any) would help you better understand the term by selecting one or more of the following:
