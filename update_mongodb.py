@@ -137,7 +137,7 @@ from pymongo import MongoClient
 # -------- CONFIG --------
 MONGO_URI = "mongodb+srv://jchan51_db_user:Aliciarivera2%40@cluster0.hxeytkt.mongodb.net/"
 CSV_PATH = "final_user_batches.csv"          # your "final_df" source
-DRY_RUN = True                              # set False to actually delete
+DRY_RUN = False                             # set False to actually delete
 BATCH_ORDER = ["static_1","static_2","interactive_3","interactive_4","finetuned_5","finetuned_6"]
 # ------------------------
 
