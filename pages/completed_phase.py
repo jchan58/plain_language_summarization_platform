@@ -14,7 +14,7 @@ st.markdown(
 
 PROLIFIC_LINK = "https://app.prolific.com/submissions/complete?cc=CZFT8YSF"
 
-# ---------------------------
+# --------------------------
 # FLOW GUARD
 # ---------------------------
 if "prolific_id" not in st.session_state or "last_batch" not in st.session_state:
