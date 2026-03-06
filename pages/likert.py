@@ -490,6 +490,8 @@ def run_likert():
                     "last_full_type": full_type
                 }}
             )
+            st.session_state.batch_id = batch_id
+            st.session_state.full_type = full_type
             st.switch_page("pages/chatbot.py")
            
 run_likert()
